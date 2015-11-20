@@ -1,0 +1,24 @@
+version 2.1 
+modified date: 2013.3.25
+1. modified ndis version get
+2. add ppp dail shell for lte/wcdma
+3. add ndis connect/disconnect example code.
+4. modified ndis_connect as conect manager.
+
+version 2.10
+modified date:2013.9.3
+1.add mac addr parameter specification
+  e.g: 
+   insmod ./src/lc_ether.ko mac_addr="00:11:22:33:44:55"
+   
+   
+version 2.11
+modified date:2013.11.10 
+ ndis_connect daemon modification.
+  ndis_connect -k -c &
+  get connect status by timer, if get disconnect info from internet. reconnect again.
+  
+version 2.12
+modified date:2014.1.2 
+ support bridge mode.and modified driver to ethernet mode.
+  

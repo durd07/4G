@@ -1,0 +1,3 @@
+About how to get ip address and dns from ndis:
+
+you can use "udhcpc -i wan0" get ndis ip address and dns 
