@@ -12,7 +12,7 @@
 int Open_Port(char* comport)
 {
     char port_tmp[20];
-    sprintf(port_tmp, comport, comport);	
+    sprintf(port_tmp, comport, comport);    
 
     int fd=0;
     // O_NOCTTY If path refers to a terminal device, do not allocate the 
@@ -35,7 +35,7 @@ int Open_Port(char* comport)
     else
     {
         //printf("  -fcntl ... done!\n");
-    }		
+    }       
     if(isatty(STDIN_FILENO)==0)
     {
         printf("standard input is not a termined device\n");
@@ -43,14 +43,14 @@ int Open_Port(char* comport)
     else
     {
         //printf("  -istty ... done!\n");
-    }		
-    return fd;			
+    }       
+    return fd;          
 }
 
 
 int Set_Opt(int fd, int nSpeed, int nBits, char nEvent, int nStop)
 {
-    struct termios newtio, oldtio;	
+    struct termios newtio, oldtio;  
     if(tcgetattr(fd,&oldtio)!=0)
     {
         perror("Setup serial");
@@ -58,54 +58,54 @@ int Set_Opt(int fd, int nSpeed, int nBits, char nEvent, int nStop)
     }
     memset(&newtio, 0, sizeof(newtio));
     newtio.c_cflag|=CLOCAL|CREAD;
-    newtio.c_cflag&=~CSIZE;	
+    newtio.c_cflag&=~CSIZE; 
     switch(nSpeed)
     {
         case 300:
             cfsetispeed(&newtio,B300);
             cfsetospeed(&newtio,B300);
-            break;		
+            break;      
         case 600:
             cfsetispeed(&newtio,B600);
             cfsetospeed(&newtio,B600);
-            break;			
+            break;          
         case 1200:
             cfsetispeed(&newtio,B1200);
             cfsetospeed(&newtio,B1200);
-            break;			
+            break;          
         case 2400:
             cfsetispeed(&newtio,B2400);
             cfsetospeed(&newtio,B2400);
-            break;		
+            break;      
         case 4800:
             cfsetispeed(&newtio,B4800);
             cfsetospeed(&newtio,B4800);
-            break;			
+            break;          
         case 9600:
             cfsetispeed(&newtio,B9600);
             cfsetospeed(&newtio,B9600);
-            break;			
+            break;          
         case 19200:
             cfsetispeed(&newtio,B19200);
             cfsetospeed(&newtio,B19200);
-            break;			
+            break;          
         case 38400:
             cfsetispeed(&newtio,B38400);
             cfsetospeed(&newtio,B38400);
-            break;			
+            break;          
         case 57600:
             cfsetispeed(&newtio,B57600);
             cfsetospeed(&newtio,B57600);
-            break;		
+            break;      
         case 115200:
             cfsetispeed(&newtio,B115200);
             cfsetospeed(&newtio,B115200);
-            break;		
+            break;      
         default:
             cfsetispeed(&newtio,B9600);
             cfsetospeed(&newtio,B9600);
-            break;	
-    }	
+            break;  
+    }   
     switch(nBits)
     {
         case 7:
@@ -113,11 +113,11 @@ int Set_Opt(int fd, int nSpeed, int nBits, char nEvent, int nStop)
             break;
         case 8:
             newtio.c_cflag|=CS8;
-            break;			
+            break;          
         default:
             newtio.c_cflag|=CS8;
-            break;			
-    }  	
+            break;          
+    }   
     switch(nEvent)
     {
         case 'O':
@@ -125,17 +125,17 @@ int Set_Opt(int fd, int nSpeed, int nBits, char nEvent, int nStop)
             newtio.c_cflag|=PARENB;
             newtio.c_cflag|=PARODD;
             newtio.c_iflag|=(INPCK|ISTRIP);
-            break;		
+            break;      
         case 'E':
         case 'e':
             newtio.c_iflag|=(INPCK|ISTRIP);
             newtio.c_cflag|=PARENB;
             newtio.c_cflag&=~PARODD;
-            break;			
+            break;          
         case 'N':
         case 'n':
             newtio.c_cflag&=~PARENB;
-            break;		
+            break;      
         default:
             newtio.c_cflag&=~PARENB;
             break;
@@ -144,14 +144,14 @@ int Set_Opt(int fd, int nSpeed, int nBits, char nEvent, int nStop)
     {
         case 1:
             newtio.c_cflag&=~CSTOPB;
-            break;			
+            break;          
         case 2:
             newtio.c_cflag|=CSTOPB;
-            break;		
+            break;      
         default:
             newtio.c_cflag&=~CSTOPB;
-            break; 			
-    } 	
+            break;          
+    }   
     newtio.c_cc[VTIME]=2;
     newtio.c_cc[VMIN]=0; // 0 non-block ; > 0 block
     tcflush(fd, TCIFLUSH);  
@@ -233,7 +233,7 @@ int read_gps(char* msg, char* result)
 //#include <unistd.h>
 //
 //int serial(int argc, char* argv[])
-//{		
+//{     
 //    char *comport = "/dev/ttyUSB2";
 //    int speed = 115200;
 //    char snd_buf[128] = "";
@@ -369,6 +369,8 @@ enum DisplayDirection
     ToStdout,
     None
 };  
+
+#include <syslog.h>
 class Item
 {
 public:
@@ -394,6 +396,17 @@ public:
         }
         cmd += " ff";
         system(cmd.c_str());
+    }
+    virtual void DisplayToStdout(string &value)
+    {
+        cout << value << endl;
+    }
+    virtual void DisplayToLogFile(string &value)
+    {
+        syslog(LOG_INFO, value.c_str());
+    }
+    virtual void DisplayOnWebPage(string &value)
+    {
     }
     //    private:
     DisplayDirection m_disp;
@@ -439,14 +452,13 @@ public:
                         else signal = "XXXX";
                         string position("20");
                         DisplayOnVideo(signal, position);
-                        break;
                     }
-                    case ToStdout:
-                        break;
-                    case ToLogFile:
-                        break;
-                    case ToWebPage:
-                        break;
+                        case ToWebPage:
+                                      DisplayOnWebPage(value);
+                        case ToLogFile:
+                                      DisplayToLogFile(value);
+                        case ToStdout:
+                                      DisplayToStdout(value);
                     default:
                         break;
                 }
@@ -482,14 +494,13 @@ class PSART : public Item
                                           string dispvalue = value.substr((value.find(":") + 2));
                                           string position("21");
                                           DisplayOnVideo(dispvalue, position);
-                                          break;
                                       }
-                        case ToStdout:
-                                      break;
-                        case ToLogFile:
-                                      break;
                         case ToWebPage:
-                                      break;
+                                      DisplayOnWebPage(value);
+                        case ToLogFile:
+                                      DisplayToLogFile(value);
+                        case ToStdout:
+                                      DisplayToStdout(value);
                         default:
                                       break;
                     }
@@ -527,14 +538,13 @@ class COPS : public Item
                                           string dispvalue = value.substr(value.find("\"") + 1, value.rfind("\"") - value.find("\"") - 1);
                                           string position("22");
                                           DisplayOnVideo(dispvalue, position);
-                                          break;
                                       }
-                        case ToStdout:
-                                      break;
-                        case ToLogFile:
-                                      break;
                         case ToWebPage:
-                                      break;
+                                      DisplayOnWebPage(value);
+                        case ToLogFile:
+                                      DisplayToLogFile(value);
+                        case ToStdout:
+                                      DisplayToStdout(value);
                         default:
                                       break;
                     }
@@ -644,21 +654,20 @@ class NETRATE : public Item
                                   DisplayOnVideo(value, position);
                                   string position1("24");
                                   DisplayOnVideo(value1, position1);
-                                  break;
                               }
-                case ToStdout:
-                              break;
-                case ToLogFile:
-                              break;
-                case ToWebPage:
-                              break;
+                        case ToWebPage:
+                                      DisplayOnWebPage(value);
+                        case ToLogFile:
+                                      DisplayToLogFile(value);
+                        case ToStdout:
+                                      DisplayToStdout(value);
                 default:
                               break;
             }
         }
 };
 
-//#include <nmea.h>
+#include "nmea/nmea.h"
 class GPS : public Item
 {
     public:
@@ -675,12 +684,65 @@ class GPS : public Item
                 printf("%x ", result[i]);
             }
             printf("\n");
-            //int pos = 0, start_pos = 0;                                                                                                                                   
-            //while((pos = tmp.find("\r\n", start_pos)) != string::npos)
-            //{
-            //}
 
+            nmeaINFO info;
+            nmeaPARSER parser;
+            nmea_zero_INFO(&info);
+            nmea_parser_init(&parser);
 
+            int pos = 0, start_pos = 0;
+            string tmp(result);
+            while((pos = tmp.find("\n", start_pos)) != string::npos)
+            {
+                nmea_parse(&parser, tmp.substr(start_pos, pos - start_pos + 1).c_str(), pos - start_pos + 1, &info);
+                start_pos = pos + 1;
+            }
+            nmea_parser_destroy(&parser);
+
+            char str[11] = {0};
+            char str1[11] = {0};
+            if(info.lat > 0)
+            {
+                int data = int(info.lat);
+                sprintf(str, "%d %d %dN", data / 100, data % 100, (info.lat - data) * 60);
+            }
+            else
+            {
+                int data = (int)(info.lat);
+                sprintf(str, "%d %d %dS", data / 100, data % 100, (info.lat - data) * 60);
+            }
+
+            if(info.lon > 0)
+            {
+                int data = (int)(info.lon);
+                sprintf(str1, "%d %d %dE", data / 100, data % 100, (info.lon - data) * 60);
+            }
+            else
+            {
+                int data = (int)(info.lon);
+                sprintf(str1, "%d %d %dW", data / 100, data % 100, (info.lon - data) * 60);
+            }
+
+            string value(str);
+            string value1(str1);
+
+            switch (m_disp)
+            {
+                case ToVideo: {
+                                  string position("25");
+                                  DisplayOnVideo(value, position);
+                                  string position1("26");
+                                  DisplayOnVideo(value1, position1);
+                              }
+                        case ToWebPage:
+                                      DisplayOnWebPage(value);
+                        case ToLogFile:
+                                      DisplayToLogFile(value);
+                        case ToStdout:
+                                      DisplayToStdout(value);
+                default:
+                              break;
+            }
         }
 };
 
