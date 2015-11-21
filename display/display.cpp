@@ -15,10 +15,10 @@ int Open_Port(char* comport)
     sprintf(port_tmp, comport, comport);	
 
     int fd=0;
-    // O_NOCTTY If path refers to a terminal device, do not allocate the device as the
-    // controlling terminal for this process
+    // O_NOCTTY If path refers to a terminal device, do not allocate the 
+    // device as the controlling terminal for this process
     // can use O_NONBLOCK instead of O_NDELAY
-    //fd=open(port_tmp,O_RDWR|O_NOCTTY|O_NDELAY);
+    // fd=open(port_tmp,O_RDWR|O_NOCTTY|O_NDELAY);
     fd=open(port_tmp,O_RDWR);
     if(fd==-1){
         perror("Can not open serial port");
@@ -155,17 +155,19 @@ int Set_Opt(int fd, int nSpeed, int nBits, char nEvent, int nStop)
     newtio.c_cc[VTIME]=2;
     newtio.c_cc[VMIN]=0; // 0 non-block ; > 0 block
     tcflush(fd, TCIFLUSH);  
-    // This function returns OK if it was able to perform any of the requested actions, even if it couldn’t
-    // perform all the requested actions. If the function returns OK, it is our responsibility to
-    // see whether all the requested actions were performed. This means that after we call
-    // tcsetattr to set the desired attributes, we need to call tcgetattr and compare the
-    // actual terminal’s attributes to the desired attributes to detect any differences.
+    // This function returns OK if it was able to perform any of the 
+    // requested actions, even if it couldn’tperform all the requested actions.
+    // If the function returns OK, it is our responsibility to
+    // see whether all the requested actions were performed. This means that 
+    // after we call tcsetattr to set the desired attributes, we need to call 
+    // tcgetattr and compare the actual terminal’s attributes to the desired a
+    // ttributes to detect any differences.
     if((tcsetattr(fd,TCSANOW,&newtio))!=0)
     {
         perror("Com set error");
         return -1;
     }  
-    //	printf("  -serial set (%d,%d,%c,%d)... done!\n", nSpeed,nBits,nEvent,nStop);
+    // printf("  -serial set (%d,%d,%c,%d)... done!\n", nSpeed,nBits,nEvent,nStop);
     return 0;
 }
 
@@ -191,6 +193,37 @@ int write_read_serial(char* msg, char* result)
     while((length = read(fd, result, 512)) > 0) {
         tcflush(fd, TCIOFLUSH);  
         printf("%s\n", result);
+    }
+
+}
+
+int read_gps(char* msg, char* result)
+{
+    write_read_serial("AT+GPSMODE=1\r", result);
+    write_read_serial("AT+GPSSTART\r", result);
+
+    // TODO check return result.
+    
+    int fd = -1;
+    char *comport = "/dev/ttyUSB3";
+    int length = 0;
+    if((fd = Open_Port(comport)) < 0)
+    {
+        printf("Open uart err \n");
+        return -1;
+    }
+
+    if((Set_Opt(fd,115200,8,'N',1)) < 0)
+    {
+        perror("Set_Opt RS485 error");
+        return -2;
+    }
+
+    tcflush(fd, TCIOFLUSH);  
+    memset(result, 0, 2048);
+    while((length = read(fd, result, 2048)) > 0) {
+        tcflush(fd, TCIOFLUSH);  
+        printf("#### %s", result);
     }
 
 }
@@ -298,6 +331,7 @@ int write_read_serial(char* msg, char* result)
 #include <algorithm>
 using namespace std;
 
+#define DISPLAY_INTERVAL 5 // seconds
 map<char, string>DLSX;
 
 void initializeDLSX(){
@@ -312,7 +346,8 @@ void initializeDLSX(){
     DLSX['3'] = "20"; DLSX['4'] = "21"; DLSX['5'] = "22"; DLSX['6'] = "23";
     DLSX['7'] = "24"; DLSX['8'] = "25"; DLSX['9'] = "26"; DLSX['0'] = "27";
     DLSX['"'] = "49"; DLSX['*'] = "50"; DLSX['<'] = "51"; DLSX['>'] = "52";
-    DLSX['.'] = "b1"; DLSX['-'] = "c9"; DLSX['x'] = "d4"; DLSX['%'] = "d5";
+    /*DLSX['.'] = "b1"; DLSX['-'] = "c9"; DLSX['x'] = "d4"; DLSX['%'] = "d5";*/
+    DLSX['.'] = "63"; DLSX['-'] = "c9"; DLSX['x'] = "d4"; DLSX['%'] = "d5";
     DLSX[','] = "1b"; // dlsx don't support ',' just work as space;
     DLSX['+'] = ""; // dlsx don't support ',' just work as space;
     DLSX[':'] = ""; // dlsx don't support ',' just work as space;
@@ -336,34 +371,36 @@ enum DisplayDirection
 };  
 class Item
 {
-    public:
-        Item(DisplayType type, DisplayDirection disp):m_type(type), m_disp(disp){}
-        virtual int Display()=0;
-        virtual void DisplayOnVideo(string &value, string &position)
-        {
-            string cmd = "~/bit_dlsx 81 01 04 73 " + position;
-            size_t value_size = value.size();
-            int actual_count = 0;
-            // only display 10 chars peer item.
-            for(int i = 0, actual_count = 0; actual_count < 10; i++) {
-                if(i < value_size){
-                    if(DLSX[value[i]] != "") {
-                        cmd += " " + DLSX[value[i]];
-                        actual_count++; 
-                    }
-                } else {
-                    cmd += " 1b";
-                    actual_count++;
+public:
+    Item(DisplayType type, DisplayDirection disp):m_type(type), m_disp(disp){}
+    virtual int Display()=0;
+    virtual void DisplayOnVideo(string &value, string &position)
+    {
+        cout << "value = " << value << endl;
+        string cmd = "~/bit_dlsx 81 01 04 73 " + position;
+        size_t value_size = value.size();
+        int actual_count = 0;
+        // only display 10 chars peer item.
+        for(int i = 0, actual_count = 0; actual_count < 10; i++) {
+            if(i < value_size){
+                if(DLSX[value[i]] != "") {
+                    cmd += " " + DLSX[value[i]];
+                    actual_count++; 
                 }
+            } else {
+                cmd += " 1b";
+                actual_count++;
             }
-            cmd += " ff";
-            system(cmd.c_str());
         }
-//    private:
-        DisplayDirection m_disp;
-        DisplayType m_type; 
+        cmd += " ff";
+        system(cmd.c_str());
+    }
+    //    private:
+    DisplayDirection m_disp;
+    DisplayType m_type; 
 };
 
+#include <sstream>
 class CSQ : public Item
 {
 public:
@@ -387,8 +424,21 @@ public:
                 switch(m_disp)
                 {
                     case ToVideo: {
+                        string dispvalue = value.substr(value.find(":") + 2, value.find(",") - value.find(":") - 2);
+                        // convert string dispvalue into int disp.
+                        int disp;
+                        stringstream ss;
+                        ss << dispvalue;
+                        ss >> disp; 
+                        string signal;
+                        if (disp <= 6) signal = "";
+                        else if (disp <= 13) signal = "I";
+                        else if (disp <= 20) signal = "II";
+                        else if (disp <= 27) signal = "III";
+                        else if (disp <= 31) signal = "IIII";
+                        else signal = "XXXX";
                         string position("20");
-                        DisplayOnVideo(value, position);
+                        DisplayOnVideo(signal, position);
                         break;
                     }
                     case ToStdout:
@@ -429,18 +479,19 @@ class PSART : public Item
                     switch (m_disp) 
                     {
                         case ToVideo: {
-                            string position("21");
-                            DisplayOnVideo(value, position);
-                            break;
-                        }
+                                          string dispvalue = value.substr((value.find(":") + 2));
+                                          string position("21");
+                                          DisplayOnVideo(dispvalue, position);
+                                          break;
+                                      }
                         case ToStdout:
-                            break;
+                                      break;
                         case ToLogFile:
-                            break;
+                                      break;
                         case ToWebPage:
-                            break;
+                                      break;
                         default:
-                            break;
+                                      break;
                     }
                     break;
                 }
@@ -457,6 +508,8 @@ class COPS : public Item
             char buf[512] = {0};
             write_read_serial("ATE\r", buf);
             memset(buf, 0, sizeof(buf));
+            // use short string for IPS. CMCC/CU-GSM
+            write_read_serial("AT+COPS=3,1\r", buf);
             write_read_serial("AT+COPS?\r", buf);
 
             string tmp(buf);
@@ -471,18 +524,19 @@ class COPS : public Item
                     switch (m_disp) 
                     {
                         case ToVideo: {
-                            string position("22");
-                            DisplayOnVideo(value, position);
-                            break;
-                        }
+                                          string dispvalue = value.substr(value.find("\"") + 1, value.rfind("\"") - value.find("\"") - 1);
+                                          string position("22");
+                                          DisplayOnVideo(dispvalue, position);
+                                          break;
+                                      }
                         case ToStdout:
-                            break;
+                                      break;
                         case ToLogFile:
-                            break;
+                                      break;
                         case ToWebPage:
-                            break;
+                                      break;
                         default:
-                            break;
+                                      break;
                     }
                     break;
                 }
@@ -497,72 +551,135 @@ class NETRATE : public Item
         NETRATE(DisplayType type, DisplayDirection disp) : Item(type, disp){}
         virtual int Display()
         {
-            static int recv_bytes = 0;
-            static int tras_bytes = 0;
-            int current_recv = 0, current_tras = 0;
+            static unsigned long old_recv = 0;
+            static unsigned long old_tras = 0;
+            unsigned long current_recv = 0; 
+            unsigned long current_tras = 0;
 
             char tmp[64] = {0};
-            FILE* rp = popen("ifconfig ppp0 | grep \"RX bytes\" | cut -d : -f 2 | cut - -d \" \" -f 1", "r");
+            FILE* rp = popen("ifconfig eth0 | grep \"RX bytes\" | cut -d : -f 2 | cut - -d \" \" -f 1", "r");
             while(fgets(tmp, sizeof(tmp), rp) != NULL)
             {
                 if (tmp[strlen(tmp) - 1] == '\n') {
                     tmp[strlen(tmp) - 1] = '\0'; //去除换行符
                 }
-                current_recv = atoi(tmp);
+                current_recv = atol(tmp);
             }
             pclose(rp);
 
-            // check peer 5 seconds.
-            double recv_rate = (current_recv - recv_bytes) / 5;
-            recv_bytes = current_recv;
+            // check peer DISPLAY_INTERVAL seconds.
+            double recv_rate = 0;
 
-            FILE* tp = popen("ifconfig ppp0 | grep \"RX bytes\" | cut -d : -f 3 | cut - -d \" \" -f 1", "r");
+            // incase the byte up to 4294967295 then down to 0;
+            if ((old_recv != 0) && (current_recv >= old_recv)) 
+                recv_rate = ((double)(current_recv - old_recv)) / DISPLAY_INTERVAL;
+            old_recv = current_recv;
+
+            FILE* tp = popen("ifconfig eth0 | grep \"RX bytes\" | cut -d : -f 3 | cut - -d \" \" -f 1", "r");
             while(fgets(tmp, sizeof(tmp), tp) != NULL)
             {
                 if (tmp[strlen(tmp) - 1] == '\n') {
                     tmp[strlen(tmp) - 1] = '\0'; //去除换行符
                 }
-                current_tras = atoi(tmp);
+                current_tras = atol(tmp);
             }
             pclose(tp);
-            double tras_rate = (current_tras - tras_bytes) / 5;
-            tras_bytes = current_tras;
+            double tras_rate = 0;
+            // incase the byte up to 4294967295 then down to 0;
+            if ((old_tras != 0) && (current_tras >= old_tras))
+            {
+                tras_rate = ((double)(current_tras - old_tras)) / DISPLAY_INTERVAL;
+            }
+            old_tras = current_tras;
 
+            // --------------------------------------------------------
             char str[11] = {0};
-            sprintf(str, "RX %.1lf", recv_rate);
+            double disp_recv_rate = recv_rate;
+            if ((disp_recv_rate / 1024) >= 1)
+            {
+                disp_recv_rate = disp_recv_rate / 1024;
+                if ((disp_recv_rate / 1024) >= 1)
+                {
+                    disp_recv_rate = disp_recv_rate / 1024;
+                    sprintf(str, "RX%.1fMS", disp_recv_rate);
+                }
+                else
+                {
+                    sprintf(str, "RX%.1fKS", disp_recv_rate);
+                }
+            }
+            else
+            {
+                sprintf(str, "RX%.1fBS", disp_recv_rate);
+            }
             string value(str);
 
-            char str1[11] = {0}; //TODO
-            sprintf(str1, "TX %.1lf", tras_rate);
+            // --------------------------------------------------------
+            char str1[11] = {0};
+            double disp_tras_rate = tras_rate;
+            cout << "tras" << tras_rate << endl;
+            if ((disp_tras_rate / 1024) >= 1)
+            {
+                disp_tras_rate = disp_tras_rate / 1024;
+                if ((disp_tras_rate / 1024) >= 1)
+                {
+                    disp_tras_rate = disp_tras_rate / 1024;
+                    sprintf(str1, "TX%.1fMS", disp_tras_rate);
+                }
+                else
+                {
+                    sprintf(str1, "TX%.1fKS", disp_tras_rate);
+                }
+            }
+            else
+            {
+                sprintf(str1, "TX%.1fBS", disp_tras_rate);
+            }
             string value1(str1);
-            cout << value1 << endl;
+
             switch (m_disp)
             {
                 case ToVideo: {
-                    string position("23");
-                    DisplayOnVideo(value, position);
-                    string position1("24");
-                    DisplayOnVideo(value1, position1);
-                    break;
-                }
+                                  string position("23");
+                                  DisplayOnVideo(value, position);
+                                  string position1("24");
+                                  DisplayOnVideo(value1, position1);
+                                  break;
+                              }
                 case ToStdout:
-                    break;
+                              break;
                 case ToLogFile:
-                    break;
+                              break;
                 case ToWebPage:
-                    break;
+                              break;
                 default:
-                    break;
+                              break;
             }
         }
 };
 
+//#include <nmea.h>
 class GPS : public Item
 {
     public:
         GPS(DisplayType type, DisplayDirection disp) : Item(type, disp){}
         virtual int Display()
         {
+            // get gps info
+            char result[2048] = "";
+            read_gps(NULL, result);
+
+            cout << "=== GPS ===" << result << endl;
+            for(int i = 0; i < 2048; i++)
+            {
+                printf("%x ", result[i]);
+            }
+            printf("\n");
+            //int pos = 0, start_pos = 0;                                                                                                                                   
+            //while((pos = tmp.find("\r\n", start_pos)) != string::npos)
+            //{
+            //}
+
 
         }
 };
@@ -690,19 +807,19 @@ bool parse_config(const string & filename, map<string, string> & m)
     }
 }
 
-// ============================================================================
+// =============================================================================
 int main(int argc, char* argv[])
 {
-    map<string, string> cfg;
+    map<string, string> cfg; // key value for log config
 
-    map<string, DisplayType> map_type;
+    map<string, DisplayType> map_type; // map the string to enum display type
     map_type["CSQ"] = DCSQ;
     map_type["PSART"] = DPSART;
     map_type["COPS"] = DCOPS;
     map_type["NETRATE"] = DNETRATE;
     map_type["GPS"] = DGPS;
 
-    map<string, DisplayDirection> map_direction;
+    map<string, DisplayDirection> map_direction; // string to enum direction
     map_direction["ToLogFile"] = ToLogFile;
     map_direction["ToStdout"] = ToStdout;
     map_direction["ToVideo"] = ToVideo;
@@ -712,6 +829,10 @@ int main(int argc, char* argv[])
 
     while(true) 
     {
+        // TODO now check the config file then start instance peer config, 
+        // delete the instances everytime. 
+        // enhance should be do to check the config file compare to the old 
+        // one to determine which instance should add or delete.
         parse_config("/mnt/nand/lte.conf", cfg);
         vector<Item*> display_list; 
 
@@ -728,7 +849,7 @@ int main(int argc, char* argv[])
         {
             (*it)->Display();
         }
-        sleep(5);
+        sleep(DISPLAY_INTERVAL);
 
         for(it = display_list.begin(); it != display_list.end(); ++it)
         {
