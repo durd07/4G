@@ -167,7 +167,7 @@ int Set_Opt(int fd, int nSpeed, int nBits, char nEvent, int nStop)
         perror("Com set error");
         return -1;
     }  
-    // printf("  -serial set (%d,%d,%c,%d)... done!\n", nSpeed,nBits,nEvent,nStop);
+    // printf("serial set (%d,%d,%c,%d)... done!\n", nSpeed,nBits,nEvent,nStop);
     return 0;
 }
 
@@ -346,7 +346,7 @@ void initializeDLSX(){
     DLSX['3'] = "20"; DLSX['4'] = "21"; DLSX['5'] = "22"; DLSX['6'] = "23";
     DLSX['7'] = "24"; DLSX['8'] = "25"; DLSX['9'] = "26"; DLSX['0'] = "27";
     DLSX['"'] = "49"; DLSX['*'] = "50"; DLSX['<'] = "51"; DLSX['>'] = "52";
-    /*DLSX['.'] = "b1"; DLSX['-'] = "c9"; DLSX['x'] = "d4"; DLSX['%'] = "d5";*/
+    //DLSX['.'] = "b1"; DLSX['-'] = "c9"; DLSX['x'] = "d4"; DLSX['%'] = "d5";
     DLSX['.'] = "63"; DLSX['-'] = "c9"; DLSX['x'] = "d4"; DLSX['%'] = "d5";
     DLSX[','] = "1b"; // dlsx don't support ',' just work as space;
     DLSX['+'] = ""; // dlsx don't support ',' just work as space;
@@ -376,6 +376,8 @@ class Item
 public:
     Item(DisplayType type, DisplayDirection disp):m_type(type), m_disp(disp){}
     virtual int Display()=0;
+
+#if 0
     virtual void DisplayOnVideo(string &value, string &position)
     {
         cout << "value = " << value << endl;
@@ -397,6 +399,14 @@ public:
         cmd += " ff";
         system(cmd.c_str());
     }
+#else
+    virtual void DisplayOnVideo(string &value, string &position)
+    {
+        // |----------|----------|----------|----------|----------|----------|----------|----------|----------|------|
+        //  IIIII CMCC  TD LTE                                      RX:x.xk/s  TX:x.xk/s        N37.09.39  E115.09.38 
+        //char line_buf[97] = {0};
+    }
+#endif
     virtual void DisplayToStdout(string &value)
     {
         cout << value << endl;
@@ -411,7 +421,12 @@ public:
     //    private:
     DisplayDirection m_disp;
     DisplayType m_type; 
+    // |----------|----------|----------|----------|----------|----------|----------|----------|----------|------|
+    //  IIIII CMCC  TD LTE                                      RX:x.xk/s  TX:x.xk/s        N37.09.39  E115.09.38 
+    static char line_buf[97];
 };
+
+Item::line_buf = {0};
 
 #include <sstream>
 class CSQ : public Item
@@ -443,15 +458,16 @@ public:
                         stringstream ss;
                         ss << dispvalue;
                         ss >> disp; 
-                        string signal;
-                        if (disp <= 6) signal = "";
-                        else if (disp <= 13) signal = "I";
-                        else if (disp <= 20) signal = "II";
-                        else if (disp <= 27) signal = "III";
-                        else if (disp <= 31) signal = "IIII";
-                        else signal = "XXXX";
-                        string position("20");
-                        DisplayOnVideo(signal, position);
+                        char signal[6];
+                        if (disp <= 6) signal = "     ";
+                        else if (disp <= 13) signal = "I    ";
+                        else if (disp <= 20) signal = "II   ";
+                        else if (disp <= 27) signal = "III  ";
+                        else if (disp <= 31) signal = "IIII ";
+                        else signal = "XXXX ";
+                        //string position("20");
+                        //DisplayOnVideo(signal, position);
+                        memcpy(line_buf, &signal, strlen(signal));
                     }
                         case ToWebPage:
                                       DisplayOnWebPage(value);
@@ -491,10 +507,11 @@ class PSART : public Item
                     switch (m_disp) 
                     {
                         case ToVideo: {
-                                          string dispvalue = value.substr((value.find(":") + 2));
-                                          string position("21");
-                                          DisplayOnVideo(dispvalue, position);
-                                      }
+                            string dispvalue = value.substr((value.find(":") + 2));
+                            //string position("21");
+                            //DisplayOnVideo(dispvalue, position);
+                            memcpy(line_buf + 11, &(dispvalue.c_str()), strlen(dispvalue.c_str()));
+                        }
                         case ToWebPage:
                                       DisplayOnWebPage(value);
                         case ToLogFile:
@@ -535,10 +552,11 @@ class COPS : public Item
                     switch (m_disp) 
                     {
                         case ToVideo: {
-                                          string dispvalue = value.substr(value.find("\"") + 1, value.rfind("\"") - value.find("\"") - 1);
-                                          string position("22");
-                                          DisplayOnVideo(dispvalue, position);
-                                      }
+                            string dispvalue = value.substr(value.find("\"") + 1, value.rfind("\"") - value.find("\"") - 1);
+                            //string position("22");
+                            //DisplayOnVideo(dispvalue, position);
+                            memcpy(line_buf + 6, &(dispvalue.c_str()), strlen(dispvalue.c_str()));
+                        }
                         case ToWebPage:
                                       DisplayOnWebPage(value);
                         case ToLogFile:
@@ -611,16 +629,16 @@ class NETRATE : public Item
                 if ((disp_recv_rate / 1024) >= 1)
                 {
                     disp_recv_rate = disp_recv_rate / 1024;
-                    sprintf(str, "RX%.1fMS", disp_recv_rate);
+                    sprintf(str, "RX:%.1fM/S", disp_recv_rate);
                 }
                 else
                 {
-                    sprintf(str, "RX%.1fKS", disp_recv_rate);
+                    sprintf(str, "RX:%.1fK/S", disp_recv_rate);
                 }
             }
             else
             {
-                sprintf(str, "RX%.1fBS", disp_recv_rate);
+                sprintf(str, "RX:%.1fB/S", disp_recv_rate);
             }
             string value(str);
 
@@ -634,16 +652,16 @@ class NETRATE : public Item
                 if ((disp_tras_rate / 1024) >= 1)
                 {
                     disp_tras_rate = disp_tras_rate / 1024;
-                    sprintf(str1, "TX%.1fMS", disp_tras_rate);
+                    sprintf(str1, "TX:%.1fM/S", disp_tras_rate);
                 }
                 else
                 {
-                    sprintf(str1, "TX%.1fKS", disp_tras_rate);
+                    sprintf(str1, "TX:%.1fK/S", disp_tras_rate);
                 }
             }
             else
             {
-                sprintf(str1, "TX%.1fBS", disp_tras_rate);
+                sprintf(str1, "TX:%.1fB/S", disp_tras_rate);
             }
             string value1(str1);
 
@@ -704,23 +722,23 @@ class GPS : public Item
             if(info.lat > 0)
             {
                 int data = int(info.lat);
-                sprintf(str, "%d %d %dN", data / 100, data % 100, (info.lat - data) * 60);
+                sprintf(str, "N%d %d %d", data / 100, data % 100, (info.lat - data) * 60);
             }
             else
             {
                 int data = (int)(info.lat);
-                sprintf(str, "%d %d %dS", data / 100, data % 100, (info.lat - data) * 60);
+                sprintf(str, "S%d %d %d", data / 100, data % 100, (info.lat - data) * 60);
             }
 
             if(info.lon > 0)
             {
                 int data = (int)(info.lon);
-                sprintf(str1, "%d %d %dE", data / 100, data % 100, (info.lon - data) * 60);
+                sprintf(str1, "E%d %d %d", data / 100, data % 100, (info.lon - data) * 60);
             }
             else
             {
                 int data = (int)(info.lon);
-                sprintf(str1, "%d %d %dW", data / 100, data % 100, (info.lon - data) * 60);
+                sprintf(str1, "W%d %d %d", data / 100, data % 100, (info.lon - data) * 60);
             }
 
             string value(str);
@@ -870,7 +888,7 @@ bool parse_config(const string & filename, map<string, string> & m)
 }
 
 // =============================================================================
-int main(int argc, char* argv[])
+int display_info(void)
 {
     map<string, string> cfg; // key value for log config
 
@@ -918,5 +936,98 @@ int main(int argc, char* argv[])
             delete (*it);
         }
     }
+    return 0;
+}
+
+// =============================================================================
+
+#include <pthread.h>
+
+void* start_wireless_thread(void *)
+{
+    // start wireless network.
+    system("pppd call td_lte");
+
+    display_info();
+    return NULL;
+}
+
+pthread_t start_wireless(void)
+{
+    pthread_t p_wireless;
+    int ret = pthread_create(&p_wireless, NULL, start_wireless_thread, NULL);
+    if(ret != 0)
+    {
+        fprintf(stderr, "create wireless_thread failed. errno = %d", errno);
+        exit(-1);
+    }
+    return p_wireless;
+}
+
+#define CMD_START_WIRELESS (1)
+#define CMD_START_VPN (2)
+#define CMD_STOP_WIRELESS (3)
+#define CMD_STOP_VPN (4)
+
+
+#define MAX_TEXT 256
+struct msg_st {  
+    long mtype;  
+    long cmd;
+    char data[MAX_TEXT];  
+};  
+
+#include <sys/msg.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <errno.h>
+
+int main(int argc, char* argv[])
+{
+    bool running = true;
+    int msgid;
+    long msg_to_receive = 0;
+    pthread_t p_wireless;
+
+
+    struct msg_st recv_msg;
+
+    msgid = msgget((key_t)0x004C5445, 0666 | IPC_CREAT);
+    if (msgid == -1) {  
+        fprintf(stderr, "msgget failed with error: %d\n", errno);  
+        exit(-1);  
+    }
+
+    while(running) {
+        if (msgrcv(msgid, (void *)&recv_msg, sizeof(recv_msg) - sizeof(long),  
+                   msg_to_receive, 0) == -1) {  
+            fprintf(stderr, "msgrcv failed with error: %d\n", errno);  
+            exit(-1);  
+        }  
+
+        switch(recv_msg.cmd) {
+            case CMD_START_WIRELESS:
+                p_wireless = start_wireless();
+                break;
+            case CMD_STOP_WIRELESS:
+                system("killall pppd");
+                pthread_cancel(p_wireless);
+                break;
+            case CMD_START_VPN:
+                break;
+            case CMD_STOP_VPN:
+                break;
+            default:
+                break;
+        }
+        fprintf(stdout, "%s\n", recv_msg.data);
+    }  
+
+    // Remove the message queue from the system and any data still on the queue.
+    if (msgctl(msgid, IPC_RMID, 0) == -1) {  
+        fprintf(stderr, "msgctl(IPC_RMID) failed\n");  
+        exit(-1);  
+    }  
+  
     return 0;
 }
