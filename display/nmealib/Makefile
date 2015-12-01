@@ -1,4 +1,4 @@
-CC = gcc 
+CC = arm-arago-linux-gnueabi-gcc 
  
 BIN = lib/libnmea.a 
 MODULES = generate generator parse parser tok context time info gmath sentence  
