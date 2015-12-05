@@ -9,6 +9,8 @@
 #include <string.h>
 #include <map>
 
+#define CONFIG_FILE "/mnt/nand/lte.conf"
+
 int Open_Port(char* comport)
 {
     char port_tmp[20];
@@ -332,6 +334,8 @@ int read_gps(char* msg, char* result)
 using namespace std;
 
 #define DISPLAY_INTERVAL 5 // seconds
+
+#if 0
 map<char, string>DLSX;
 
 void initializeDLSX(){
@@ -352,10 +356,11 @@ void initializeDLSX(){
     DLSX['+'] = ""; // dlsx don't support ',' just work as space;
     DLSX[':'] = ""; // dlsx don't support ',' just work as space;
 }
+#endif
 enum DisplayType
 {
     DCSQ = 0,
-    DPSART,
+    DPSRAT,
     DCOPS,
     DNETRATE,
     DGPS
@@ -371,6 +376,10 @@ enum DisplayDirection
 };  
 
 #include <syslog.h>
+#include "sysctrl.h"
+#include "sys_msg_drv.h"
+#include "file_msg_drv.h"
+
 class Item
 {
 public:
@@ -400,11 +409,38 @@ public:
         system(cmd.c_str());
     }
 #else
-    virtual void DisplayOnVideo(string &value, string &position)
+    static void InitLineBuff()
+    {
+        memset(line_buf, ' ', 96);
+    }
+    static void DisplayOnVideo()
     {
         // |----------|----------|----------|----------|----------|----------|----------|----------|----------|------|
-        //  IIIII CMCC  TD LTE                                      RX:x.xk/s  TX:x.xk/s        N37.09.39  E115.09.38 
-        //char line_buf[97] = {0};
+        //  IIIII CMCC      TDSCD MA                    RX:xxx.xkb /s TX:xxx. xkb/s            N37. 09.39  E115.09.38 
+        printf("====%s====\n", line_buf);
+        printf("TRACE %s   %d\n", __FILE__, __LINE__);
+
+        char text_enable = 1; 
+        int ret;
+        if((ret = ControlSystemData(SFIELD_SET_TEXTENABLE1, &text_enable, sizeof(text_enable))) < 0)
+        {
+            fprintf(stderr, "send SFIELD_SET_TEXTENABLE1 failed. ret = %d\n", ret);
+            return;
+        }
+        printf("TRACE %s   %d\n", __FILE__, __LINE__);
+        char text_position = 1; //right
+        if(ControlSystemData(SFIELD_SET_TEXT_POSITION1, &text_position, sizeof(text_position)) < 0)
+        {
+            fprintf(stderr, "send SFIELD_SET_TEXT_POSITION1 failed.\n");
+            return;
+        }
+
+        printf("TRACE %s   %d\n", __FILE__, __LINE__);
+        if(ControlSystemData(SFIELD_SET_OVERLAY_TEXT1, &line_buf, strlen(line_buf)) < 0)
+        {
+            fprintf(stderr, "send SFIELD_SET_OVERLAY_TEXT1 failed.\n");
+            return;
+        }
     }
 #endif
     virtual void DisplayToStdout(string &value)
@@ -422,11 +458,11 @@ public:
     DisplayDirection m_disp;
     DisplayType m_type; 
     // |----------|----------|----------|----------|----------|----------|----------|----------|----------|------|
-    //  IIIII CMCC  TD LTE                                      RX:x.xk/s  TX:x.xk/s        N37.09.39  E115.09.38 
+    //  IIIII CMCC      TDSCD MA                    RX:xxx.xkb /s TX:xxx. xkb/s            N37. 09.39  E115.09.38 
     static char line_buf[97];
 };
 
-Item::line_buf = {0};
+char Item::line_buf[97] = {0};
 
 #include <sstream>
 class CSQ : public Item
@@ -458,16 +494,17 @@ public:
                         stringstream ss;
                         ss << dispvalue;
                         ss >> disp; 
-                        char signal[6];
-                        if (disp <= 6) signal = "     ";
-                        else if (disp <= 13) signal = "I    ";
-                        else if (disp <= 20) signal = "II   ";
-                        else if (disp <= 27) signal = "III  ";
-                        else if (disp <= 31) signal = "IIII ";
-                        else signal = "XXXX ";
+                        char signal[7];
+                        if (disp <= 6)       memcpy(signal, "      ", 7); //signal = "     ";
+                        else if (disp <= 13) memcpy(signal, "I     ", 7); //signal = "I    ";
+                        else if (disp <= 20) memcpy(signal, "II    ", 7); //signal = "II   ";
+                        else if (disp <= 27) memcpy(signal, "III   ", 7); //signal = "III  ";
+                        else if (disp <= 31) memcpy(signal, "IIII  ", 7); //signal = "IIII ";
+                        else                 memcpy(signal, "XXXX  ", 7); //signal = "XXXX ";
                         //string position("20");
                         //DisplayOnVideo(signal, position);
                         memcpy(line_buf, &signal, strlen(signal));
+                        //snprintf(line_buf, strlen(signal), "%s", signal);
                     }
                         case ToWebPage:
                                       DisplayOnWebPage(value);
@@ -484,10 +521,10 @@ public:
     }
 };
 
-class PSART : public Item
+class PSRAT : public Item
 {
     public:
-        PSART(DisplayType type, DisplayDirection disp) : Item(type, disp){}
+        PSRAT(DisplayType type, DisplayDirection disp) : Item(type, disp){}
         virtual int Display()
         {
             char buf[512] = {0};
@@ -507,10 +544,11 @@ class PSART : public Item
                     switch (m_disp) 
                     {
                         case ToVideo: {
-                            string dispvalue = value.substr((value.find(":") + 2));
+                            const char* dispvalue = value.substr((value.find(":") + 2)).c_str();
                             //string position("21");
                             //DisplayOnVideo(dispvalue, position);
-                            memcpy(line_buf + 11, &(dispvalue.c_str()), strlen(dispvalue.c_str()));
+                            memcpy(line_buf + 15, dispvalue, strlen(dispvalue));
+                            //snprintf(line_buf + 15, strlen(dispvalue), "%s", dispvalue);
                         }
                         case ToWebPage:
                                       DisplayOnWebPage(value);
@@ -552,10 +590,11 @@ class COPS : public Item
                     switch (m_disp) 
                     {
                         case ToVideo: {
-                            string dispvalue = value.substr(value.find("\"") + 1, value.rfind("\"") - value.find("\"") - 1);
+                            const char* dispvalue = value.substr(value.find("\"") + 1, value.rfind("\"") - value.find("\"") - 1).c_str();
                             //string position("22");
                             //DisplayOnVideo(dispvalue, position);
-                            memcpy(line_buf + 6, &(dispvalue.c_str()), strlen(dispvalue.c_str()));
+                            memcpy(line_buf + 6, dispvalue, strlen(dispvalue));
+                            //snprintf(line_buf + 6, strlen(dispvalue), "%s", dispvalue);
                         }
                         case ToWebPage:
                                       DisplayOnWebPage(value);
@@ -621,7 +660,7 @@ class NETRATE : public Item
             old_tras = current_tras;
 
             // --------------------------------------------------------
-            char str[11] = {0};
+            char str[13] = {0};
             double disp_recv_rate = recv_rate;
             if ((disp_recv_rate / 1024) >= 1)
             {
@@ -629,21 +668,23 @@ class NETRATE : public Item
                 if ((disp_recv_rate / 1024) >= 1)
                 {
                     disp_recv_rate = disp_recv_rate / 1024;
-                    sprintf(str, "RX:%.1fM/S", disp_recv_rate);
+                    sprintf(str, "RX:%5.1fmb/s", disp_recv_rate);
+                    //snprintf(line_buf + 40, 12, "RX:%4.1fmb/s", disp_recv_rate);
                 }
                 else
                 {
-                    sprintf(str, "RX:%.1fK/S", disp_recv_rate);
+                    sprintf(str, "RX:%5.1fkb/s", disp_recv_rate);
+                    //snprintf(line_buf + 40, 12, "RX:%4.1fkb/s", disp_recv_rate);
                 }
             }
             else
             {
-                sprintf(str, "RX:%.1fB/S", disp_recv_rate);
+                sprintf(str, "RX:%5.1f0b/s", disp_recv_rate);
+                //snprintf(line_buf + 40, 12, "RX:%4.1f0b/s", disp_recv_rate);
             }
-            string value(str);
 
             // --------------------------------------------------------
-            char str1[11] = {0};
+            char str1[13] = {0};
             double disp_tras_rate = tras_rate;
             cout << "tras" << tras_rate << endl;
             if ((disp_tras_rate / 1024) >= 1)
@@ -652,33 +693,38 @@ class NETRATE : public Item
                 if ((disp_tras_rate / 1024) >= 1)
                 {
                     disp_tras_rate = disp_tras_rate / 1024;
-                    sprintf(str1, "TX:%.1fM/S", disp_tras_rate);
+                    sprintf(str1, "TX:%5.1fmb/s", disp_tras_rate);
+                    //snprintf(line_buf + 53, 12, "TX:%4.1fmb/s", disp_tras_rate);
                 }
                 else
                 {
-                    sprintf(str1, "TX:%.1fK/S", disp_tras_rate);
+                    sprintf(str1, "TX:%5.1fkb/s", disp_tras_rate);
+                    //snprintf(line_buf + 53, 12, "TX:%4.1fkb/s", disp_tras_rate);
                 }
             }
             else
             {
-                sprintf(str1, "TX:%.1fB/S", disp_tras_rate);
+                sprintf(str1, "TX:%5.1f0b/s", disp_tras_rate);
+                //snprintf(line_buf + 53, 12, "TX:%4.1f0b/s", disp_tras_rate);
             }
-            string value1(str1);
 
             switch (m_disp)
             {
                 case ToVideo: {
-                                  string position("23");
-                                  DisplayOnVideo(value, position);
-                                  string position1("24");
-                                  DisplayOnVideo(value1, position1);
-                              }
-                        case ToWebPage:
-                                      DisplayOnWebPage(value);
-                        case ToLogFile:
-                                      DisplayToLogFile(value);
-                        case ToStdout:
-                                      DisplayToStdout(value);
+                    //string position("23");
+                    //DisplayOnVideo(value, position);
+                    //string position1("24");
+                    //DisplayOnVideo(value1, position1);
+                    memcpy(line_buf + 40, str, strlen(str));
+                    memcpy(line_buf + 53, str1, strlen(str1));
+                    //snprintf(line_buf + 40, 25, "%s %s", str, str1);
+                }
+                case ToWebPage:
+                              //DisplayOnWebPage(value);
+                case ToLogFile:
+                              //DisplayToLogFile(value);
+                case ToStdout:
+                              //DisplayToStdout(value);
                 default:
                               break;
             }
@@ -686,6 +732,7 @@ class NETRATE : public Item
 };
 
 #include "nmea/nmea.h"
+#include <math.h>
 class GPS : public Item
 {
     public:
@@ -717,28 +764,24 @@ class GPS : public Item
             }
             nmea_parser_destroy(&parser);
 
-            char str[11] = {0};
-            char str1[11] = {0};
+            char str[13] = {0};
+            char str1[13] = {0};
             if(info.lat > 0)
             {
-                int data = int(info.lat);
-                sprintf(str, "N%d %d %d", data / 100, data % 100, (info.lat - data) * 60);
+                sprintf(str, "N%11.6f", fabs(info.lat));
             }
             else
             {
-                int data = (int)(info.lat);
-                sprintf(str, "S%d %d %d", data / 100, data % 100, (info.lat - data) * 60);
+                sprintf(str, "S%11.6f", fabs(info.lat));
             }
 
             if(info.lon > 0)
             {
-                int data = (int)(info.lon);
-                sprintf(str1, "E%d %d %d", data / 100, data % 100, (info.lon - data) * 60);
+                sprintf(str1, "E%12.6f", fabs(info.lon));
             }
             else
             {
-                int data = (int)(info.lon);
-                sprintf(str1, "W%d %d %d", data / 100, data % 100, (info.lon - data) * 60);
+                sprintf(str1, "W%12.6f", fabs(info.lon));
             }
 
             string value(str);
@@ -747,17 +790,20 @@ class GPS : public Item
             switch (m_disp)
             {
                 case ToVideo: {
-                                  string position("25");
-                                  DisplayOnVideo(value, position);
-                                  string position1("26");
-                                  DisplayOnVideo(value1, position1);
-                              }
-                        case ToWebPage:
-                                      DisplayOnWebPage(value);
-                        case ToLogFile:
-                                      DisplayToLogFile(value);
-                        case ToStdout:
-                                      DisplayToStdout(value);
+                    char str2[27] = {0};
+                    //string position("25");
+                    //DisplayOnVideo(value, position);
+                    //string position1("26");
+                    //DisplayOnVideo(value1, position1);
+                    snprintf(str2, 27, "%s %s", str, str1);
+                    memcpy(line_buf + 70, str2, 27);
+                }
+                case ToWebPage:
+                    DisplayOnWebPage(value);
+                case ToLogFile:
+                    DisplayToLogFile(value);
+                case ToStdout:
+                    DisplayToStdout(value);
                 default:
                               break;
             }
@@ -774,8 +820,8 @@ class DisplayFactory
                 case DCSQ:
                     p = new CSQ(type, direction);
                     break;
-                case DPSART:
-                    p = new PSART(type, direction);
+                case DPSRAT:
+                    p = new PSRAT(type, direction);
                     break;
                 case DCOPS:
                     p = new COPS(type, direction);
@@ -876,7 +922,7 @@ bool parse_config(const string & filename, map<string, string> & m)
     m.clear();
     ifstream infile(filename.c_str());
     if (!infile) {
-        cout << "file open error" << endl;
+        cout << filename << " open error" << endl;
         return false;
     }
     string line, key, value;
@@ -885,8 +931,30 @@ bool parse_config(const string & filename, map<string, string> & m)
             m[key] = value;
         }
     }
+    return true;
 }
 
+bool write_config(const string & filename, map<string, string> & m)
+{
+    ofstream outfile(filename.c_str());
+    if (!outfile) {
+        cout << filename << " write error." << endl;
+        return false;
+    }
+
+    outfile << "# This file is about wireless and vpn configuration which is\n"
+            << "# created automatically by process display.\n"
+            << "# you can modify it manually, but it will not take effect until 
+            << "# you restart the process display."
+            << "# another method to change the configuration is from web\n"
+            << "# which will take effect immediately." << endl;
+    map<string, string>::iterator it;
+    for(it = m.begin(); it != m.end(); ++it)
+    {
+        outfile << it->first << "=" << it->second << endl;
+    }
+    return true;
+}
 // =============================================================================
 int display_info(void)
 {
@@ -894,7 +962,7 @@ int display_info(void)
 
     map<string, DisplayType> map_type; // map the string to enum display type
     map_type["CSQ"] = DCSQ;
-    map_type["PSART"] = DPSART;
+    map_type["PSRAT"] = DPSRAT;
     map_type["COPS"] = DCOPS;
     map_type["NETRATE"] = DNETRATE;
     map_type["GPS"] = DGPS;
@@ -905,8 +973,13 @@ int display_info(void)
     map_direction["ToVideo"] = ToVideo;
     map_direction["ToWebPage"] = ToWebPage;
 
+#if 0
     initializeDLSX();
+#endif
 
+    InitFileMsgDrv(FILE_MSG_KEY, FILE_SDK_MSG);
+    SysDrvInit(SYS_SDK_MSG);
+    Item::InitLineBuff();
     while(true) 
     {
         // TODO now check the config file then start instance peer config, 
@@ -916,9 +989,12 @@ int display_info(void)
         parse_config("/mnt/nand/lte.conf", cfg);
         vector<Item*> display_list; 
 
+        bool display_on_video = false;
         map<string, string>::iterator itc = cfg.begin();
         for(; itc != cfg.end(); ++itc)
         {
+            if(itc->second == "ToVideo")
+                display_on_video = true;
             Item* p = DisplayFactory::createDisplay(map_type[itc->first], 
                     map_direction[itc->second]);
             display_list.push_back(p);
@@ -929,6 +1005,9 @@ int display_info(void)
         {
             (*it)->Display();
         }
+
+        if(display_on_video)
+            Item::DisplayOnVideo();
         sleep(DISPLAY_INTERVAL);
 
         for(it = display_list.begin(); it != display_list.end(); ++it)
@@ -946,7 +1025,7 @@ int display_info(void)
 void* start_wireless_thread(void *)
 {
     // start wireless network.
-    system("pppd call td_lte");
+    //system("pppd call td_lte");
 
     display_info();
     return NULL;
@@ -964,10 +1043,11 @@ pthread_t start_wireless(void)
     return p_wireless;
 }
 
-#define CMD_START_WIRELESS (1)
-#define CMD_START_VPN (2)
-#define CMD_STOP_WIRELESS (3)
-#define CMD_STOP_VPN (4)
+#define CMD_START_WIRELESS   (1)
+#define CMD_START_VPN        (2)
+#define CMD_STOP_WIRELESS    (3)
+#define CMD_STOP_VPN         (4)
+#define CMD_CHANGE_LOG_LEVEL (5)
 
 
 #define MAX_TEXT 256
@@ -981,53 +1061,145 @@ struct msg_st {
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <errno.h>
+#include <signal.h>
+
+#define TRUE 1
+#define FALSE 0
+#define INVALID -1
+
+void bool_value(string & value)
+{
+    if(value == "")
+        return INVALID;
+
+    vector<string> true_value = {"True", "true", "Yes", "yes", "TRUE", "YES", "1", "y"};
+    vector<string> false_value = {"False", "false", "No", "no", "FALSE", "NO", "0", "n"};
+    
+    if(find(true_value.begin(), true_value.end(), value) != true_value.end())
+        return TRUE;
+    else if(find(false_value.begin(), false_value.end(), value) != false_value.end())
+        return FALSE;
+    else
+        return INVALID;
+}
+void sig_exit_handler(int sig_num)
+{
+    cout << "Sip Abort SIG Received!!!" << endl;
+    CleanupFileMsgDrv();
+    SysDrvExit();
+    exit(0);
+}
+
+int init(map<string, string> &cfg)
+{
+    // signal init
+    signal(SIGPIPE, SIG_IGN);
+    signal(SIGINT, sig_exit_handler);
+
+    // read config file /mnt/nand/lte.conf
+    parse_config("/mnt/nand/lte.conf", cfg);
+}
 
 int main(int argc, char* argv[])
 {
-    bool running = true;
-    int msgid;
-    long msg_to_receive = 0;
-    pthread_t p_wireless;
+    // key value for log config
+    map<string, string> cfg; 
+    pthread_t p_wireless = 0;
 
+    // init 
+    init(cfg);
 
-    struct msg_st recv_msg;
+    // start new thread to start wireless and display info.
+    if(cfg.find("use_wireless") != cfg.end())
+    {
+        if(bool_value(cfg["use_wireless"]) == TRUE)
+            p_wireless = start_wireless();
+    }
+    
+    int msg_id;
+    long msg_len = 0;
+    struct msg_st msg_recv;
 
-    msgid = msgget((key_t)0x004C5445, 0666 | IPC_CREAT);
-    if (msgid == -1) {  
+    msg_id = msgget((key_t)0x004C5445, 0666 | IPC_CREAT);
+    if (msg_id == -1)
+    {  
         fprintf(stderr, "msgget failed with error: %d\n", errno);  
         exit(-1);  
     }
 
-    while(running) {
-        if (msgrcv(msgid, (void *)&recv_msg, sizeof(recv_msg) - sizeof(long),  
-                   msg_to_receive, 0) == -1) {  
+    while(true)
+    {
+        if (msgrcv(msg_id, (void *)&msg_recv, sizeof(msg_recv) - sizeof(long),  
+                   msg_len, 0) == -1)
+        { 
             fprintf(stderr, "msgrcv failed with error: %d\n", errno);  
             exit(-1);  
         }  
 
-        switch(recv_msg.cmd) {
+        switch(msg_recv.cmd)
+        {
             case CMD_START_WIRELESS:
-                p_wireless = start_wireless();
+
+                // write config file if use_wireless=false or none previous.
+                if(bool_value(cfg["use_wireless"]) != TRUE)
+                {
+                    cfg["use_wireless"] = "True";
+                    write_config(CONFIG_FILE, cfg);
+                }
+
+                if(p_wireless == 0)
+                    p_wireless = start_wireless();
                 break;
             case CMD_STOP_WIRELESS:
                 system("killall pppd");
                 pthread_cancel(p_wireless);
+                p_wireless = 0;
                 break;
             case CMD_START_VPN:
                 break;
             case CMD_STOP_VPN:
                 break;
+            case CMD_CHANGE_LOG_LEVEL:
+                break;
             default:
                 break;
         }
-        fprintf(stdout, "%s\n", recv_msg.data);
+        fprintf(stdout, "%s\n", msg_recv.data);
     }  
 
     // Remove the message queue from the system and any data still on the queue.
-    if (msgctl(msgid, IPC_RMID, 0) == -1) {  
+    if (msgctl(msg_id, IPC_RMID, 0) == -1)
+    {  
         fprintf(stderr, "msgctl(IPC_RMID) failed\n");  
         exit(-1);  
     }  
-  
+#if 0
+    while(1)
+    {
+        sleep(100);
+    }
+#endif
     return 0;
 }
+
+
+// CONFIG FILE
+// # LTE Log type
+// CSQ=ToVideo
+// PSRAT=ToVideo
+// COPS=ToVideo
+// NETRATE=ToVideo
+// GPS=ToVideo
+// 
+// # VPN
+// use_wireless=yes 
+// use_vpn=yes
+// vpn_server_ip=192.168.1.164
+// vpn_subnet_ip=192.168.8.171
+// vpn_subnet_mask=255.255.255.0
+// vpn_username=durd
+// vpn_password=durd
+// vpn_protocal=pptp
+// vpn_require_mppe=true
+// vpn_add_default_route=true
+
