@@ -442,6 +442,37 @@ public:
             return;
         }
     }
+
+    // we need a method to cancel the already displayed info on screen.
+    static void TurnOffDisplayOnVideo()
+    {
+        char text_enable = 0;
+        int ret;
+        printf("TRACE %s   %d\n", __FILE__, __LINE__);
+        if((ret = ControlSystemData(SFIELD_SET_TEXTENABLE1, &text_enable, sizeof(text_enable))) < 0)
+        {
+            fprintf(stderr, "send SFIELD_SET_TEXTENABLE1 failed. ret = %d\n", ret);
+            return;
+        }
+        return;
+    }
+    static void TunOnDisplayOnVideo()
+    {
+        char text_enable = 1; 
+        int ret;
+        if((ret = ControlSystemData(SFIELD_SET_TEXTENABLE1, &text_enable, sizeof(text_enable))) < 0)
+        {
+            fprintf(stderr, "send SFIELD_SET_TEXTENABLE1 failed. ret = %d\n", ret);
+            return;
+        }
+        printf("TRACE %s   %d\n", __FILE__, __LINE__);
+        char text_position = 1; //right
+        if(ControlSystemData(SFIELD_SET_TEXT_POSITION1, &text_position, sizeof(text_position)) < 0)
+        {
+            fprintf(stderr, "send SFIELD_SET_TEXT_POSITION1 failed.\n");
+            return;
+        }
+    }
 #endif
     virtual void DisplayToStdout(string &value)
     {
@@ -944,8 +975,8 @@ bool write_config(const string & filename, map<string, string> & m)
 
     outfile << "# This file is about wireless and vpn configuration which is\n"
             << "# created automatically by process display.\n"
-            << "# you can modify it manually, but it will not take effect until 
-            << "# you restart the process display."
+            << "# you can modify it manually, but it will not take effect\n"
+            << "# until you restart the process display.\n"
             << "# another method to change the configuration is from web\n"
             << "# which will take effect immediately." << endl;
     map<string, string>::iterator it;
@@ -1022,6 +1053,26 @@ int display_info(void)
 
 #include <pthread.h>
 
+#define TRUE 1
+#define FALSE 0
+#define INVALID -1
+
+int bool_value(string & value)
+{
+    if(value == "")
+        return INVALID;
+
+    vector<string> true_value = {"True", "true", "Yes", "yes", "TRUE", "YES", "1", "y"};
+    vector<string> false_value = {"False", "false", "No", "no", "FALSE", "NO", "0", "n"};
+    
+    if(find(true_value.begin(), true_value.end(), value) != true_value.end())
+        return TRUE;
+    else if(find(false_value.begin(), false_value.end(), value) != false_value.end())
+        return FALSE;
+    else
+        return INVALID;
+}
+
 void* start_wireless_thread(void *)
 {
     // start wireless network.
@@ -1041,6 +1092,66 @@ pthread_t start_wireless(void)
         exit(-1);
     }
     return p_wireless;
+}
+
+void start_vpn(map<string, string> cfg)
+{
+    bool use_vpn = (bool_value(cfg["use_vpn"]) == TRUE) ? true : false;
+    string vpn_server_ip = cfg["vpn_server_ip"];
+    string vpn_subnet_ip = cfg["vpn_subnet_ip"];
+    string vpn_subnet_mask = cfg["vpn_subnet_mask"];
+    string vpn_username = cfg["vpn_username"];
+    string vpn_password = cfg["vpn_password"];
+    string vpn_protocal = cfg["vpn_protocal"];
+    bool vpn_require_mppe = 
+        (bool_value(cfg["vpn_require_mppe"]) == TRUE) ? true : false;
+    bool vpn_add_default_route =
+        (bool_value(cfg["vpn_add_default_route"]) == TRUE) ? true : false;
+ 
+    string cmd = "";
+    if(("pptp" == vpn_protocal) || ("*" == vpn_protocal))
+    {
+        if(vpn_require_mppe)
+        {
+            // pptp --debug 58.58.40.162 user sui password sui require-mppe
+            cmd = "pptp --debug " +
+                         vpn_server_ip +
+                         " user " +
+                         vpn_username +
+                         " password " +
+                         vpn_password +
+                         " require-mppe";
+        }
+        else
+        {
+            // pptp --debug 58.58.40.162 user sui password sui require-mppe
+            cmd = "pptp --debug " +
+                         vpn_server_ip +
+                         " user " +
+                         vpn_username +
+                         " password " +
+                         vpn_password;
+        }
+        cout << "cmd = " << cmd << endl;
+    }
+    else
+    {
+        // other protocals link n2n
+    }
+    system(cmd.c_str());
+}
+
+void stop_vpn(map<string, string> cfg)
+{
+    string vpn_protocal = cfg["vpn_protocal"];
+    if(("pptp" == vpn_protocal) || ("*" == vpn_protocal))
+    {
+        system("killall pptp");
+    }
+    else
+    {
+        // other protocals link n2n
+    }
 }
 
 #define CMD_START_WIRELESS   (1)
@@ -1063,25 +1174,6 @@ struct msg_st {
 #include <errno.h>
 #include <signal.h>
 
-#define TRUE 1
-#define FALSE 0
-#define INVALID -1
-
-void bool_value(string & value)
-{
-    if(value == "")
-        return INVALID;
-
-    vector<string> true_value = {"True", "true", "Yes", "yes", "TRUE", "YES", "1", "y"};
-    vector<string> false_value = {"False", "false", "No", "no", "FALSE", "NO", "0", "n"};
-    
-    if(find(true_value.begin(), true_value.end(), value) != true_value.end())
-        return TRUE;
-    else if(find(false_value.begin(), false_value.end(), value) != false_value.end())
-        return FALSE;
-    else
-        return INVALID;
-}
 void sig_exit_handler(int sig_num)
 {
     cout << "Sip Abort SIG Received!!!" << endl;
@@ -1151,13 +1243,21 @@ int main(int argc, char* argv[])
                     p_wireless = start_wireless();
                 break;
             case CMD_STOP_WIRELESS:
+                if(bool_value(cfg["use_wireless"]) != FALSE) // TRUE or INVALIDf
+                {
+                    cfg["use_wireless"] = "False";
+                    write_config(CONFIG_FILE, cfg);
+                }
                 system("killall pppd");
                 pthread_cancel(p_wireless);
+                Item::TurnOffDisplayOnVideo();
                 p_wireless = 0;
                 break;
             case CMD_START_VPN:
+                start_vpn(cfg);
                 break;
             case CMD_STOP_VPN:
+                stop_vpn(cfg);
                 break;
             case CMD_CHANGE_LOG_LEVEL:
                 break;
@@ -1202,4 +1302,3 @@ int main(int argc, char* argv[])
 // vpn_protocal=pptp
 // vpn_require_mppe=true
 // vpn_add_default_route=true
-
