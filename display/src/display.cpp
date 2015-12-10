@@ -1024,11 +1024,16 @@ int display_info(void)
         map<string, string>::iterator itc = cfg.begin();
         for(; itc != cfg.end(); ++itc)
         {
-            if(itc->second == "ToVideo")
-                display_on_video = true;
-            Item* p = DisplayFactory::createDisplay(map_type[itc->first], 
-                    map_direction[itc->second]);
-            display_list.push_back(p);
+            if((itc->first == "CSQ" ) || (itc->first == "PSRAT"  ) || 
+               (itc->first == "COPS") || (itc->first == "NETRATE") ||
+               (itc->first == "GPS"))
+            {
+                if(itc->second == "ToVideo")
+                    display_on_video = true;
+                Item* p = DisplayFactory::createDisplay(map_type[itc->first], 
+                        map_direction[itc->second]);
+                display_list.push_back(p);
+            }
         }
 
         vector<Item*>::iterator it;
@@ -1076,7 +1081,7 @@ int bool_value(string & value)
 void* start_wireless_thread(void *)
 {
     // start wireless network.
-    //system("pppd call td_lte");
+    system("pppd call td_lte");
 
     display_info();
     return NULL;
