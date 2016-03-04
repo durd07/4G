@@ -1,0 +1,341 @@
+<html>
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+    <title>
+      FTP Setting
+    </title>
+     <style type="text/css" >
+    	td {font-size:12px;}
+    </style>
+  </head>
+
+  <body onload="MY_ONLOAD()">
+<script>
+    var v_ftpip = "<%ftpip%>";
+    var v_ftpPort = "<%ftpipport%>";
+    var v_ftpUser = "<%ftpuser%>";
+    var v_ftpPwd = "<%ftppassword%>";
+    var v_ftpPath = "<%ftppath%>";
+
+    // var ftpPathlist = v_ftpPath.split('\\');
+    // alert(ftpPathlist.length);
+    // alert(ftpPathlist[0]);
+    // alert(ftpPathlist[1]);
+
+
+    var v_maxFQDNLen = 190;//"<%maxfqdnlen%>";//GFL
+    var v_FTPPathChar = new V_StrFTPPath(GL("file_update_path"));
+    CTRLARY = {
+        // ftpip: new Ctrl_IPAddr("ftpip", v_ftpip, "ftpip="), //netmask
+        ftpip: new Ctrl_Text("ftpip", "25", v_maxFQDNLen, v_ftpip, "ftpip="),
+        ftpPort: new Ctrl_Text("ftpPort", "5", "5", v_ftpPort, "ftpipport="),
+        ftpUser: new Ctrl_Text("ftpUser", "25", "<%maxftpuserlen%>", v_ftpUser, "ftpuser="),
+        ftpPwd: new Ctrl_Text("ftpPwd", "25", "25", v_ftpPwd, "ftppassword=", null, true),
+        ftpPath: new Ctrl_Text("ftpPath", "25", "<%maxftppathlen%>", v_ftpPath, "ftppath=")
+    };
+</script> 
+<script> 
+    function MY_ONLOAD() {
+        g_lockLink = false;
+    }
+
+    function FtpLogin() {
+        var o = 'ftp://';
+        o += GetCCV('ftpUser') + ":" + GetCCV('ftpPwd') + "@" + GetCCV('ftpip') + GetCCV('ftpPath');
+        // alert(o);
+        WindowOpen(o, "", "width=800,height=660,left=200,scrollbars=1");
+    }
+
+function CheckFtpIp() {
+  var value = document.getElementById("ftpip").value;
+      var res = false;    
+      var ipary = value.split(".");     
+      var num = ipary.length;
+      if (value.length == 0)
+      {
+        alert(GL("ftpip_empty"));
+        document.getElementById("ftpip").focus();
+        return false;
+      }
+      if(num != 4)
+      {
+        alert(GL("ftpip_err"));
+        document.getElementById("ftpip").value = "";
+        document.getElementById("ftpip").focus();
+        return false;
+      }
+      else
+      {
+        var i = 0;
+        if (ipary[0] <= 0 || !(IsNumeric(ipary[0])))
+        {
+          alert(GL("ftpip_err"));
+          document.getElementById("ftpip").value = "";
+          document.getElementById("ftpip").focus();
+          return false; 
+        } 
+
+        for (i = 1; i<num;i++)
+        {
+          if(ipary[i] < 0 || ipary[i] >255 || !(IsNumeric(ipary[i])) || ipary[i] == '')
+          {            
+            alert(GL("ftpip_err"));
+            document.getElementById("ftpip").value = "";
+            document.getElementById("ftpip").focus();
+            
+            return false; 
+          }
+        }
+      }
+      return true;
+}
+
+function CheckFtpPort(min, max)
+{
+    var port = document.getElementById("ftpPort").value;
+    var umport1 = "<%umport1%>";
+    var umport2 = "<%umport2%>";
+    var useUniMul1 = "<%umenable1%>";
+    var useUniMul2 = "<%umenable2%>";
+
+    if(port.length == 0)
+    {
+        alert(GL("ftpport_empty"));
+        return false;
+    }
+
+    if (!IsNumeric(port))
+    {
+        alert(GL("ftpport_inv"));
+        document.getElementById("ftpPort").value = "";
+        document.getElementById("ftpPort").focus();
+        return false;
+    }
+
+    if (!((port >= min && port <= max) || port == 21))
+    {
+        alert(GL("ftpport_num"));
+        document.getElementById("ftpPort").value = "";
+        document.getElementById("ftpPort").focus();
+        return false;
+    }
+
+    if (useUniMul1 == 1 || useUniMul2 == 1)
+    {
+        if (port == umport1 || port == umport2)
+        {
+            alert(GL("port1_equal"));
+            document.getElementById("ftpPort").value = "";
+            document.getElementById("ftpPort").focus();
+            return false;
+        }
+    }
+    return true;
+}
+
+function CheckftpUser()
+{
+    var user = document.getElementById("ftpUser").value;
+    if (user.length == 0)
+    {
+        alert(GL("ftpuser_empty"));
+        return false;
+    }
+
+    for (var i = 0; i < user.length; i++) {
+      var ch = user.charAt(i);
+
+      if (isChinese(ch) || isInvalid(ch) || ch == ' ')
+      {
+        alert(GL("ftpuser_inv"));
+        document.getElementById("ftpUser").value = '';
+        document.getElementById("ftpUser").focus(); 
+        return false;
+      }
+    }
+
+    if (user.length > 31 || user.length < 4)
+    {
+      alert(GL("ftpuser_range"));
+      document.getElementById("ftpUser").value = '';
+      document.getElementById("ftpUser").focus(); 
+      return false;
+    }
+
+    return true;
+}
+
+function CheckftpPwd()
+{
+    var user = document.getElementById("ftpPwd").value;
+    if (user.length == 0)
+    {
+        alert(GL("ftppwd_empty"));
+        return false;
+    }
+
+    for (var i = 0; i < user.length; i++) {
+      var ch = user.charAt(i);
+
+      if (isChinese(ch) || isInvalid(ch) || ch == ' ')
+      {
+        alert(GL("ftppwd_inv"));
+        document.getElementById("ftpPwd").value = '';
+        document.getElementById("ftpPwd").focus(); 
+        return false;
+      }
+    }
+
+    if (user.length > 15 || user.length < 4)
+    {
+      alert(GL("ftppwd_range"));
+      document.getElementById("ftpPwd").value = '';
+      document.getElementById("ftpPwd").focus(); 
+      return false;
+    }
+    
+    return true;
+}
+
+function CheckftpPath()
+{
+    var path = document.getElementById("ftpPath").value;
+    if (path.length == 0)
+    {
+        alert(GL("ftppath_empty"));
+        return false;
+    }
+    
+    for (var i = 0; i < path.length; i++) {
+      var ch = path.charAt(i);
+
+      if (isChinese(ch) || isPathInvalid(ch) || ch == ' ')
+      {
+        alert(GL("ftppath_inv"));
+        document.getElementById("ftpPath").value = '';
+        document.getElementById("ftpPath").focus(); 
+        return false;
+      }
+    }
+
+    if (path.length > 127)
+    {
+      alert(GL("ftppath_range"));
+      document.getElementById("ftpPath").value = '';
+      document.getElementById("ftpPath").focus(); 
+      return false;
+    }
+    
+
+    return true;
+}
+function ParaCheck()
+{
+  var flag = false;
+
+  var ftpip = GetCCV("ftpip");
+  if (ftpip == "<%ftpip%>")
+  {
+    CTRLARY["ftpip"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var ftpPort = GetCCV("ftpPort");
+  if (ftpPort == "<%ftpipport%>")
+  {
+    CTRLARY["ftpPort"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var ftpUser = GetCCV("ftpUser");
+  if (ftpUser == "<%ftpuser%>")
+  {
+    CTRLARY["ftpUser"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var ftpPwd = GetCCV("ftpPwd");
+  if (ftpPwd == "<%ftppassword%>")
+  {
+    CTRLARY["ftpPwd"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var ftpPath = GetCCV("ftpPath");
+  if (ftpPath == "<%ftppath%>")
+  {
+    CTRLARY["ftpPath"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  return flag;
+}
+  function MY_BEFORE_SUBMIT() {
+    if(CheckFtpIp() == false)
+      return false;
+    if (CheckFtpPort(2000, 65535) == false)
+    return false;
+    if (CheckftpUser() == false)
+        return false;
+    if (CheckftpPwd() == false)
+        return false;
+    if (CheckftpPath() == false)
+        return false;
+    if (ParaCheck() == false)
+    {
+      alert(GL("para_not_change"));
+      ChangeActive();
+      return false;
+    }
+
+    // alert(GetCCV("ftpPath"));
+    var ftppath1 = GetCCV("ftpPath");
+    var ftppath2 = ftppath1.replace(/\\/g,'\\\\');
+    // alert(ftppath2);
+    SetCCV("ftpPath", ftppath2);
+    
+    return true;
+}
+  function MY_SUBMIT_OK() {
+    alert(GL("submit_success"));
+    // ChangeContent(null, false);
+    window.location.reload();
+  }
+
+</script>
+<script>
+    DW('<table>');
+    WIP("ftp_server", "ftpip");
+
+    // DW("<tr><td>" + GL("ftp_server") + ":</td><td>");
+    // WH("ftpip");
+    // DW("</td></tr>");
+    DW("<tr><td>");
+    DW(GL("ftp_port") + ":</td><td>");
+    WH("ftpPort");
+    DW("</td></tr>");
+    WIP("user_name", "ftpUser");
+    WIP("ftp_pwd", "ftpPwd");
+    WIP("file_update_path", "ftpPath");
+    WIPSubmit();
+
+    // DW('<input id="ftplogin"  type="button" value="login" onclick="FtpLogin()">');
+</script>
+
+<script>
+    DW('</table>');
+    ALC();
+</script>
+</body>
+</html>

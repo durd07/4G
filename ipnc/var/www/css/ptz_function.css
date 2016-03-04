@@ -1,0 +1,287 @@
+body {
+	margin: 0;
+	padding:0;
+	height:100%;
+	width:100%;
+	min-height:570px;
+	min-width:1180px;
+	font-size:12px;
+	background:#D5D5D5;
+}
+html {
+	height: 100%;
+}
+
+#left_div
+{
+	width:650px; height:100%; float:left;
+}
+#right_div
+{
+	 margin-left:650px; height:100%; overflow:hidden;
+}
+
+#ocx_container
+{
+	width:100%; height:100%; margin-bottom:-150px; background:black;
+}
+#bottom_conatainer
+{
+	width:100%; min-height:150px;background:#5D5D5D;
+}
+#nav_div
+{
+	width:120px; height:100%; float:left;
+	overflow:hidden;
+	
+
+}
+#func_container
+{
+	 width:100%; height:100%; background:#ccc;
+	 margin-left:140px; padding-left:10px;
+}
+.hiddenClass
+{ 
+	display:none; 
+}
+ul
+{
+	display:inline-block;
+	width:109px;
+	
+}
+ul li
+{
+	display:inline;
+    float:left;
+    line-height:30px;
+	width:100%;
+}
+ul li a
+{
+	position:relative;
+    left:-30px;
+    display:block;
+    text-decoration:none;    
+}
+
+ul li a span {
+    display:block;
+    font-weight:bold;
+    color:#000;
+	padding-left:30px;
+    font-family:"微软雅黑";
+}
+
+ul li a:hover span {
+    color:#fff;
+	background:#A4A4A4;
+}
+.selected_span
+{
+	color:#fff;
+	background:#7B7B7B;
+}
+
+
+
+
+
+.ptz_button_left_up {
+          
+		  width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+         
+      }
+.ptz_button_left_up:hover{
+		      
+          width: 32;
+          height:32px;
+          background-image: url('../images/boat.png');
+		  background-position: -34px -0px;
+         
+}
+.ptz_button_up {
+        
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+		  background-position: -0px -31px;
+         
+      }
+.ptz_button_up:hover{
+		 
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+		  background-position: -34px -31px;
+          
+}
+
+.ptz_button_right_up {
+         
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+		  background-position: -0px -62px;
+         
+}.ptz_button_right_up:hover {
+         
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+		  background-position: -34px -62px;
+         
+}
+.ptz_button_left {
+        
+          width:32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -93px;
+}
+.ptz_button_left:hover{
+		
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');          
+		  background-repeat: no-repeat;
+		  background-position: -34px -93px;
+}
+.ptz_button_right {
+         
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -123px;
+}
+.ptz_button_right:hover{
+		
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');          
+		  background-repeat: no-repeat;
+		  background-position: -34px -123px;
+}	
+.ptz_button_left_down {
+          
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -155px;
+}  
+.ptz_button_left_down:hover{
+		
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');          
+		  background-repeat: no-repeat;
+		  background-position: -34px -155px;		  
+}
+.ptz_button_down {
+         
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -185px;
+} 
+.ptz_button_down:hover {
+        
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+          background-repeat: no-repeat;
+		  background-position: -34px -185px;
+}
+.ptz_button_right_down {
+        
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -216px;
+} 
+.ptz_button_right_down:hover {
+        
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+          background-repeat: no-repeat;
+		  background-position: -34px -216px;
+}
+
+
+
+
+
+
+.ptz_zoomnear {         
+          width: 27px;
+          height:27px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -0px;
+}
+.ptz_zoomnear:hover {         
+          width: 27px;
+          height:27px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -28px -0px;
+}
+.ptz_zoomfar { 
+		  position: absolute;
+          left:130px;              
+          width: 26px;
+          height:26px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -27px;
+}
+.ptz_zoomfar:hover {
+          position: absolute;
+          left:130px;         
+          width: 26px;
+          height:26px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -28px -27px;
+}
+.ptz_focusnear {         
+          width: 27px;
+          height:27px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -0px;
+}
+.ptz_focusnear:hover {         
+          width: 27px;
+          height:27px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -28px -0px;
+}
+.ptz_focusfar {
+          position: absolute;
+          left:130px;        
+          width: 27px;
+          height:26px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -28px;
+}
+.ptz_focusfar:hover {
+          position: absolute;
+          left:130px;          
+          width: 27px;
+          height:26px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -28px -28px;
+}

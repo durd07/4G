@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<link rel="stylesheet" type="text/css" href="css/main.css"/>
+<link rel="stylesheet" type="text/css" href="css/sdmenu.css"/>
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+<title>IP Camera Configuration</title>
+<script language="javascript" src="var.js"></script>
+<script language="javascript" src="common.js"></script>
+<script src="js/jquery-1.10.2.js"></script>
+<script src="js/main.js"></script>
+<script src="js/sdmenu.js"></script>
+
+<script> 
+//网页加载就开始调用
+InitLoad(); 
+
+//网页onload调用方法
+function MY_ONLOAD() 
+{
+	LangChange();
+}
+</script>
+</head>
+
+<body onload="MY_ONLOAD()">
+<div id="container">
+<!--DIV-001-begin  最外围DIV->TOP，存放MENU的部分-->
+<div id="top_banner">
+	<img id="logo_icon" src="images/logo.png" height="40px"/>
+	<div id="menu1" class="menu_div" style="margin-left:180px;">
+    	<a class="menu_href" href="#">
+		<script>DW(GL("preview"));</script>
+		</a>
+    </div>
+    <div id="menu2" class="menu_div">
+    	<a class="menu_href" href="#">
+		<script>DW(GL("basiccfg"));</script>
+		</a>
+    </div>
+    <div id="menu3" class="menu_div"  style=" border-right:1px solid #aaa">
+    	<a class="menu_href" href="#">
+		<script>DW(GL("advancfg"));</script>
+		</a>
+    </div>
+	
+    <div id="information">
+    	<img src="images/user.png" width="25px" height="25px"/>
+        <span id="login_user">
+		<script>DW(loginusr);</script>
+		</span>
+        
+        <div style="float:left;height:50px; padding-left:15px; padding-top:15px; display:none;">
+            <select  style="background:#303a40 0px 0px; color: #ffffff; font-size: 14px; border: #000000 1px solid; padding: 0px;" name="choose" id="lang" onchange="SelLang()">
+                <option><script>DW(GL("chinese"));</script></option>
+				<option><script>DW(GL("english"));</script></option>
+            </select>
+        </div>
+		
+        <img src="images/login_out.png" width="25px" height="25px"/>
+        <a id="login_out_href" href="login.htm">
+		<script> DW(GL("logout")); </script>
+		</a>       
+    </div>
+</div>
+<!--DIV-001-end  最外围DIV->TOP，存放MENU的部分-->
+
+
+<!--DIV-002-begin  最外围DIV->主体部分，存放树和mainframe的部分-->
+<div id="main_body">
+
+	<!--DIV-003-begin  Tree -->
+	<div id="main_body_left_tree">
+    	
+    </div>
+    <!--DIV-003-end  Tree -->
+	
+    <!--DIV-004 begin-frame 可内嵌网页的地方 -->
+    <div id="main_frame_inner_html">
+    	<iframe id="right_frame" allowtransparency="false" scrolling="no" frameborder="0" name="right_iframe"></iframe> 
+    </div>
+    <!--DIV-004 end-frame 可内嵌网页的地方 -->
+
+</div>
+<!--DIV-002-end  最外围DIV->主体部分，存放树和mainframe的部分-->
+</div>
+</body>

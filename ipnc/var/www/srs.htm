@@ -1,0 +1,124 @@
+<script>
+    var is485 = true;
+    try {
+        var ss = CONTENT_PAGE.split(":");
+        if (ss[1] == "232") is485 = false;
+    } catch (e) {};
+    var v_rsRate = ((is485) ? "<%485speed%>" : "<%uartspeed%>");
+    var v_rsType = ((is485) ? "<%485type%>" : "<%uarttype%>");
+    CTRLARY = {
+        rsRate: new Ctrl_Select("rsRate", "<%uartspeedname.all%>", v_rsRate, ((is485) ? "set485speed=" : "setuartspeed=")),
+        rsType: new Ctrl_Select("rsType", "<%uarttypename.all%>", v_rsType, ((is485) ? "set485type=" : "setuarttype=")),
+        rsID: new Ctrl_SelectNum("rsID", 1, 255, 1, "<%485ID%>", "set485id=")
+    };
+    var c_rsWrite = new Ctrl_Text("rsWrite", "50", "40", "", ((is485) ? "rs485write=" : "rs232write="), gco_empty, null, null, null, "Transformat()");
+    var c_rsText = new Ctrl_Text("rsText", "50", "20", "", "", null, null, null, null, "Transformat()");
+    var c_rsWT = new Ctrl_Radio("rsWT", 0, "", "FixStatus()");
+    var MYCTRLS = {
+        rsWrite: c_rsWrite
+    };
+
+    function MY_ONLOAD() {
+        FixStatus();
+        g_lockLink = false;
+    }
+
+    function MY_BEFORE_SUBMIT() {
+        SetCIA("rsID", is485);
+    }
+
+    function ToText(ascValue) {
+        var keys = " !\"#$%&'()*+'-./0123456789:;<=>?@";
+        var loAZ = "abcdefghijklmnopqrstuvwxyz";
+        keys += loAZ.toUpperCase();
+        keys += "[\\]^_`";
+        keys += loAZ;
+        keys += "{|}~";
+        if (ascValue > -1) {
+            return keys.charAt(ascValue - 32);
+        }
+        return ("");
+    }
+
+    function ToAscii(ascValue) {
+        var keys = " !\"#$%&'()*+'-./0123456789:;<=>?@";
+        var loAZ = "abcdefghijklmnopqrstuvwxyz";
+        keys += loAZ.toUpperCase();
+        keys += "[\\]^_`";
+        keys += loAZ;
+        keys += "{|}~";
+        var loc;
+        loc = keys.indexOf(ascValue);
+        if (loc > -1) {
+            Ascii_Decimal = 32 + loc;
+            return (32 + loc);
+        }
+        return (0);
+    }
+
+    function Transformat() {
+        var tmpstr = "";
+        var finalstr = "";
+        var decint = 0;
+        if (c_rsWT.GV() == 1) {
+            tmpstr = c_rsWrite.GV();
+            if (!CheckHex(tmpstr) || tmpstr.length < 2) {
+                c_rsText.SV("");
+                return;
+            } else {
+                for (i = 0;
+                i < tmpstr.length;
+                i += 2) {
+                    if ((i + 1) < tmpstr.length) {
+                        decint = Hex2Dec(tmpstr.charAt(i) + tmpstr.charAt(i + 1));
+                        if (decint < 32 || decint > 126) {
+                            finalstr += '.';
+                        } else {
+                            finalstr += ToText(decint);
+                        }
+                    }
+                }
+            }
+            c_rsText.SV(finalstr);
+        } else {
+            tmpstr = c_rsText.GV();
+            for (i = 0;
+            i < tmpstr.length;
+            i++) {
+                finalstr += Dec2Hex(eval(ToAscii(tmpstr.charAt(i)))).toString();
+            }
+            c_rsWrite.SV(finalstr);
+        }
+    }
+
+    function ClearField() {
+        c_rsWrite.SV("");
+        c_rsText.SV("");
+    }
+
+    function FixStatus() {
+        var isdis = (c_rsWT.GV() == 1);
+        DisableObject("rsWrite", !isdis);
+        DisableObject("rsText", isdis);
+    }
+
+    function MySend() {
+        Transformat();
+        ValidateCtrlAndSubmit(MYCTRLS);
+    }
+    WriteSysPH((is485) ? "sys_rs485_set" : "sys_rs232_set");
+    WriteGroup((is485) ? "sys_rs485_set" : "sys_rs232_set");
+    WTablePH(500);
+    WIP("baud_rate", "rsRate");
+    WIP("type", "rsType");
+    if (is485) WIP("device_id", "rsID");
+    WIPSubmit();
+    WIP1("<hr>");
+    WIP1(GL((is485) ? "transmit_rs485" : "transmit_rs232"));
+    DW("<tr class=b1 ><td height=30>" + c_rsWT.GetHtml(1) + " " + GL("raw_format") + ":</td><td>" + c_rsWrite.html + "</td></tr>");
+    DW("<tr class=b1 ><td width=160 height=30 >" + c_rsWT.GetHtml(0) + " " + GL("canonical_format") + ":</td><td>" + c_rsText.html + "</td></tr>");
+    WIP1("<br><center><input type=button class=m1 value='" + GL("send") + "' onClick='MySend()' >&nbsp;&nbsp;&nbsp;<input type=button class=m1 value='" + GL("clear") + "' onClick='ClearField()' >");
+    WTablePB();
+    WriteSysPB();
+    ALC();
+</script>

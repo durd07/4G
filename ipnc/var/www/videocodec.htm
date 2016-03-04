@@ -1,0 +1,179 @@
+<script>
+  var c_MaxTitleLen = parseInt("<%maxtitlelen%>"); //zdy
+  var c_MaxTextLen = parseInt("<%maxtextlen%>"); // add by zdy, 2013-05-03
+  
+  var codecRes = parseInt("<%videocodecres%>");
+  //var codecMode = parseInt("<%videocodecmode%>");
+  var codecMode = parseInt("<%videocodec%>");//GFL
+  var rateConNow = parseInt("<%ratecontrol1%>");
+
+  var v_titleLen = new V_StrLen(1, c_MaxTitleLen, GL("title"));
+  var v_titleChar = new V_StrDeviceTitle(GL("title_char"));
+  var v_valueRange = new V_NumRange(64, 16000, GL("custom_qa"));
+  var v_valueRange2 = new V_NumRange(64, 8000, GL("custom_qa"));
+  var v_valueRange3 = new V_NumRange(2, 97, GL("quality")); //add by zdy
+  var co_titleChecker = new CheckerObj(v_titleLen, new CheckerObj(v_titleChar));
+  
+  CTRLARY = {
+    resMenu1: new Ctrl_Select("resMenu1","<%videocodecresname%>","<%videocodecres1%>","videocodecres1="),
+    resMenu2: new Ctrl_Select("resMenu2","<%videocodecresname%>","<%videocodecres2%>","videocodecres2="),
+    H264BitRate1: new Ctrl_Text("H264BitRate1", "5", 5, "<%bitrate1%>", "bitrate1", new CheckerObj(v_valueRange), false, "CheckH264BitRate()"),
+    H264BitRate2: new Ctrl_Text("H264BitRate2", "4", 4, "<%bitrate2%>", "bitrate2", new CheckerObj(v_valueRange2), false, "CheckH264BitRate2()"),
+    rateCtrl1: new Ctrl_Select("rateCtrl1", "<%ratecontrolname.all%>", "<%ratecontrol1%>", "ratecontrol1="),
+    rateCtrl2: new Ctrl_Select("rateCtrl2", "<%ratecontrolname.all%>", "<%ratecontrol2%>", "ratecontrol2="),
+    frmH2641: new Ctrl_Select("frmH2641", "None", "<%framerate1%>", "framerate1="),
+    frmH2642: new Ctrl_Select("frmH2642", "None", "<%framerate2%>", "framerate2="),
+    goplen1: new Ctrl_Text("goplen1", "3", "3", "<%goplen1%>", "goplen1="),
+    goplen2: new Ctrl_Text("goplen1", "3", "3", "<%goplen1%>", "goplen1=")
+  };
+
+  
+  function CheckH264BitRate() {
+  
+    CTRLARY["H264BitRate"].IsPass();
+  }
+  function CheckH264BitRate2() {
+  
+    CTRLARY["H264BitRate2"].IsPass();
+  }  
+
+  function MY_ONUNLOAD() {
+  
+    clearTimeout(timerID);
+    StopActiveX();
+  }
+
+  function MY_ONLOAD() {  
+    g_lockLink = false;
+  }
+  function MY_SUBMIT_OK() {
+    ChangeContent(null, true);
+  }
+  function SelectStream()
+  {
+    var value = document.getElementById("stream").selectedIndex;
+    alert(value);
+    switch(value)
+    {
+      case 0:
+        $("#stream2").hide();
+        $("#stream1").show();
+        break;
+      case 1:
+        $("#stream1").hide();
+        $("#stream2").show();
+        break;
+      case 2:
+        $("#stream1").hide();
+        $("#stream2").hide();
+        break;
+    }   
+  }
+
+  WriteNetPH("image"); //add by zdy, 2012-11-20
+  WriteGroup("image");
+  DW('<table><tr><td>');
+</script>
+<script>
+  DW('<td colspan=3 align="left">');
+  DW('<div overflow="left" text-align="left">');
+
+  WriteGroup("codec");
+</script>
+  <div>
+  <table>
+    <tr>
+      <td>
+        <select id="stream" onchange="SelectStream()">
+          <option selected value="stream1">{$stream1}</option>
+          <option value="stream2">{$stream2}</option>
+        </select>
+      </td>
+    </tr>
+  </table>
+</div>
+
+  <script>
+// title and codemode
+  DW('<div>');
+  DW('<table>');
+  DW('<tr><td colspan=2>' + GL("codec_res") + ': </td><td>');
+  WH("resMenu");
+  DW('</td></tr>');
+  DW('</table>');
+  DW('</div>');
+</script>
+<script>
+//div stream1
+  DW('<div id="stream1" text-align="left" style="border-style:solid">');
+
+  DW('<table>');  
+  // WIP("rate_ctrl", "rateCtrl1");
+  DW('<tr align="left"><td colspan=2>' + GL("rate_ctrl") + ':</td><td>');
+  WH("rateCtrl1");
+  DW('</td></tr>');
+  DW('</table>');
+
+  DW('<table>');
+  DW('<tr align="left"><td colspan=2>' + GL("frame_rate") + '</td><td>');
+  WH("frmH264");
+  DW(GL("fps") + '</td></tr>');
+  DW('</table>');
+
+  DW('<table>');
+  DW('<tr align=left><td colspan=2>' + GL("bitrate") + '</td><td>');
+  WH("H264BitRate");
+  DW(GL("kbps") + '</td></tr>');
+  DW('</table>');
+
+  DW('<table>');
+  DW('<tr><td colspan=2>' + GL("gop") + '</td><td>'); 
+  WH("goplen1");
+  DW('</td></tr>');
+  DW('</table>');
+
+  DW('</div>');
+
+//stream2
+  DW('<div id="stream2" text-align="left" style="border-style:solid">');
+  DW('<table>');  
+  WIP("rate_ctrl", "rateCtrl2");
+  DW('</table>');
+
+  DW('<table>');
+  DW('<tr><td>' + GL("frame_rate") + '</td><td>');
+  WH("frmH2642");
+  DW(GL("fps") + '</td></tr>');
+  DW('</table>');
+
+  DW('<table>');  
+  DW('<tr><td>' + GL("bitrate") + '</td><td>');
+  WH("H264BitRate2");
+  DW(GL("kbps") + '</td></tr>');
+  DW('</table>');
+
+  DW('<table>');
+  DW('<tr><td colspan=2>' + GL("gop") + '</td><td>'); 
+  WH("goplen2");
+  DW('</td></tr>');
+  DW('</table>');
+
+  DW('</div>');
+//submit button
+  DW('<div>');
+  DW('<table><tr><td colspan=4 align="center">');
+  CreateSubmitButton();
+  DW('</td></tr></table>');
+  DW('</div>');
+
+  DW('</fieldset></form>');
+  DW('</div>');
+  DW('</td></tr>');
+  DW("</table>");
+  </script>
+<script>
+  DW('</fieldset></form></div>');
+  WriteNetPB();
+  ALC();
+</script>
+

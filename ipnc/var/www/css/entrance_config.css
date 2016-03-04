@@ -1,0 +1,125 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-size: 12px;
+	background: #D5D5D5;
+}
+#entrance_container {
+	padding: 10px 15px 0 15px;
+	min-height: 550px;
+}
+#entrance_tabs {
+	position: absolute;
+	z-index: 100;
+}
+#entrance_tabs ul {
+	list-style: none;
+}
+#entrance_tabs ul li {
+	display: inline-block;
+	background: #333333;
+}
+#entrance_tabs ul a {
+	display: block;
+	text-align: center;
+	padding: 10px;
+	width: 90px;
+	color: white;
+	text-decoration: none;
+	border-top: 1px solid #999999;
+	border-right: 1px solid #999999;
+	border-left: 1px solid #999999;
+	cursor: pointer;
+}
+
+#entrance_tabs ul li a.active {
+	background: #D5D5D5;
+	color: black;
+	font-weight: bold;
+	border-bottom: none;
+}
+
+#entrance_tabs ul li a.active:hover {
+	background: #D5D5D5;
+}
+#entrance_tabs ul li a:hover {
+	background: #999;
+}
+
+#entrance_tab_content {
+	position: relative;
+	top: 34px;
+	width: 100%;
+	height: 100%;
+	min-height: 515px;
+	border: 1px solid #999;
+}
+.tab_content_div {
+	padding: 15px;
+}
+
+.entrance_table {
+	width: 800px;
+	border: none;
+	border-collapse: collapse;
+}
+
+.entrance_table_td_input {
+	margin-left: 10px;
+	width: 300px;
+	height: 23px;
+}
+
+.entrance_table_td_select {
+	margin-left: 10px;
+	width: 303px;
+	height: 27px;
+}
+
+.entrance_table_td_radio {
+	margin-left: 40px;
+	vertical-align: text-top;
+}
+
+.entrance_table td {
+	padding: 8px 0 8px 15px;
+}
+
+.entrance_table tr:nth-child(even) {
+	background: #ccc;
+}
+.table_title {
+	font-weight: bold;
+	background: #BCBCBC;
+	height: 20px;
+}
+/**
+ * 	这个是给字体颜色用的
+ */
+span.Icon {
+	top: -5px;
+}
+
+.entrance_save_footer {
+	position: relative;
+	top: 35px;
+	width: 100%;
+	padding-top: 5px;
+}
+
+.savebtn {
+	display: inline-block;
+	width: 88px;
+	height: 24px;
+	_height: 27px;
+	vertical-align: middle;
+	border: 0px;
+	color: #000000;
+	background: url(../images/Button.gif) no-repeat;
+	cursor: pointer;
+}

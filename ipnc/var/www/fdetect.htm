@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script language="javascript" src="var.js"></script>
+    <script language="javascript" src="common.js"></script>
+    <script> InitLoad(); </script>
+    <script>
+      CTRLARY = {
+        fdetect: new Ctrl_Check("fdetect", g_fdetect, null, null)
+      };
+      function MY_ONLOAD() {
+          StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+          g_lockLink = false;
+      };
+      function MY_ONUNLOAD() {
+          StopActiveX();
+      };
+      function setFdetect() {
+          var val_fdtect = GetCCV("fdetect");
+          var val_fdconflevel = document.getElementById("fdconflevelval").value;
+          var val_fddirection = document.getElementById("fddirection").selectedIndex;
+          var val_fdx = document.getElementById("fdx").value;
+          var val_fdy = document.getElementById("fdy").value;
+          var val_fdw = document.getElementById("fdw").value;
+          var val_fdh = document.getElementById("fdh").value;
+          var o = "";
+          o += c_iniUrl;
+          o += GetSetterCmdKV("fdetect", val_fdtect);
+          o += GetSetterCmdKV("fdconflevel", val_fdconflevel);
+          o += GetSetterCmdKV("fddirection", val_fddirection);
+          o += GetSetterCmdKV("fdx", val_fdx);
+          o += GetSetterCmdKV("fdy", val_fdy);
+          o += GetSetterCmdKV("fdw", val_fdw);
+          o += GetSetterCmdKV("fdh", val_fdh);
+          SendHttp( o , false);
+      };
+    </script>
+  </head>
+
+  <body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+    <div style="float:left; width:540px; height:304px;">
+      <script> WriteImgtuneVideo(); </script>
+    </div>
+    <div style="float:left; margin: 10px auto auto 20px; font-size:12px;">
+      <table style="border-spacing: 5px 10px;">
+        <tr>
+          <td colSpan="2">
+            <script> WH("fdetect"); </script>
+            <label for="fdetect"><script>DW(GL("enable_fdetect"));</script></label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <script>DW(GL("fdconflevel") + " :&nbsp;");</script>
+            <input type="text" id="fdconflevelval" max="100" min="0" maxlength="3" size="2"/>
+            %
+            <script>document.getElementById("fdconflevelval").value = g_fdconflevel; </script>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <script>DW(GL("fddirection") + " :&nbsp;");</script>
+            <select id="fddirection">
+              <script>
+                DW('<option >' + GL("up") + '</option >');
+                DW('<option >' + GL("right") + '</option >');
+                DW('<option >' + GL("left") + '</option >');
+                document.getElementById("fddirection").selectedIndex = g_fddirection;
+              </script>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td style="background-color:#F0F0F0;">
+            <script>DW(GL("fdregion"));</script>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            X :&nbsp;
+            <input type="text" id="fdx" max="1920" min="0" maxlength="4" size="2"/>
+            <script>document.getElementById("fdx").value = g_fdx; </script>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Y :&nbsp;
+            <input type="text" id="fdy" max="1080" min="0" maxlength="4" size="2"/>
+            <script>document.getElementById("fdy").value = g_fdy; </script>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            W :&nbsp;
+            <input type="text" id="fdw" max="1920" min="0" maxlength="4" size="2"/>
+            <script>document.getElementById("fdw").value = g_fdw; </script>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            H :&nbsp;
+            <input type="text" id="fdh" max="1080" min="0" maxlength="4" size="2"/>
+            <script>document.getElementById("fdh").value = g_fdh; </script>
+          </td>
+        </tr>
+      </table>
+      <div>
+        <input type="button" id="set_fdetect" onclick="setFdetect()" style="width:60px;height:20px;" /> 
+        <script>document.getElementById("set_fdetect").value = GL("submit"); </script>
+      </div>
+    </div>
+  </body>
+
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <link rel="shortcut icon" href="skin/favicon.ico" type="image/x-icon" />
+    <script language="javascript" src="var.js"></script>
+    <script language="javascript" src="common.js"></script>
+    <script language="javascript" src="js/panasonic.js"></script>
+    <script>
+      function CalcCmd()
+      {
+        var str = document.getElementById("values").value;
+        var result = new Array();
+        result = str.split(",");
+        for (var i=0; i<result.length; i++){
+          result[i] = parseInt(result[i]);
+          if (isNaN(result[i]))
+            result[i] = 0;
+        }
+        return result;
+      }
+
+      function SendCmd()
+      {
+        var cmd = panasonicMkCmd(CalcCmd());
+        SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_get", cmd), false, GetResult);
+        document.getElementById("result").innerHTML = g_resultTxt;
+      }
+    </script>
+    <title>
+      Panasonic Settings
+    </title>
+  </head>
+
+  <body>
+
+    <input id="values" type="text"></input>
+    <input type="button" value="发送" onclick="SendCmd()"></input>
+    <div id="result"></div>
+
+  </body>
+
+</html>
+

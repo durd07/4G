@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script>
+            InitLoad();
+         </script>
+        <title>
+            
+        </title>
+    <style type="text/css">
+    td {
+      font-size: 12px;
+    }
+    </style>
+
+    </head>
+<body onload="MY_ONLOAD()">
+<script>
+    var v_minAudioVol = 1;
+    var v_maxAudioVol = 100;//parseInt("<%audioinmax%>");//GFL, this page should add more things    
+    var V_AudVol = new V_NumRange(0, v_maxAudioVol, GL("audio_volume").toLowerCase());
+    //var V_AudLev = new V_NumRange(0, v_maxAudioVol, "");
+    
+    CTRLARY = {
+        audioEn: new Ctrl_Radio("audioEn", "<%audioenable%>", "audioenable=", "FixStatus()"),
+        audiomode: new Ctrl_Select("audiomode", "<%audiomodename.all%>", "<%audiomode%>", "audiomode="), // zdy
+        audioVol: new Ctrl_Text("audioVol", "3", "3", "<%audioinvolume%>", "audioinvolume=", new CheckerObj(V_AudVol)),
+        encode: new Ctrl_Select("encode", "<%encodingname.all%>", "<%encoding%>", "encoding="), // zdy
+        samplerate: new Ctrl_Select("samplerate", "<%sampleratename.all%>", "<%samplerate%>", "samplerate="), // zdy
+        audiobitrate: new Ctrl_Select("audiobitrate", "<%audiobitratename.all%>", "<%audiobitrate%>", "audiobitrate="), // zdy
+        alarmlevel: new Ctrl_Text("alarmlevel", "3", "3", "<%alarmlevel%>", "alarmlevel=", new CheckerObj(V_AudVol)), // zdy
+        audiooutvolume: new Ctrl_Text("audiooutvolume", "3", "3", "<%audiooutvolume%>", "audiooutvolume=", new CheckerObj(V_AudVol)) // zdy
+    };
+
+    function MY_ONLOAD() {
+        FixStatus();
+        g_lockLink = false;
+    }
+    function FixStatus() {
+    	var audioval = parseInt(GetRadioValue("audioEn"));        
+        DisableObject("audiomode", audioval==0);        
+    }
+  function MY_BEFORE_SUBMIT() {
+
+    if (CheckaudioVol(0, 80) == false)
+        return false;
+    if (Checkalarmlevel(0, 50) == false)
+        return false;
+    if (Checkaudiooutvolume(0, 80) == false)
+        return false;
+    return true;
+  }
+  function MY_SUBMIT_OK() {
+
+        alert(GL("submit_success"));
+        window.location.reload();
+
+  }
+function CheckaudioVol(min, max)
+{
+  var value = document.getElementById("audioVol").value;
+  if (value.length == 0)
+  {
+    alert(GL("avol_empty"));
+    document.getElementById("audioVol").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("avol_inv"));
+    document.getElementById("audioVol").value = "";
+    document.getElementById("audioVol").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("avol_num"));
+    document.getElementById("audioVol").value = "";
+    document.getElementById("audioVol").focus();
+    return false;
+  }
+  return true;
+}
+
+function Checkalarmlevel(min, max)
+{
+  var value = document.getElementById("alarmlevel").value;
+  if (value.length == 0)
+  {
+    alert(GL("alevel_empty"));
+    document.getElementById("alarmlevel").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("alevel_inv"));
+    document.getElementById("alarmlevel").value = "";
+    document.getElementById("alarmlevel").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("alevel_num"));
+    document.getElementById("alarmlevel").value = "";
+    document.getElementById("alarmlevel").focus();
+    return false;
+  }
+  return true;
+}
+
+function Checkaudiooutvolume(min, max)
+{
+  var value = document.getElementById("audiooutvolume").value;
+  if (value.length == 0)
+  {
+    alert(GL("aovol_empty"));
+    document.getElementById("audiooutvolume").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("aovol_inv"));
+    document.getElementById("audiooutvolume").value = "";
+    document.getElementById("audiooutvolume").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("aovol_num"));
+    document.getElementById("audiooutvolume").value = "";
+    document.getElementById("audiooutvolume").focus();
+    return false;
+  }
+  return true;
+}
+
+</script>
+<script>
+    DW('<table>');    
+    WIP("audio_recording", "audioEn");
+    WIP("audio_mode", "audiomode"); //zdy
+    //DW("<br>"); //zdy
+    
+    DW("<tr><td colspan=2><b>" + GL("audio_input") + "</b></td></tr>"); //zdy
+    WIPX("audio_volume", WH_("audioVol") + GL("audio_vol_range2", {
+        1: v_maxAudioVol
+    }));
+    
+    //ZDY
+    WIP("encoding", "encode"); //zdy
+    WIP("sample_rate", "samplerate"); //zdy
+    WIP("bit_rate", "audiobitrate"); //zdy    
+    WIPX("alarm_level", WH_("alarmlevel") + GL("audio_vol_range1", {
+        1: v_maxAudioVol
+    }));
+    
+    DW("<tr><td colspan=2><b>" + GL("audio_output") + "</b></td></tr>"); //zdy
+    WIPX("audiooutvolume", WH_("audiooutvolume") + GL("audio_vol_range2", {
+        1: v_maxAudioVol
+    })); //zdy
+    
+    WIPSubmit();
+    DW('</table>');
+    ALC();
+</script>
+</body>
+</html>

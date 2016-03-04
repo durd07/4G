@@ -1,0 +1,120 @@
+
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+		<script>
+      		InitLoad();
+   		 </script>
+		<title>
+			
+		</title>
+    <style type="text/css">
+    .body {
+      font-size: 9px;
+    }
+    td {
+    	font-size: 12px;
+    }
+    </style>
+
+	</head>
+<body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+<script>
+
+function MY_ONUNLOAD() {
+    StopActiveX();
+}
+
+function MY_ONLOAD() {
+  g_lockLink = false;
+  StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+}
+
+function OpenOsddis()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("osddis", 1), false);
+}
+
+function CloseOsddis()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("osddis", 0), false);
+}
+
+function Down()
+{
+  // alert("ZoomWStart");
+  SendHttp(c_iniUrl + GetSetterCmdKV("zoomwide", 1), false);
+}
+
+function Up()
+{
+  // alert("ZoomTStart");
+  SendHttp(c_iniUrl + GetSetterCmdKV("zoomtele", 1), false);
+}
+
+function SelectVal1()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("focusnear", 1), false);
+}
+function SelectVal2()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("focusfar", 1), false);
+}
+
+</script>
+
+<script>
+  DW('<div id="advancediv">');
+  DW('<table cellpadding="0" cellspacing="2"><tr><td style="vertical-align:text-top;">');
+
+  DW('<div id="videoview">');
+  WriteImgtuneVideo();
+  DW('</div>');
+  DW('</td>');
+  DW('<td style="vertical-align:text-top;" width="5px">');
+  DW('<div class="linediv">');
+  // DW('<table cellspacing="0" cellpadding="0" width="1" height="100%" bgcolor="#C0C0C0"><tr><td></td></tr></table>');
+  DW('</div>');
+
+  DW('</td><td style="vertical-align:text-top;">');
+
+  DW('<div class="layout" id="tabs-5" >');
+  DW('<table>');
+
+  DW('<tr><td>');
+  DW('<input id="opendis" type="button" value="' + GL("open_dis")+ ' " onclick="OpenOsddis()">');
+  DW('</td>');
+  DW('<td>');
+  DW('<input id="closedis" type="button" value="' + GL("close_dis")+ ' " onclick="CloseOsddis()">');
+  DW('</td></tr>');
+
+  DW('<tr><td>');
+  DW('<input id="up" type="button" value="' + GL("up_dis")+ ' " onclick="Up()">');
+  DW('</td>');
+  DW('<td>');
+  DW('<input id="down" type="button" value="' + GL("down_dis")+ ' " onclick="Down()">');
+  DW('</td></tr>');
+
+  DW('<tr><td>');
+  DW('<input id="up" type="button" value="' + GL("select_val1")+ ' " onclick="SelectVal1()">');
+  DW('</td>');
+    DW('<td>');
+  DW('<input id="confirmdis" type="button" value="' + GL("select_val2")+ ' " onclick="SelectVal2()">');
+  DW('</td></tr>');
+
+  DW('<tr><td>');
+  DW('<input id="confirmdis" type="button" value="' + GL("confirm_dis")+ ' " onclick="OpenOsddis()">');
+  DW('</td></tr>');
+
+
+  DW('</table>');
+  DW('</div>');
+  DW('</td></tr></table>');
+  DW('</div>');
+
+</script>
+</body>
+</html>

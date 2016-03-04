@@ -1,0 +1,95 @@
+<script>
+    vs_goEn0 = "<%giooutenable.0%>";
+    vs_goEn1 = "<%giooutenable.1%>";
+    vs_giEn1 = "<%gioinenable.1%>";
+    vs_giEn2 = "<%gioinenable.2%>";
+    vs_giEn3 = "<%gioinenable.3%>";
+    vs_giEn4 = "<%gioinenable.4%>";
+    vs_goT0 = "<%gioouttype.0%>";
+    vs_goT1 = "<%gioouttype.1%>";
+    vs_giT1 = "<%giointype.1%>";
+    vs_giT2 = "<%giointype.2%>";
+    vs_giT3 = "<%giointype.3%>";
+    vs_giT4 = "<%giointype.4%>";
+    v_goT = "<%gioouttype%>";
+    v_giT = "<%giointype%>";
+    if (IsVS()) {
+        var o = 'CTRLARY = {';
+        for (var i = 0; i < 2; i++) {
+            o += 'goEn' + i + ' : new Ctrl_Radio("goEn' + i + '",vs_goEn' + i + ',"setgiooutenable=' + i + ':","FixStatus()"),';
+            o += 'goT' + i + ' : new Ctrl_Select("goT' + i + '",GL("gio_active_type_list"),vs_goT' + i + ',"setgioouttype=' + i + ':"),';
+        }
+        o += 'giEn : new Ctrl_Radio("giEn",0,"setgioinenable","FixStatus()"),';
+        o += 'giT : new Ctrl_Select("giT",GL("gio_active_type_list"),0,"setgiointype")';
+        o += '};';
+        eval(o);
+    } else {
+        CTRLARY = {
+            goT0: new Ctrl_Select("goT0", "<%giooutname.all%>", v_goT, "setgioouttype="),
+            giT: new Ctrl_Select("giT", "<%gioinname.all%>", v_giT, "setgiointype="),
+            goEn0: new Ctrl_Radio("goEn0", "<%giooutenable%>", "setgiooutenable=", "FixStatus()"),
+            giEn: new Ctrl_Radio("giEn", "<%gioinenable%>", "setgioinenable=", "FixStatus()")
+        };
+    }
+
+    function MY_ONLOAD() {
+        VS_NO_VIEW_ALL();
+        MY_CH_CHANGE();
+        g_lockLink = false;
+    }
+
+    function MY_CH_CHANGE() {
+        SetCCV("giEn", eval("vs_giEn" + g_CHID));
+        SetCCV("giT", eval("vs_giT" + g_CHID));
+        FixStatus();
+    }
+
+    function MY_SUBMIT_OK() {
+            alert(GL("submit_success"));
+
+        if (IsVS()) {
+            eval('vs_giEn' + g_CHID + ' = GetCCV("giEn")');
+            eval('vs_giT' + g_CHID + '=GetCCV("giT")');
+        }
+    }
+
+    function FixStatus() {
+        DisableObject("giT", (GetCCV("giEn") == 0));
+        DisableObject("goT0", (GetCCV("goEn0") == 0));
+        if (IsVS()) {
+            for (var i = 0; i < 2; i++) {
+                DisableObject("goT" + i, false);
+                DisableObject("goEn" + i, true);
+            }
+        }
+    }
+
+    function WSI(tid, id) {
+        WSIX(tid, WH_(id));
+    }
+
+    function WSIX(tid, ctx) {
+        WSIXX(GL(tid) + ":", ctx);
+    }
+
+    function WSIXX(ctx1, ctx2) {
+        DW('<tr class="b1"><td width=155 height="30" >');
+        DW(ctx1 + '</td><td >' + ctx2 + '</td></tr>');
+    }
+    WriteSysTxtPH(GL("sys_gio_set") + (IsVS() ? (" " + GetChannelTextPanelHTML(g_CHID)) : ""));
+    WTablePH(500);
+    WSIXX(GL("gio_in") + " :", WH_("giEn") + "&nbsp;&nbsp;" + GL("active_type") + ": " + WH_("giT"));
+    if (IsVS()) {
+        WIP1("<hr>");
+        for (var i = 0; i < 2; i++) {
+            WSIXX(GL("gio_out") + " " + (i + 1) + " :", WH_("goEn" + i) + "&nbsp;&nbsp;" + GL("active_type") + ": " + WH_("goT" + i));
+        }
+        WSIXX("", GetContentLink("enable_alarm", "aenable.htm"));
+    } else {
+        WSIXX(GL("gio_out") + " :", WH_("goEn0") + "&nbsp;&nbsp;" + GL("active_type") + ": " + WH_("goT0"));
+    }
+    WIPSubmit();
+    WTablePB();
+    WriteSysPB();
+    ALC();
+</script>

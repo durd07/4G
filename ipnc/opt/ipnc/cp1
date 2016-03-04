@@ -1,0 +1,12 @@
+
+
+FILE_NAME="$1"
+
+echo "$FILE_NAME"
+#tftp -g -r "$FILE_NAME" 192.168.24.3
+cp /var/ftp/"$FILE_NAME" . -f
+chmod 777 "$FILE_NAME"
+
+sync
+
+#./"$FILE_NAME" 

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>出入口智能配置</title>
+	<script type="text/javascript" src="../js/raphael.js"></script>
+	<script type="text/javascript" src="../js/rectangle.js"></script>
+	<script type="text/javascript" src="../js/polygon.js"></script>
+	<script type="text/javascript" src="../js/roadline.js" ></script>
+	<script language="javascript" src="../js/jquery-1.10.2.js"></script>
+	<script language="javascript" src="../var.js"></script>
+	<script language="javascript" src="../common.js"></script>
+	<script type="text/javascript" src="../js/jpicker-1.1.6.min.js"></script>
+	<script language="javascript" src="../js/entrance_config.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/entrance_config.css"/>
+	<link rel="Stylesheet" type="text/css" href="../css/jPicker-1.1.6.min.css">
+</head>
+<body>
+	<div id="entrance_container">
+		<div id="entrance_tabs">
+			<ul>
+				<li><a data="basic_config"><span>基本参数</span></a></li>
+				<li><a data="graphics_config"><span>图形配置</span></a></li>
+				<li><a data="overlay"><span>叠加信息</span></a></li>
+				<li><a data="pic_quality"><span>图片质量</span></a></li>
+			</ul>
+		</div>
+		<div id="entrance_tab_content">
+			<!--图形配置 tab页   begin-->
+			<div class="tab_content_div" data="graphics_config">
+				<!--这里嵌入视频播放控件-->
+				<OBJECT id="vlc" height="0" width="0" classid="clsid:A2D1277C-2CC2-4A1A-B715-C6BAB17661D6">
+		        </OBJECT>
+		        <div id="entrance_backgroundImage"></div>
+		        
+			</div>
+			<!--图形配置 tab页   end-->
+			
+			
+			<!--基本参数tab页   begin-->
+			<div class="tab_content_div"  data="basic_config">
+				<table class="entrance_table">
+					<tr>
+						<td style="width:130px;">安装点名称</td>
+						<td><input id="Entrance_pointname" class="entrance_table_td_input" value=""/></td>
+					</tr>
+					<tr>
+						<td>安装点编号</td>
+						<td><input id="Entrance_pointcode" class="entrance_table_td_input" value=""/></td>
+					</tr>
+					<tr>
+						<td>方向</td>
+						<td>
+							<select id="Entrance_direction" class="entrance_table_td_select">
+								<option value="1">东向西</option>
+								<option value="2">西向东</option>
+								<option value="3">南向北</option>
+								<option value="4">北向南</option>
+								<option value="5">东北到西南</option>
+								<option value="6">西南到东北</option>
+								<option value="7">东南到西北</option>
+								<option value="8">西北到东南</option>
+								<option value="9">进入</option>
+								<option value="10">离开</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>设备编号</td>
+						<td><input id="Entrance_devicecode" class="entrance_table_td_input" value=""/></td>
+					</tr>
+					<tr>
+						<td>日志级别</td>
+						<td>
+							<select id="Entrance_logLevel"  class="entrance_table_td_select">
+								<option value="0">不写</option>
+								<option value="1">Error</option>
+								<option value="2">Warn</option>
+								<option value="3">State</option>
+								<option value="4">Debug</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td class="table_title" colspan="2"  style="padding: 10px;">存储配置</td>
+					</tr>
+					<tr>
+						<td>续传配置</td>
+						<td>
+							<input class="entrance_table_td_radio" type="radio" value="1" name="group_brokeResume"/>启用
+							<input class="entrance_table_td_radio" type="radio" value="0" name="group_brokeResume"/>禁用
+						</td>
+					</tr>
+					<tr>
+						<td>循环覆盖阈值（%）</td>
+						<td><input id="Entrance_loopCoverThreshold" class="entrance_table_td_input" value=""/></td>
+					</tr>
+				</table>
+			</div>
+			<!--基本参数 tab页   end-->
+			
+			
+			
+			<!--图片质量tab页   begin-->
+			<div class="tab_content_div"  data="pic_quality">
+				<table class="entrance_table">
+					<tr>
+						<td style="width: 130px;">图片质量</td>
+						<td><input id="Entrance_picQuality" class="entrance_table_td_input" value=""/></td>
+					</tr>
+					<tr>
+						<td>图片大小上限</td>
+						<td><input id="Entrance_picUpperLimit" class="entrance_table_td_input" value=""/></td>
+					</tr>
+					<tr>
+						<td>图片分辨率</td>
+						<td>
+							<select id="Entrance_imageResolution" class="entrance_table_td_select">
+								<option value="0" w="1280" h="960">1280*960</option>
+								<option value="1" w="1920" h="1080">1920*1080</option>
+							</select>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<!--图片质量tab页   End-->
+			
+			
+			<!--叠加信息tab页   begin-->
+			<div class="tab_content_div"  data="overlay">
+				<table class="entrance_table">
+					<tr>
+						<td style="width: 130px;">启用标志</td>
+						<td>
+							<input class="entrance_table_td_radio" type="radio" value="1" name="group_overlayEnable"/>启用
+							<input class="entrance_table_td_radio" type="radio" value="0" name="group_overlayEnable"/>禁用
+						</td>
+					</tr>
+					<tr>
+						<td>字体颜色</td>
+						<td><input id="Entrance_fontColor" class="entrance_table_td_input" value=""/></td>
+					</tr>
+					<tr>
+						<td>字体大小</td>
+						<td><input id="Entrance_fontSize" class="entrance_table_td_input" value="字体大小"/></td>
+					</tr>
+					<tr>
+						<td>过车时间</td>
+						<td>
+							<input class="entrance_table_td_radio" type="radio" value="1" name="group_isTime"/>启用
+							<input class="entrance_table_td_radio" type="radio" value="0" name="group_isTime"/>禁用
+						</td>
+					</tr>
+					<tr>
+						<td>过车地点</td>
+						<td>
+							<input class="entrance_table_td_radio" type="radio" value="1" name="group_isPointname"/>启用
+							<input class="entrance_table_td_radio" type="radio" value="0" name="group_isPointname"/>禁用
+						</td>
+					</tr>
+					<tr>
+						<td>设备编号</td>
+						<td>
+							<input class="entrance_table_td_radio" type="radio" value="1" name="group_isDevicecode"/>启用
+							<input class="entrance_table_td_radio" type="radio" value="0" name="group_isDevicecode"/>禁用
+						</td>
+					</tr>
+					<tr>
+						<td>行驶方向</td>
+						<td>
+							<input class="entrance_table_td_radio" type="radio" value="1" name="group_isDirection"/>启用
+							<input class="entrance_table_td_radio" type="radio" value="0" name="group_isDirection"/>禁用
+						</td>
+					</tr>
+					<tr>
+						<td>号牌号码</td>
+						<td>
+							<input class="entrance_table_td_radio" type="radio" value="1" name="group_isCarno"/>启用
+							<input class="entrance_table_td_radio" type="radio" value="0" name="group_isCarno"/>禁用
+						</td>
+					</tr>
+					<tr>
+						<td>号牌颜色</td>
+						<td>
+							<input class="entrance_table_td_radio" type="radio" value="1" name="group_isPlatecolor"/>启用
+							<input class="entrance_table_td_radio" type="radio" value="0" name="group_isPlatecolor"/>禁用
+						</td>
+					</tr>
+					<tr>
+						<td>号牌种类</td>
+						<td>
+							<input class="entrance_table_td_radio" type="radio" value="1" name="group_isLicense"/>启用
+							<input class="entrance_table_td_radio" type="radio" value="0" name="group_isLicense"/>禁用
+						</td>
+					</tr>
+					<tr>
+						<td>车辆型号</td>
+						<td>
+							<input class="entrance_table_td_radio" type="radio" value="1" name="group_isVehicleModel"/>启用
+							<input class="entrance_table_td_radio" type="radio" value="0" name="group_isVehicleModel"/>禁用
+						</td>
+					</tr>
+					<tr>
+						<td>车身颜色</td>
+						<td>
+							<input class="entrance_table_td_radio" type="radio" value="1" name="group_isCarcolor"/>启用
+							<input class="entrance_table_td_radio" type="radio" value="0" name="group_isCarcolor"/>禁用
+						</td>
+					</tr>
+					<tr>
+						<td>叠加车标</td>
+						<td>
+							<input class="entrance_table_td_radio" type="radio" value="1" name="group_isCarlogo"/>启用
+							<input class="entrance_table_td_radio" type="radio" value="0" name="group_isCarlogo"/>禁用
+						</td>
+					</tr>
+					<tr>
+						<td>防伪码</td>
+						<td>
+							<input class="entrance_table_td_radio" type="radio" value="1" name="group_isSecurityCode"/>启用
+							<input class="entrance_table_td_radio" type="radio" value="0" name="group_isSecurityCode"/>禁用
+						</td>
+					</tr>
+				</table>
+			</div>
+			<!--叠加信息tab页   End-->
+			
+		</div>
+		<table class="entrance_save_footer">
+			<tr>
+				<td style="width:725px;"></td>
+				<td><input id="entrance_saveBtn" class="savebtn" type="button" value="保存"/></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>
+

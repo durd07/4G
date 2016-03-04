@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<!--
+  network, dns, ftp, smtp.....
+-->
+<html>
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script language="javascript" src="jquery/jquery-1.9.1.min.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+    <title>
+      Network Setting
+    </title>
+    <style type="text/css">
+      .menu ul,li { list-style:none}
+      .box {width:780px; height:auto; margin:0px; font-size:12px; font-family:Verdana, Arial, Helvetica, sans-serif}
+      ul.menu li {float:left; margin-bottom:1px; line-height:16px; height:14px; margin:5px 0 0 -1px; text-align:center; padding:0 12px; cursor:pointer}
+      ul.menu li.current {border:1px solid #CECECE;/*#88BBB4*/; border-bottom:none; background:#fff; height:25px; line-height:26px; margin:0}
+      .content { padding:10px}
+      a {TEXT-DECORATION:none}
+      a:link { text-decoration: none;color: black}
+      a:active { text-decoration:none}
+      a:hover { text-decoration:none;color: black}
+      a:visited { text-decoration: none;color: black}
+    </style>
+  </head>
+
+  <body onload="MY_ONLOAD()">
+  <script language="javascript" type="text/javascript">
+
+  function ready()
+  {
+    $("ul.menu li:first-child").addClass("current");
+    $("div.content").find("div.layout:not(:first-child)").hide();
+    $("div.content div.layout").attr("id", function(){return idNumber("No")+ $("div.content div.layout").index(this)});    
+  }
+    
+  function show(controlMenu,num,prefix){
+    var content= prefix + num;
+    $('#'+content).siblings().hide();
+    $('#'+content).show();
+    controlMenu.eq(num).addClass("current").siblings().removeClass("current");
+  };
+ 
+  function idNumber(prefix){
+      var idNum = prefix;
+      return idNum;
+  };
+  function click1(){
+      var c = $("ul.menu li");
+      var index = 0;
+      var p = idNumber("No");
+      show(c,index,p);
+  };
+
+    function click2(){
+        var c = $("ul.menu li");
+        var index = 1;
+        var p = idNumber("No");
+        show(c,index,p);
+    }
+
+    function click3(){
+        var c = $("ul.menu li");
+        var index = 2;
+        var p = idNumber("No");
+        show(c,index,p);
+    }
+
+    function click4(){
+        var c = $("ul.menu li");
+        var index = 3;
+        var p = idNumber("No");
+        show(c,index,p);
+    }
+
+    function click5(){
+        var c = $("ul.menu li");
+        var index = 4;
+        var p = idNumber("No");
+        show(c,index,p);
+    }
+
+  </script>
+  <script>
+
+  function MY_ONLOAD() {
+    g_lockLink = false;
+    click1();  
+  }
+  </script>
+
+<script>
+  DW('<div id="networkdiv">');
+
+  DW('<div class="box">');
+
+  DW('<div class="tagMenu">');
+
+  DW('<ul class="menu">');
+  DW('<li onclick="click1()"><a href="net.htm" target="content1" onfocus="this.blur()">' + GL("network") + '</a></li>');
+  // DW('<li onclick="click2()"><a href="ndns.htm" target="content1" onfocus="this.blur()">' + GL("ndns") + '</a></li>');
+  // DW('<li onclick="click3()"><a href="nftp.htm" target="content1" onfocus="this.blur()">' + GL("nftp") + '</a></li>');
+  // DW('<li onclick="click4()"><a href="nsmtp.htm" target="content1" onfocus="this.blur()">' + GL("nsmtp") + '</a></li>');
+  DW('<li onclick="click2()"><a href="nsntp.htm" target="content1" onfocus="this.blur()">' + GL("nsntp") + '</a></li>');
+  DW('</ul>');
+
+  DW('</div>');
+</script>
+<div id="tabs-net" class="content">
+  <iframe src="net.htm" id="netframe" name="content1" marginheight="0" marginwidth="0" scrolling="both" frameborder="0">
+  </iframe>
+</div>
+
+  <script>
+  DW('</div>');
+  DW('</div>');
+
+  </script>
+<script>
+  ALC();
+</script>
+</body>
+</html>

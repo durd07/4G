@@ -1,0 +1,275 @@
+examples/dict.o: examples/dict.c include/lzo/lzoconf.h config.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include-fixed/limits.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include-fixed/syslimits.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/limits.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/features.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/predefs.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/cdefs.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/wordsize.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/gnu/stubs.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/posix1_lim.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/local_lim.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/linux/limits.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/posix2_lim.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include/stddef.h \
+ include/lzo/lzodefs.h include/lzo/lzo1x.h examples/portab.h \
+ examples/portab_a.h src/lzo_supp.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/stdio.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/types.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/typesizes.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/libio.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/_G_config.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/wchar.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include/stdarg.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/stdio_lim.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/sys_errlist.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/stdio.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/types.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/time.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/endian.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/endian.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/byteswap.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/select.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/select.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/sigset.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/time.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/sysmacros.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/pthreadtypes.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/stat.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/stat.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/stdlib.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/waitflags.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/waitstatus.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/alloca.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/string.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/xlocale.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/string.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/string2.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/strings.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/inttypes.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include/stdint.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/stdint.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/wchar.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/unistd.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/posix_opt.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/environments.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/confname.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/getopt.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/ctype.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/errno.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/errno.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/linux/errno.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/asm/errno.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/asm-generic/errno.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/asm-generic/errno-base.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/malloc.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/fcntl.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/fcntl.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/dirent.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/dirent.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/setjmp.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/setjmp.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/signal.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/signum.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/siginfo.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/sigaction.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/sigcontext.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/asm/sigcontext.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/sigstack.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/ucontext.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/procfs.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/time.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/user.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/sigthread.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/utime.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/mman.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/mman.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/resource.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/resource.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/assert.h
+
+include/lzo/lzoconf.h:
+
+config.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include-fixed/limits.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include-fixed/syslimits.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/limits.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/features.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/predefs.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/cdefs.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/wordsize.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/gnu/stubs.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/posix1_lim.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/local_lim.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/linux/limits.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/posix2_lim.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include/stddef.h:
+
+include/lzo/lzodefs.h:
+
+include/lzo/lzo1x.h:
+
+examples/portab.h:
+
+examples/portab_a.h:
+
+src/lzo_supp.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/stdio.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/types.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/typesizes.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/libio.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/_G_config.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/wchar.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include/stdarg.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/stdio_lim.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/sys_errlist.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/stdio.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/types.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/time.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/endian.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/endian.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/byteswap.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/select.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/select.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/sigset.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/time.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/sysmacros.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/pthreadtypes.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/stat.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/stat.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/stdlib.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/waitflags.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/waitstatus.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/alloca.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/string.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/xlocale.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/string.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/string2.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/strings.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/inttypes.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include/stdint.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/stdint.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/wchar.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/unistd.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/posix_opt.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/environments.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/confname.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/getopt.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/ctype.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/errno.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/errno.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/linux/errno.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/asm/errno.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/asm-generic/errno.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/asm-generic/errno-base.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/malloc.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/fcntl.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/fcntl.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/dirent.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/dirent.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/setjmp.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/setjmp.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/signal.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/signum.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/siginfo.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/sigaction.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/sigcontext.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/asm/sigcontext.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/sigstack.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/ucontext.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/procfs.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/time.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/user.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/sigthread.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/utime.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/mman.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/mman.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/resource.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/resource.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/assert.h:

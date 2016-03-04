@@ -1,0 +1,173 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script language="javascript" src="jquery/jquery-1.9.1.min.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+    <title>
+      Camera Setting
+    </title>
+    <style type="text/css">
+      .menu ul,li { list-style:none}
+      .box {font-size:12px; font-family:Verdana, Arial, Helvetica, sans-serif}
+      ul.menu li {float:left; margin-bottom:1px; line-height:16px; height:14px; margin:5px 0 0 -1px; border-left:1px solid #CECECE;/*#88BBB4*/; text-align:center; padding:0 12px; cursor:pointer}
+      ul.menu li.current {border:1px solid #CECECE;/*#88BBB4*/; border-bottom:none; background:#fff; height:25px; line-height:26px; margin:0}
+      .content { padding:10px}
+      a {TEXT-DECORATION:none}
+      a:link { text-decoration: none;color: black}
+      a:active { text-decoration:none}
+      a:hover { text-decoration:none;color: black}
+      a:visited { text-decoration: none;color: black}
+    </style>
+    <script language="javascript" type="text/javascript">
+      function ready() {
+        $("ul.menu li:first-child").addClass("current");
+        $("div.content").find("div.layout:not(:first-child)").hide();
+        $("div.content div.layout").attr("id",
+        function() {
+          return idNumber("No") + $("div.content div.layout").index(this)
+        });
+      }
+  
+      function show(controlMenu, num, prefix) {
+        var content = prefix + num;
+        $('#' + content).siblings().hide();
+        $('#' + content).show();
+        controlMenu.eq(num).addClass("current").siblings().removeClass("current");
+      };
+  
+      function idNumber(prefix) {
+        var idNum = prefix;
+        return idNum;
+      };
+      function click1() {
+        var c = $("ul.menu li");
+        var index = 0;
+        var p = idNumber("No");
+        show(c, index, p);
+      };
+  
+      function click2() {
+        var c = $("ul.menu li");
+        var index = 1;
+        var p = idNumber("No");
+        show(c, index, p);
+      }
+  
+      function click3() {
+        var c = $("ul.menu li");
+        var index = 2;
+        var p = idNumber("No");
+        show(c, index, p);
+      }
+  
+      function click4() {
+        var c = $("ul.menu li");
+        var index = 3;
+        var p = idNumber("No");
+        show(c, index, p);
+      }
+      function click5() {
+        var c = $("ul.menu li");
+        var index = 4;
+        var p = idNumber("No");
+        show(c, index, p);
+      }
+  
+      function MY_ONUNLOAD() {
+        StopActiveX();
+      }
+  
+      function MY_ONLOAD() {
+        g_lockLink = false;
+        // StartActiveXOneEx(0, 0, Get9001FirstCodec(), 5, null); //h264 1080p
+        click1();
+      }
+
+      function SaveCamPara()
+      {
+        SendHttp(c_iniUrl + GetSetterCmdKV("camera_save", 1), false);
+		alert("OK");
+      }
+	  function Restore_Defaults()
+      {
+        SendHttp(c_iniUrl + GetSetterCmdKV("camera_default", 1), false);
+		alert("OK");
+		window.location.reload();
+      }
+	  
+	  
+    </script>
+  </head>
+
+  <body onload="MY_ONLOAD()"  onunload="MY_ONUNLOAD()">
+    <div id="imgtunediv">
+      <table>
+        <tr>
+          <td style="vertical-align:text-top;">
+            <div class="imgvideoview">
+              <script>WriteImgtuneVideo();</script>
+            </div>
+          </td>
+          <td style="vertical-align:text-top;" align="left">
+            <div>
+              <iframe src="ptzctrl.htm" width="300px" height="313px" marginheight="0" marginwidth="0" scrolling="no" frameborder="0"></iframe>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan=2 align="left" style="vertical-align:text-top;">
+            <div class="imgtunediv">
+              <div class="box">
+                <div class="tagMenu">
+                  <ul class="menu">
+                    <li onclick="click1()">
+                      <a href="focus_awb.htm" target="content2" onfocus="this.blur()"><script>DW(GL("focus_awb"));</script></a>
+                    </li>
+                    <li onclick="click2()">
+                      <a href="exposure.htm" target="content2" onfocus="this.blur()"><script>DW(GL("exposure"));</script></a>
+                    </li>
+                    <li onclick="click3()">
+                      <a href="dn.htm" target="content2" onfocus="this.blur()"><script>DW(GL("day_night"));</script></a>
+                    </li>
+                    <li onclick="click4()">
+                      <a href="advance.htm" target="content2" onfocus="this.blur()"><script>DW(GL("advance_set"));</script></a>
+                    </li>
+                  </ul>
+                  <div style="position:absolute;width:150px;margin-top:-40px;right:30px;">
+                    <input type="button" id="submit" onclick="SaveCamPara()" style="height:20px;line-height:16px;">           
+					
+                    <script>
+                      document.getElementById("submit").value=GL("submit");    
+					   document.getElementById("submit").title=GL("Save_the_camera_parameters");
+					                  
+					  
+                    </script>
+                  </div>
+				  <div style="position:absolute;width:80px;margin-top:-40px;right:30px;">
+					 <input type="button" id="restoredefaults" onclick="Restore_Defaults()" style="height:20px;line-height:16px;">
+					 <script>
+						 document.getElementById("restoredefaults").value=GL("Restore_Defaults");  
+						 document.getElementById("restoredefaults").title=GL("restore_defaults_the_camera_parameters");
+					 </script>
+				  </div>
+                </div>
+                <div id="tabs-imgtune" class="content"  align="left">
+                  <iframe src="focus_awb.htm" id="imgtuneframe" name="content2" marginheight="0" marginwidth="0" scrolling="both" frameborder="0"></iframe>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <script>
+      ALC();
+    </script>
+  </body>
+</html>

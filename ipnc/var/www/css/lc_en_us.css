@@ -1,0 +1,849 @@
+/*	CSS	*/
+
+body {
+    font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;
+    text-align: center;
+    margin: 0 auto;
+}
+
+select,
+option {
+    font-family: Consolas, 'Courier New', Courier, monospace;
+}
+
+input {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.m1 {
+    font-family: "Tahoma","Arial";
+    font-size: 12px;
+    max-width: 200px;
+}
+
+.submitbtn {
+    float: right;
+}
+
+.headline {
+    font-size: 16px;
+    background-color: #F0F0F0;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+#header {
+	/*background-image: url(../skin/bg.PNG);*/
+    height: 30px;
+}
+
+#logoimg {
+    float: left;
+}
+
+#sellang {
+    float: right;
+    margin-top: 5px;
+}
+
+#header img {
+    position: absolute;
+    top: 5px;
+}
+
+#bodycontainer {
+    width: 1024px;
+    margin: 0 auto;
+}
+
+#toolbar {
+    background-image: url(../skin/menu.PNG);
+    background-repeat: repeat-x;
+    height: 30px;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    border: 1px solid #1DA38E;
+}
+
+#tabs-preview {
+    margin-top: 2px;
+    height: auto;
+    border: 1px solid #929292;
+}
+
+#end {
+    height: 30px;
+    display: none;
+}
+
+#end label {
+    margin-top: 5px;
+    font-size: 11px;
+}
+
+ul li {
+    list-style: none;
+}
+
+#leftmenu ul.menu {
+    margin: 0px;
+}
+
+#leftmenu ul.menu li {
+    float: left;
+    text-align: center;
+    height: 30px;
+    padding: 0 10px;
+    cursor: pointer;
+    font-weight: bold;
+    line-height: 30px;
+}
+
+#leftmenu .menu li a {
+    display: block;
+    text-decoration: none;
+    color: #FFFFFF;
+    font-size: 18px;
+}
+
+#leftmenu .menu li a:hover {
+    color: #B9B9B9;
+	background: #FFFFFF;
+}
+
+#leftmenu .menu li a:active {
+    color: #B9B9B9;
+	background: #FFFFFF;
+}
+
+#contentframe {
+    width: 1022px;
+    height: 520px;
+}
+
+/*	preview.htm	*/
+#preview {
+    margin: 2px auto 10px auto;
+    width: 850px;
+}
+
+#videohead {
+    background-image: url(../skin/videobar.PNG);
+    width: 940px;
+    height: 25px;
+}
+
+#videoend {
+    width: 842px;
+}
+
+#ctrlCtx {
+    width: 799px;
+    height: 474px;
+}
+
+#buttonall {
+    text-align: left;
+    margin-left: 5px;
+    margin-right: -5px;
+    width: 300px;
+}
+
+#streamtype {
+    margin-right: 0px;
+    padding-right: 0px;
+    width: 100px;
+    text-align: right;
+    float: right;
+}
+
+#streamtype1 {
+    cursor: hand;
+    font-size: 14px;
+    color: #B9B9B9;
+    font-weight: bold;
+    font-family: Verdana, Arial, Helvetica, sans-serif
+}
+
+#streamtype2 {
+    cursor: hand;
+    font-size: 14px;
+    color: #B9B9B9;
+    font-weight: bold;
+    font-family: Verdana, Arial, Helvetica, sans-serif
+}
+
+#streamtype3 {
+    cursor: hand;
+    font-size: 14px;
+    color: #B9B9B9;
+    font-weight: bold;
+    font-family: Verdana, Arial, Helvetica, sans-serif
+}
+
+.click {
+    color: #FF0000;
+}
+
+.moveout {
+    color: #FFFFFF;
+}
+/*	config.htm	*/
+#cfgdiv {
+    width: 1024px;
+    height: auto;
+}
+
+#cfgleft {
+    margin-left: 10px;
+    margin-top: 5px;
+    width: 150px;
+    height: 505px;
+    border: 1px solid #B9B9B9;
+    float: left;
+}
+
+#tabmenu {
+    text-align: left;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.cfgmenu li {
+    list-style-type: none;
+}
+
+.cfgmenu li a {
+    display: block;
+    text-decoration: none;
+    font-size: 12px;
+    margin-left: 15px;
+}
+
+.cfgmenu li a:link {
+    color: #2e2f2f
+}
+
+.cfgmenu li a:active {
+    color: #2e2f2f
+}
+
+.cfgmenu li a:hover {
+    color: #2e2f2f
+}
+
+.cfgmenu li a:visited {
+    color: #2e2f2f
+}
+
+.menu2 {
+    list-style-type: none;
+    background: url(../skin/menu_2_u.png) 10 7 no-repeat;
+}
+
+#submenu1 li {
+    list-style-type: none;
+    background: url(../skin/menu_2.png) 10 7 no-repeat;
+}
+
+#submenu2 li {
+    list-style-type: none;
+    background: url(../skin/menu_2.png) 10 7 no-repeat;
+}
+
+#submenu3 li {
+    list-style-type: none;
+    background: url(../skin/menu_2.png) 10 7 no-repeat;
+}
+
+#cfgright {
+    margin-right: 10px;
+    margin-top: 5px;
+    float: right;
+}
+
+#WebContent {
+    width: 840px;
+    height: 505px;
+ /*560px*/
+}
+
+ul#cfgmenutab {
+    margin-left: 0px;
+    padding-left: 10px;
+}
+
+ul#cfgmenutab li {
+    background-repeat: no-repeat;
+    background-position: 4px 50%;
+    border-bottom: 1px solid #888888;
+    width: 80px;
+    height: 20px;
+    line-height: 20px;
+}
+
+.hide {
+    background-image: url(../skin/menu_1.png);
+}
+
+.show {
+    background-image: url(../skin/menu_1_u.png);
+}
+
+#cfgmenutab li {
+    padding-left: 10px;
+    padding-top: 1px;
+}
+
+#cfgmenutab li img {
+    width: 100px;
+    height: 1px;
+}
+
+#submenu li img {
+    width: 100px;
+    height: 1px;
+}
+
+#leftsidebar {
+    background-image: url(../skin/ltoolbar1.PNG);
+    width: 90%;
+    height: 500px;
+    float: left;
+}
+
+#rightsidebar {
+    background: url(../skin/rsidebar.PNG);
+    width: 10%;
+    height: 500px;
+    position: absolute;
+    right: 10px;
+    float: right;
+}
+
+#bottom {
+    background: url(../skin/bg.PNG);
+    width: 100%;
+    height: 10px;
+    position: absolute;
+    bottom: 1px;
+    float: bottom;
+}
+
+/* img.htm */
+#tabs-img {
+    width: 296px;
+    height: 280px;
+    border: 1px solid #B9B9B9;
+}
+
+#imgdiv1 {
+    margin-left: -8px;
+    margin-right: -8px;
+}
+/*	sysinfo.htm 	*/
+
+#sysdiv {
+    height: 380px;
+    width: 750px;
+    text-align: left;
+}
+
+#systable {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border: 1px solid #B9B9B9;
+    border-collapse: collapse;
+}
+
+#systable tr td {
+    height: 30px;
+    border: 1px solid #B9B9B9;
+}
+
+.color {
+    width: 280px;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border: 1px solid #B9B9B9;
+    border-collapse: collapse;
+}
+
+.nocolor {
+    width: 480px;
+}
+
+.videomenu ul,li {
+    list-style: none
+}
+
+.videobox {
+    position: relative;
+    left: 10px;
+    top: 30px;
+    width: 400px;
+    height: auto;
+    border: 1px solid #B9B9B9;
+	margin: 0px;
+    font-size: 12px;
+    font-family: Verdana, Arial, Helvetica, sans-serif
+}
+
+.videotagMenu {
+    height: 28px;
+    line-height: 28px;
+    background: #efefef;
+    position: relative;
+    border-bottom: 1px solid #B9B9B9;
+}
+
+.videotagMenu ul {
+    position: absolute;
+    left: 0px;
+    bottom: -1px;
+    height: 26px;
+}
+
+ul.videomenu li {
+    float: left;
+    margin-bottom: 1px;
+    line-height: 16px;
+    height: 14px;
+    margin: 5px 0 0 -1px;
+    border-left: 1px solid #B9B9B9;
+	text-align: center;
+    padding: 0 12px;
+    cursor: pointer
+}
+
+ul.videomenu li.current {
+    border: 1px solid #B9B9B9;
+	border-bottom: none;
+    background: #fff;
+    height: 25px;
+    line-height: 26px;
+    margin: 0
+}
+
+#videodiv {
+    position: relative;
+    left: 5px;
+    border-left: 1px solid #B9B9B9;
+	width: 500px;
+    height: 568px;
+}
+
+#videoset {
+    position: relative;
+    left: 10px;
+    top: 10px;
+}
+
+.videocontent {
+    position: relative;
+    top: 40px;
+    left: 10px;
+    height: 300px;
+    width: 400px;
+    border: 1px solid #B9B9B9;
+}
+
+#videoconfra {
+    height: 300px;
+    width: 400px;
+}
+
+.submit {
+    position: relative;
+    top: 10px;
+    left: 320px;
+}
+
+.syssubmit {
+    position: relative;
+    top: 100px;
+    left: 200px;
+}
+
+#logout {
+    float: right;
+    margin-top: -2px;
+    width: 160px;
+    height: 30px;
+    color: #FFFFFF;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+#btnlog {
+    cursor: pointer;
+}
+
+/*	audio and video, av.htm */
+#tabs-av {
+    border: 1px solid #B9B9B9;
+    margin: 0px;
+    padding: 0px;
+}
+
+#avframe {
+    width: 800px;
+    height: 450px;
+    margin-left: -10px;
+    padding: 0px;
+}
+
+/*	video.htm 	*/
+#imgdiv {
+    height: 450px;
+    margin-left: -2px;
+}
+
+#videoframe {
+    height: 450px;
+    width: 320px;
+}
+
+#videoview {
+    width: 480px;
+    height: 270px;
+}
+
+#codecdiv {
+    width: 320px;
+    height: 80px;
+}
+
+#imgframe {
+    width: 345px;
+    height: 300px;
+}
+
+/*	audio.htm */
+
+
+/* cameraset.htm */
+#tabs-cameraset {
+    border: 1px solid #B9B9B9;
+    padding: 0px;
+}
+
+#camerasetdiv {
+    width: 810px;
+    height: 460px;
+    margin: 0px;
+    padding: 0px;
+}
+
+#camerasetframe {
+    width: 800px;
+    height: 465px;
+    margin-left: 0px;
+    padding: 0px;
+}
+/*	imgtune.htm 	*/
+#imgtunediv {
+    text-align: left;
+    margin-left: 10px;
+}
+
+#tabs-imgtune {
+    width: 743px;
+    height: 80px;
+    border: 1px solid #B9B9B9;
+}
+
+#imgtuneframe {
+    width: 743px;
+    height: 88px;
+}
+
+#imgtuneAX {
+    width: 448px;
+    height: 252px;
+    float: left;
+}
+
+
+
+/* dnframe.htm */
+
+.imgvideoview {
+    width: 540px;
+    height: 304px;
+}
+
+.imgtunecontent {
+    width: 250px;
+    height: 500px;
+}
+
+#dnframe {
+    width: 250px;
+    height: 500px;
+}
+/*	ptzctrl.htm */
+#ptzdiv {
+    margin-top: 5px;
+    margin-left: 5px;
+    width: 600px;
+    text-align: top;
+}
+
+#pelcopd {
+    float: right;
+    margin-top: 5px;
+    width: 150px;
+    height: 400px;
+}
+
+#pelcopd table tr td {
+    font-size: 12px;
+}
+
+#networkdiv {
+    width: 790px;
+    height: 450px;
+}
+
+.layout {
+    font-size: 12px;
+}
+
+.layout input,
+.layout select {
+    margin: 0px;
+}
+
+/*	network.htm */
+#tabs-net {
+    border: 1px solid #B9B9B9;
+}
+
+#netframe {
+    width: 760px;
+    height: 400px;
+}
+
+/*	system.htm */
+#tabs-system {
+    border: 1px solid #B9B9B9;
+}
+
+#systemframe {
+    width: 760px;
+    height: 400px;
+}
+
+/*	event.htm */
+#tabs-event {
+    border: 1px solid #B9B9B9;
+}
+
+#eventframe {
+    width: 780px;
+    height: 446px;
+}
+
+#Area {
+    width: 540px;
+    height: 303px;
+}
+/*	storage.htm */
+#tabs-storage {
+    border: 1px solid #B9B9B9;
+}
+
+#storageframe {
+    width: 780px;
+    height: 450px;
+}
+
+/* secure.htm 	*/
+#tabs-secure {
+    border: 1px solid #B9B9B9;
+}
+
+#secureframe {
+    width: 780px;
+    height: 446px;
+}
+
+/*	suser.htm 	*/
+
+#userbtn {
+    float: right;
+}
+
+#userlistdiv {
+    width: 720px;
+}
+
+#usertable {
+    width: 720px;
+    height: 380px;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+#usertable tr td {
+    height: 20px;
+}
+
+#modifydiv {
+    width: 200px;
+    height: 200px;
+    float: left;
+}
+
+#adddiv {
+    width: 450px;
+    height: 200px;
+    float: left;
+}
+
+#userltable {
+    width: 720px;
+    border: 1px solid #B9B9B9;
+    border-collapse: collapse;
+}
+
+#userltable tr td {
+    border: 1px solid #B9B9B9;
+    border-collapse: collapse;
+    padding: 2px;
+}
+
+.m2 {
+    background-color: #F0F0F0;
+}
+
+#motiondiv {
+    text-align: center;
+}
+
+.videoview1 {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+/*	aevt.htm 	*/
+#logdiv1 {
+    width: 400px;
+}
+
+#logdiv {
+    width: 400px;
+    height: 500px;
+    border: 1px solid #B9B9B9;
+    float: left;
+}
+
+#logtable {
+    width: 400px;
+    height: 800px;
+}
+
+#logtable tr td {
+    height: 30px;
+}
+
+/*	setcard.htm 	*/
+#sdstordiv {
+    width: 760px;
+}
+
+#sdstortable {
+    width: 750px;
+    border: 1px solid #B9B9B9;
+    border-collapse: collapse;
+}
+
+#sdstortable tr td {
+    height: 20px;
+    border: 1px solid #B9B9B9;
+	/*border-collapse:collapse;*/
+}
+
+.linediv {
+    width: 1px;
+    height: 100px;
+    border: 1px solid #B9B9B9;
+}
+
+#sdinfotab {
+    width: 750px;
+    border: 1px solid #B9B9B9;
+    border-collapse: collapse;
+}
+
+#sdinfotab tr td {
+    height: 20px;
+    border: 1px solid #B9B9B9;
+	/*border-collapse:collapse;*/
+}
+
+.a1 a {
+    display: block;
+    text-decoration: none;
+}
+
+.a1 a:link {
+    color: #2e2f2f
+}
+
+.a1 a:active {
+    color: #2e2f2f
+}
+
+.a1 a:hover {
+    color: #2e2f2f
+}
+
+.a1 a:visited {
+    color: #2e2f2f
+}
+
+
+/* sdt.htm */
+
+
+/* gb.htm */
+/*	system.htm */
+#tabs-gb {
+    border: 1px solid #B9B9B9;
+}
+
+#gbframe {
+    width: 780px;
+    height: 400px;
+}
+
+.btn {
+    height: 10px;
+}
+
+.headline {
+    font-size: 13px;
+    background-color: #F0F0F0;
+	/*font-weight:bold;*/
+    margin-top: 10px;
+    height: auto;
+	/*margin-left: 10px;*/
+}
+
+.segline {
+    width: 1px;
+    height: 450px;
+    border-right: 1px solid #B9B9B9;
+}
+
+.tagMenu {
+    height: 28px;
+    line-height: 28px;
+    margin-bottom: -3px;
+}
+
+.tagMenu ul {
+    margin-bottom: 0px;
+    margin-top: 0px;
+    height: 26px;
+}

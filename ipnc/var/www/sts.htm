@@ -1,0 +1,195 @@
+<script>
+    var isOsdtext = "<%textenable1%>";
+    
+    CTRLARY = {
+        //tsEn: new Ctrl_Check("tsEn", "<%tstampenable%>", "tstampenable=", "FixStatus()"),
+        tsEn: new Ctrl_Check("tsEn", "<%datestampenable1%>", "datestampenable1=", "FixStatus()"),  //Enable Date and Time stamp
+		    //tsFormat: new Ctrl_Select("tsFormat", "<%tstampformatname.all%>", "<%tstampformat%>", "tstampformat="),
+                timestampenable1: new Ctrl_Check("timestampenable1", "<%timestampenable1%>", "timestampenable1="),
+
+        tsFormat: new Ctrl_Select("tsFormat", "<%tstampformatname.all%>", "<%tstampformat%>", "tstampformat="),  //Date Format:0:12Hrs, 1:24Hrs
+        timeposition: new Ctrl_Select("timeposition", "<%datetimepositionname.all%>", "<%timeposition%>", "timeposition="), //ZDY
+        //osdstream: new Ctrl_Select("osdstream", "<%osdstreamname.all%>", "<%osdstream%>", "osdstream="),
+        //osdwinnum: new Ctrl_Select("osdwinnum", "<%osdwinnumname.all%>", "<%osdwinnum%>", "osdwinnum="),
+        
+        //stream1
+        osdwinnum1: new Ctrl_Radio("osdwinnum1", "<%logoenable1%>", "logoenable1=", "FixStatus()"),
+        osdwin1: new Ctrl_Radio("osdwin1", "<%textenable1%>", "textenable1=", "FixStatus()"),        
+        // osdtext: new Ctrl_Text("osdtext", "20", "14", "<%osdtextinfo%>", "osdtextinfo=", gco_engNum, false, false, false)
+        osdtext1: new Ctrl_Text("osdtext1", "20", "14", "<%overlaytext1%>", "overlaytext1=", gco_engNum, false, false, false),//gco_engNum: Check the legitimacy of the input data
+		    infoLoc1: new Ctrl_Radio("infoLoc1", "<%detailinfo1%>", "detailinfo1="),//Add by GFL, this should be "display or not", not Location
+		    logoLoc1: new Ctrl_Select("logoLoc1", "<%logopositionname.all%>", "<%logoposition1%>", "logoposition1="), //Add by ZDY, this is logoposition
+		    textLoc1: new Ctrl_Select("textLoc1", "<%textpositionname.all%>", "<%textposition1%>", "textposition1="), //Add by ZDY, this is textposition
+		    
+		    //stream2
+		    osdwinnum2: new Ctrl_Radio("osdwinnum2", "<%logoenable2%>", "logoenable2=", "FixStatus()"),
+        osdwin2: new Ctrl_Radio("osdwin2", "<%textenable2%>", "textenable2=", "FixStatus()"),        
+        osdtext2: new Ctrl_Text("osdtext2", "20", "14", "<%overlaytext2%>", "overlaytext2=", gco_engNum, false, false, false),//gco_engNum: Check the legitimacy of the input data
+		    infoLoc2: new Ctrl_Radio("infoLoc2", "<%detailinfo2%>", "detailinfo2="),//Add by GFL, this should be "display or not", not Location
+		    logoLoc2: new Ctrl_Select("logoLoc2", "<%logopositionname.all%>", "<%logoposition2%>", "logoposition2="), //Add by ZDY, this is logoposition
+		    textLoc2: new Ctrl_Select("textLoc2", "<%textpositionname.all%>", "<%textposition2%>", "textposition2="), //Add by ZDY, this is textposition
+		    
+		    //stream3
+		    osdwinnum3: new Ctrl_Radio("osdwinnum3", "<%logoenable3%>", "logoenable3=", "FixStatus()"),
+        osdwin3: new Ctrl_Radio("osdwin3", "<%textenable3%>", "textenable3=", "FixStatus()"),        
+        osdtext3: new Ctrl_Text("osdtext3", "20", "14", "<%overlaytext3%>", "overlaytext3=", gco_engNum, false, false, false),//gco_engNum: Check the legitimacy of the input data
+		    infoLoc3: new Ctrl_Radio("infoLoc3", "<%detailinfo3%>", "detailinfo3="),//Add by GFL, this should be "display or not", not Location
+		    logoLoc3: new Ctrl_Select("logoLoc3", "<%logopositionname.all%>", "<%logoposition3%>", "logoposition3="), //Add by ZDY, this is logoposition
+		    textLoc3: new Ctrl_Select("textLoc3", "<%textpositionname.all%>", "<%textposition3%>", "textposition3=") //Add by ZDY, this is textposition
+		    		    
+		    //infoLoc: new Ctrl_Select("infoLoc", "<%tstamppositionname.all%>", "<%tstampinfoposition%>", "tstampinfoposition="),
+        //infoFormat: new Ctrl_Select("infoFormat", "<%tstampinfoformatname.all%>", "<%tstampinfoformat%>", "tstampinfoformat=")
+    };
+
+    function MY_ONLOAD() {
+        FixStatus();
+        //alert(isOsdwin);
+        //switchIPItems(isOsdwin);
+        //DisableObject("osdstream", true);
+        //DisableObject("osdwinnum", true);
+        //DisableObject("osdwin", true);
+        //DisableObject("osdtext", true);
+        g_lockLink = false;
+    }
+
+    function FixStatus() {
+        // Enable Date and Time
+        //DisableObjs(new Array("infoLoc", "infoFormat"), (IsVS() ? (GetCCV("tsEn") == 0) : true));
+        DisableObjs(new Array("tsFormat"), (GetCCV("tsEn") == 0));
+        //stream1 zdy
+        // Enalbe overlaytext1
+        var textval1 = parseInt(GetRadioValue("osdwin1"));        
+        DisableObject("osdtext1", textval1==0);        
+        // Enable textposition1
+        DisableObjs(new Array("textLoc1"), (textval1 == 0));        
+        // Enable logoposition1
+        var logval1 = parseInt(GetRadioValue("osdwinnum1"));
+        DisableObjs(new Array("logoLoc1"), (logval1 == 0));
+        
+        //stream2 zdy
+        var textval2 = parseInt(GetRadioValue("osdwin2"));        
+        DisableObject("osdtext2", textval2 == 0);        
+        // Enable textposition2
+        DisableObjs(new Array("textLoc2"), (textval2 == 0));        
+        // Enable logoposition2
+        var logval2 = parseInt(GetRadioValue("osdwinnum2"));
+        DisableObjs(new Array("logoLoc2"), (logval2 == 0));
+        
+        //stream3 zdy
+        var textval3 = parseInt(GetRadioValue("osdwin3"));        
+        DisableObject("osdtext3", textval3 == 0);        
+        // Enable textposition3
+        DisableObjs(new Array("textLoc3"), (textval3 == 0));        
+        // Enable logoposition3
+        var logval3 = parseInt(GetRadioValue("osdwinnum3"));
+        DisableObjs(new Array("logoLoc3"), (logval3 == 0));
+    }
+    
+    WriteSysPH("sys_ts");
+    WriteGroup("sys_ts");
+    WTablePH();
+    
+    WIP1(WH_("tsEn") + " " + GL("en_ts"));	
+    /*if (IsVS()) {
+    WIP("info_location", "infoLoc");
+    WIP("info_format", "infoFormat");
+  }*/
+  WIP1(WH_("timestampenable1")+ " " + "timeenable");
+    WIP("ts_format", "tsFormat");
+    WIP("time_position", "timeposition"); //zdy
+
+    DW("<tr><td colspan=2>OSD Setting</td></tr>");
+    //DW("<tr><td>Stream Num:</td><td>");
+    //WH("osdstream");
+    //DW("</td></tr>");
+    
+    DW("<tr><td>(1)" + GL("stream") + "1:</td><td>");
+    DW("<tr><td>" + GL("logo") + ":</td><td>");
+    //WH("osdwinnum");
+//    var o = '';
+//    o += GetRadioCtrlHtml(CTRLARY, "osdwinnum", 0);
+//    o += "OFF";
+//    o += GetRadioCtrlHtml(CTRLARY, "osdwinnum", 1);
+//    o += "ON";
+//    DW(o);
+    WH("osdwinnum1");
+    
+    DW("</td><td>" + GL("logo_loc") + ": </td><td>");
+    WH("logoLoc1");
+    
+    DW("</td></tr>");
+	
+	//Follow add by GFL, Info should be changed
+	DW("<tr><td>" + GL("detailed_info") + ": </td><td>");
+    //WH("infoLoc");
+//    var o = '';
+//    o += GetRadioCtrlHtml(CTRLARY, "infoLoc", 0);
+//    o += "OFF";
+//    o += GetRadioCtrlHtml(CTRLARY, "infoLoc", 1);
+//    o += "ON";
+//    DW(o);
+    WH("infoLoc1");
+    DW("</td></tr>");
+	
+	
+    DW("<tr><td>" + GL("text") + ":</td><td>");
+//    var o = '';
+//    o += GetRadioCtrlHtml(CTRLARY, "osdwin", 0);
+//    o += "OFF";
+//    o += GetRadioCtrlHtml(CTRLARY, "osdwin", 1);
+//    o += "ON";
+//    DW(o);
+
+    WH("osdwin1");
+    DW("</td><td>" + GL("text_loc") + ":</td><td>");
+    WH("textLoc1");
+    //switchIPItems(isOsdwin == 0);
+    DW("</td></tr>");    
+    DW("<tr><td> </td><td>");
+    WH("osdtext1");
+    DW("</td></tr>");
+    
+    // Follow add by zdy
+    //stream2
+    DW("<tr><td>(2)" + GL("stream") + "2:</td><td>");
+    DW("<tr><td>" + GL("logo") + ":</td><td>");
+    WH("osdwinnum2");    
+    DW("</td><td>" + GL("logo_loc") + ": </td><td>");
+    WH("logoLoc2");    
+    DW("</td></tr>");
+	  DW("<tr><td>" + GL("detailed_info") + ": </td><td>");
+    WH("infoLoc2");
+    DW("</td></tr>");
+    DW("<tr><td>" + GL("text") + ":</td><td>");
+    WH("osdwin2");
+    DW("</td><td>" + GL("text_loc") + ":</td><td>");
+    WH("textLoc2");
+    DW("</td></tr>");    
+    DW("<tr><td> </td><td>");
+    WH("osdtext2");
+    DW("</td></tr>");
+    
+    //stream3
+    DW("<tr><td>(3)" + GL("stream") + "3:</td><td>");
+    DW("<tr><td>" + GL("logo") + ":</td><td>");
+    WH("osdwinnum3");    
+    DW("</td><td>" + GL("logo_loc") + ": </td><td>");
+    WH("logoLoc3");    
+    DW("</td></tr>");
+	  DW("<tr><td>" + GL("detailed_info") + ": </td><td>");
+    WH("infoLoc3");
+    DW("</td></tr>");
+    DW("<tr><td>" + GL("text") + ":</td><td>");
+    WH("osdwin3");
+    DW("</td><td>" + GL("text_loc") + ":</td><td>");
+    WH("textLoc3");
+    DW("</td></tr>");    
+    DW("<tr><td> </td><td>");
+    WH("osdtext3");
+    DW("</td></tr>");
+    
+    WIPSubmit();
+    WTablePB();
+    WriteSysPB();
+    ALC();
+</script>

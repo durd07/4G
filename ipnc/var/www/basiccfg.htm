@@ -1,0 +1,44 @@
+<html>
+	<head>
+		<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+		<script type="text/javascript" src="var.js"></script>
+		<script type="text/javascript" src="common.js"></script>
+		<script>
+            InitLoad();
+        </script>
+		<link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+		<title>
+		</title>
+	</head>
+	<body style="overflow:hidden" onload="MY_ONLOAD()">
+		<script>
+		function MY_ONLOAD()
+		{
+			g_lockLink = false;
+		}
+
+		var uri = window.location.href;
+		    // alert(uri);
+		var namelist = uri.split('?');
+		</script>
+
+		<script>
+			WriteBasicCfg();
+		</script>
+		<div id="cfgright">
+		<script>
+			if (namelist.length == 1)
+			{
+				DW('<iframe src="av.htm" id="WebContent" name="cfgcontent" marginheight="0" marginwidth="0" scrolling="both" frameborder="0"');		
+			}
+			else
+			{			
+				DW('<iframe src="network.htm" id="WebContent" name="cfgcontent" marginheight="0" marginwidth="0" scrolling="both" frameborder="0">');
+			}
+
+		</script>
+			
+		</div>
+	</div>
+	</body>
+</html>

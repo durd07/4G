@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>出入口智能配置</title>
+	<script language="javascript" src="jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="js/json2.js"></script>
+	<script language="javascript" src="var.js"></script>
+	<script language="javascript" src="common.js"></script>
+	<script language="javascript" src="js/localconfig.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/localconfig.css"/>
+</head>
+<body>
+	<div id="localconfig_container">
+		<div id="localconfig_tabs">
+			<ul>
+				<li><a data="local_config" class="active"><span>本地化配置</span></a></li>
+			</ul>
+		</div>
+		<div id="localconfig_tab_content">
+			<!--本地化配置tab页   begin-->
+			<div class="tab_content_div"  data="basic_config">
+				<OBJECT id="vlc" height="0" width="0" classid="clsid:A2D1277C-2CC2-4A1A-B715-C6BAB17661D6"></OBJECT>
+				<table class="localconfig_table">
+					<tr>
+						<td style="width:130px;">预览抓图保存路径</td>
+						<td>
+							<input id="localconfig_input_snapshot" class="localconfig_table_td_input" readOnly="true" />
+							<input id="localconfig_browse_snapshot" type="button" value="浏览" style="width:80px; height: 25px;"/>
+						</td>
+					</tr>
+					<tr>
+						<td>录像文件保存路径</td>
+						<td>
+							<input id="localconfig_input_videorecord" class="localconfig_table_td_input" readOnly="true" />
+							<input id="localconfig_browse_videorecord" type="button" value="浏览" style="width:80px; height: 25px;"/>	
+						</td>
+					</tr>
+				</table>
+			</div>
+			<!--本地化配置 tab页   end-->
+			
+			
+		</div>
+		<table class="save_footer">
+			<tr>
+				<td style="width:725px;"></td>
+				<td><input id="localconfig_saveBtn" class="savebtn" type="button" value="保存"/></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>
+

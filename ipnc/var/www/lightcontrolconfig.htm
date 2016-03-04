@@ -1,0 +1,904 @@
+
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+		<script>
+      		InitLoad();
+   		 </script>
+		<title>
+			
+		</title>
+    <style type="text/css">
+    .body {
+      font-size: 9px;
+    }
+    td {
+    	font-size: 12px;
+    }
+    </style>
+
+	</head>
+<body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+<script>
+var sysdnr2dlist = GL("auto") + ";" + GL("low") + ";" + GL("mid") + ";" + GL("high"); 
+var dnr2dlist = GL("off") + ";" + GL("low") + ";" + GL("mid") + ";" + GL("high"); 
+var agclist = GL("off") + ";" + GL("low") + ";" + GL("mid") + ";" + GL("high"); 
+var gammalist =  GL("off") + ";1;2;3;4;5;6;7;8;9;10"; 
+var deffectlist =GL("off") + ";" + GL("v_flip") + ";" + GL("mirror") + ";" + GL("rotate");
+
+CTRLARY = {
+  //night with color
+  ncsyscontrast: new Ctrl_Text("ncsyscontrast", 4, 4, "<%ncsyscontrast%>", "ncsyscontrast=", null, false, "ChangeNCSysContrast()"),
+  ncsysbrightness: new Ctrl_Text("ncsysbrightness", 4, 4, "<%ncsysbrightness%>", "ncsysbrightness=", null, false, "ChangeNCSysBrightness()"),
+  ncsyssharpness: new Ctrl_Text("ncsyssharpness", 4, 4, "<%ncsyssharpness%>", "ncsyssharpness=", null, false, "ChangeNCSysSharp()"),
+  ncsys2ddnr: new Ctrl_Select("ncsys2ddnr", sysdnr2dlist, "<%ncsys2ddnr%>", "ncsys2ddnr=", "ChangeNCSys2DDNR()"),
+  nclgcontrast: new Ctrl_Text("nclgcontrast", 4, 4, "<%nclgcontrast%>", "nclgcontrast=", null, false, "ChangeNCLGContrast()"),
+  nclgbrightness: new Ctrl_Text("nclgbrightness", 4, 4, "<%nclgbrightness%>", "nclgbrightness=", null, false, "ChangeNCLGBrightness()"),
+  nclgsharpness: new Ctrl_Text("nclgsharpness", 4, 4, "<%nclgsharpness%>", "nclgsharpness=", null, false, "ChangeNCLGSharp()"),
+  nclg2ddnr: new Ctrl_Select("nclg2ddnr", dnr2dlist, "<%nclg2ddnr%>", "nclg2ddnr=", "ChangeNCLG2DDNR()"),
+  nclgsaturation: new Ctrl_Text("nclgsaturation", 4, 4, "<%nclgsaturation%>", "nclgsaturation=", null, false, "ChangeNCLGSaturation()"),
+  nclgagc: new Ctrl_Select("nclgagc", agclist, "<%nclgagc%>", "nclgagc=", "ChangeNCLGAGC()"),
+
+  //night without color 
+  nsyscontrast: new Ctrl_Text("nsyscontrast", 4, 4, "<%nsyscontrast%>", "nsyscontrast=", null, false, "ChangeNSysContrast()"),
+  nsysbrightness: new Ctrl_Text("nsysbrightness", 4, 4, "<%nsysbrightness%>", "nsysbrightness=", null, false, "ChangeNSysBrightness()"),
+  nsyssharpness: new Ctrl_Text("nsyssharpness", 4, 4, "<%nsyssharpness%>", "nsyssharpness=", null, false, "ChangeNSysSharp()"),
+  nsys2ddnr: new Ctrl_Select("nsys2ddnr", dnr2dlist, "<%nsys2ddnr%>", "nsys2ddnr=", "ChangeNSys2DDNR()"),
+  nlgcontrast: new Ctrl_Text("nlgcontrast", 4, 4, "<%nlgcontrast%>", "nlgcontrast=", null, false, "ChangeNLGContrast()"),
+  nlgbrightness: new Ctrl_Text("nlgbrightness", 4, 4, "<%nlgbrightness%>", "nlgbrightness=", null, false, "ChangeNLGBrightness()"),
+  nlgsharpness: new Ctrl_Text("nlgsharpness", 4, 4, "<%nlgsharpness%>", "nlgsharpness=", null, false, "ChangeNLGSharp()"),
+  nlg2ddnr: new Ctrl_Select("nlg2ddnr", dnr2dlist, "<%nlg2ddnr%>", "nlg2ddnr=", "ChangeNLG2DDNR()"),
+  nlgsaturation: new Ctrl_Text("nlgsaturation", 4, 4, "<%nlgsaturation%>", "nlgsaturation=", null, false, "ChangeNLGSaturation()"),
+  nlgagc: new Ctrl_Select("nlgagc", agclist, "<%nlgagc%>", "nlgagc=", "ChangeNLGAGC()")
+/*
+  dnr3d: new Ctrl_Select("dnr3d", dnr3dlist, "<%dnr3d%>", "dnr3d=", "ChangeDnr3d()"),
+  dnr2d: new Ctrl_Select("dnr2d", dnr3dlist, "<%dnr2d%>", "dnr2d=", "ChangeDnr2d()"),
+  contrast: new Ctrl_Text("contrast", 4, 4, "<%contrastlg%>", "lgcontrast=", null, false, "ChangeContrast()"),
+  saturation: new Ctrl_Text("saturation", 4, 4, "<%saturation%>", "saturation=", null, false, "ChangeSaturation()"),
+  luminance: new Ctrl_Text("luminance", 4, 4, "<%luminance%>", "luminance=", null, false, "ChangeLumi()"),
+  sharpness: new Ctrl_Text("sharpness", 4, 4, "<%lgsharpness%>", "lgsharpness=", null, false, "ChangeSharp()"),
+
+  deffect: new Ctrl_Select("deffect", deffectlist, "<%deffect%>", "deffect=", "ChangeDeffect()"),
+  freeze: new Ctrl_Check("freeze", "<%freeze%>", "freeze=", "ChangeFreeze()"),
+  stabilizer: new Ctrl_Check("stabilizer", "<%stabilizer%>", "stabilizer=", "ChangeStab()"),
+  zoommag: new Ctrl_Check("zoommag", "<%zoommag%>", "zoommag=", "ChangeZoommag()"),
+  osddis: new Ctrl_Check("osddis", "<%osddis%>", "osddis=", "ChangeOsddis()"),
+  gamma: new Ctrl_Select("gamma", gammalist, "<%lggamma%>", "lggamma=", "ChangeGamma()")
+*/
+};
+
+</script>
+
+<script>
+function ChangeDnr3d()
+{  
+  SendHttp(c_iniUrl + GetSetterCmdKV("dnr3d", GetCCV("dnr3d")), false, SendImgCallBack);
+}
+
+function ChangeNCSys2DDNR()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("ncsys2ddnr", GetCCV("ncsys2ddnr")), false, SendImgCallBack);
+}
+function ChangeNCLG2DDNR()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("nclg2ddnr", GetCCV("nclg2ddnr")), false, SendImgCallBack);
+}
+function ChangeNSys2DDNR()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("nsys2ddnr", GetCCV("nsys2ddnr")), false, SendImgCallBack);
+}
+function ChangeNLG2DDNR()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("nlg2ddnr", GetCCV("nlg2ddnr")), false, SendImgCallBack);
+}
+function ChangeNCLGAGC()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("nclgagc", GetCCV("nclgagc")), false, SendImgCallBack);
+}
+function ChangeNLGAGC()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("nlgagc", GetCCV("nlgagc")), false, SendImgCallBack);
+}
+function ChangeNCSysContrast()
+{
+  if (CheckNCSysContrast(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("ncsyscontrast", GetCCV("ncsyscontrast")), false, SendImgCallBack);
+}
+
+function ChangeNSysContrast()
+{
+  if (CheckNSysContrast(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("nsyscontrast", GetCCV("nsyscontrast")), false, SendImgCallBack);
+}
+
+function ChangeNCLGContrast()
+{
+  if (CheckNCLGContrast(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("nclgcontrast", GetCCV("nclgcontrast")), false, SendImgCallBack);
+}
+
+function ChangeNLGContrast()
+{
+  if (CheckNLGContrast(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("nlgcontrast", GetCCV("nlgcontrast")), false, SendImgCallBack);
+}
+
+function ChangeNCLGSaturation()
+{
+  if (CheckNCLGSat(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("nclgsaturation", GetCCV("nclgsaturation")), false, SendImgCallBack);
+}
+function ChangeNLGSaturation()
+{
+  if (CheckNLGSat(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("nlgsaturation", GetCCV("nlgsaturation")), false, SendImgCallBack);
+}
+function ChangeNCSysBrightness()
+{
+  if (CheckNCSysBrightness(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("ncsysbrightness", GetCCV("ncsysbrightness")), false, SendImgCallBack);
+}
+function ChangeNSysBrightness()
+{
+  if (CheckNSysBrightness(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("nsysbrightness", GetCCV("nsysbrightness")), false, SendImgCallBack);
+}
+function ChangeNCLGBrightness()
+{
+  if (CheckNCLGBrightness(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("nclgbrightness", GetCCV("nclgbrightness")), false, SendImgCallBack);
+}
+function ChangeNLGBrightness()
+{
+  if (CheckNLGBrightness(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("nlgbrightness", GetCCV("nlgbrightness")), false, SendImgCallBack);
+}
+function ChangeNCSysSharp()
+{
+  if (CheckNCSysSharp(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("ncsyssharpness", GetCCV("ncsyssharpness")), false, SendImgCallBack);
+}
+function ChangeNSysSharp()
+{
+  if (CheckNSysSharp(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("nsyssharpness", GetCCV("nsyssharpness")), false, SendImgCallBack);
+}
+function ChangeNCLGSharp()
+{
+  if (CheckNCLGSharp(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("nclgsharpness", GetCCV("nclgsharpness")), false, SendImgCallBack);
+}
+function ChangeNLGSharp()
+{
+  if (CheckNLGSharp(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("nlgsharpness", GetCCV("nlgsharpness")), false, SendImgCallBack);
+}
+function ChangeDeffect()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("deffect", GetCCV("deffect")), false, SendImgCallBack);
+}
+function ChangeFreeze()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("freeze", GetCCV("freeze")), false, SendImgCallBack);
+}
+function ChangeStab()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("stabilizer", GetCCV("stabilizer")), false, SendImgCallBack);
+}
+function ChangeZoommag()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("zoommag", GetCCV("zoommag")), false, SendImgCallBack);
+}
+function ChangeOsddis()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("osddis", GetCCV("osddis")), false, SendImgCallBack);
+}
+function ChangeGamma()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("lggamma", GetCCV("gamma")), false, SendImgCallBack);
+}
+function ParaCheck()
+{
+  var flag = false;
+
+  var ncsys2ddnr = GetCCV("ncsys2ddnr");
+  if (ncsys2ddnr == "<%ncsys2ddnr%>")
+  {
+    CTRLARY["ncsys2ddnr"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var nclg2ddnr = GetCCV("nclg2ddnr");
+  if (nclg2ddnr == "<%nclg2ddnr%>")
+  {
+    CTRLARY["nclg2ddnr"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var nsys2ddnr = GetCCV("nsys2ddnr");
+  if (nsys2ddnr == "<%nsys2ddnr%>")
+  {
+    CTRLARY["nsys2ddnr"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var nlg2ddnr = GetCCV("nlg2ddnr");
+  if (nlg2ddnr == "<%nlg2ddnr%>")
+  {
+    CTRLARY["nlg2ddnr"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var ncsyscontrast = GetCCV("ncsyscontrast");
+  if (ncsyscontrast == "<%ncsyscontrast%>")
+  {
+    CTRLARY["ncsyscontrast"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var nclgcontrast = GetCCV("nclgcontrast");
+  if (nclgcontrast == "<%nclgcontrast%>")
+  {
+    CTRLARY["nclgcontrast"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var nsyscontrast = GetCCV("nsyscontrast");
+  if (nsyscontrast == "<%nsyscontrast%>")
+  {
+    CTRLARY["nsyscontrast"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var nlgcontrast = GetCCV("nlgcontrast");
+  if (nlgcontrast == "<%nlgcontrast%>")
+  {
+    CTRLARY["nlgcontrast"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var nclgsaturation = GetCCV("nclgsaturation");
+  if (nclgsaturation == "<%nclgsaturation%>")
+  {
+    CTRLARY["nclgsaturation"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var nlgsaturation = GetCCV("nlgsaturation");
+  if (nlgsaturation == "<%nlgsaturation%>")
+  {
+    CTRLARY["nlgsaturation"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var ncsysbrightness = GetCCV("ncsysbrightness");
+  if (ncsysbrightness == "<%ncsysbrightness%>")
+  {
+    CTRLARY["ncsysbrightness"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var nclgbrightness = GetCCV("nclgbrightness");
+  if (nclgbrightness == "<%nclgbrightness%>")
+  {
+    CTRLARY["nclgbrightness"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var nsysbrightness = GetCCV("nsysbrightness");
+  if (ncsysbrightness == "<%nsysbrightness%>")
+  {
+    CTRLARY["nsysbrightness"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var nlgbrightness = GetCCV("nlgbrightness");
+  if (nlgbrightness == "<%nlgbrightness%>")
+  {
+    CTRLARY["nlgbrightness"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var ncsyssharpness = GetCCV("ncsyssharpness");
+  if (ncsyssharpness == "<%ncsyssharpness%>")
+  {
+    CTRLARY["ncsyssharpness"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+   var nclgsharpness = GetCCV("nclgsharpness");
+  if (nclgsharpness == "<%nclgsharpness%>")
+  {
+    CTRLARY["nclgsharpness"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var nsyssharpness = GetCCV("nsyssharpness");
+  if (nsyssharpness == "<%nsyssharpness%>")
+  {
+    CTRLARY["nsyssharpness"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+   var nlgsharpness = GetCCV("nlgsharpness");
+  if (nlgsharpness == "<%nlgsharpness%>")
+  {
+    CTRLARY["nlgsharpness"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  return flag;
+}
+// if awb == auto || awb == ATW; rgain , bgain and colortemp.disabled == true
+function CheckNCSysContrast(min, max)
+{
+  var value = document.getElementById("ncsyscontrast").value;
+  if (value.length == 0)
+  {
+    alert(GL("con_empty"));
+    document.getElementById("ncsyscontrast").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("con_inv"));
+    document.getElementById("ncsyscontrast").value = "";
+    document.getElementById("ncsyscontrast").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("con_num"));
+    document.getElementById("ncsyscontrast").value = "";
+    document.getElementById("ncsyscontrast").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckNSysContrast(min, max)
+{
+  var value = document.getElementById("nsyscontrast").value;
+  if (value.length == 0)
+  {
+    alert(GL("con_empty"));
+    document.getElementById("nsyscontrast").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("con_inv"));
+    document.getElementById("nsyscontrast").value = "";
+    document.getElementById("nsyscontrast").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("con_num"));
+    document.getElementById("nsyscontrast").value = "";
+    document.getElementById("nsyscontrast").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckNCLGContrast(min, max)
+{
+  var value = document.getElementById("nclgcontrast").value;
+  if (value.length == 0)
+  {
+    alert(GL("con_empty"));
+    document.getElementById("nclgcontrast").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("con_inv"));
+    document.getElementById("nclgcontrast").value = "";
+    document.getElementById("nclgcontrast").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("con_num"));
+    document.getElementById("nclgcontrast").value = "";
+    document.getElementById("nclgcontrast").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckNLGContrast(min, max)
+{
+  var value = document.getElementById("nlgcontrast").value;
+  if (value.length == 0)
+  {
+    alert(GL("con_empty"));
+    document.getElementById("nlgcontrast").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("con_inv"));
+    document.getElementById("nlgcontrast").value = "";
+    document.getElementById("nlgcontrast").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("con_num"));
+    document.getElementById("nlgcontrast").value = "";
+    document.getElementById("nlgcontrast").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckNCLGSat(min, max)
+{
+  var value = document.getElementById("nclgsaturation").value;
+  if (value.length == 0)
+  {
+    alert(GL("sat_empty"));
+    document.getElementById("nclgsaturation").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("sat_inv"));
+    document.getElementById("nclgsaturation").value = "";
+    document.getElementById("nclgsaturation").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("sat_num"));
+    document.getElementById("nclgsaturation").value = "";
+    document.getElementById("nclgsaturation").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckNLGSat(min, max)
+{
+  var value = document.getElementById("nlgsaturation").value;
+  if (value.length == 0)
+  {
+    alert(GL("sat_empty"));
+    document.getElementById("nlgsaturation").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("sat_inv"));
+    document.getElementById("nlgsaturation").value = "";
+    document.getElementById("nlgsaturation").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("sat_num"));
+    document.getElementById("nlgsaturation").value = "";
+    document.getElementById("nlgsaturation").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckNCSysBrightness(min, max)
+{
+  var value = document.getElementById("ncsysbrightness").value;
+  if (value.length == 0)
+  {
+    alert(GL("lum_empty"));
+    document.getElementById("ncsysbrightness").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("lum_inv"));
+    document.getElementById("ncsysbrightness").value = "";
+    document.getElementById("ncsysbrightness").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("lum_num"));
+    document.getElementById("ncsysbrightness").value = "";
+    document.getElementById("ncsysbrightness").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckNSysBrightness(min, max)
+{
+  var value = document.getElementById("nsysbrightness").value;
+  if (value.length == 0)
+  {
+    alert(GL("lum_empty"));
+    document.getElementById("nsysbrightness").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("lum_inv"));
+    document.getElementById("nsysbrightness").value = "";
+    document.getElementById("nsysbrightness").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("lum_num"));
+    document.getElementById("nsysbrightness").value = "";
+    document.getElementById("nsysbrightness").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckNCLGBrightness(min, max)
+{
+  var value = document.getElementById("nclgbrightness").value;
+  if (value.length == 0)
+  {
+    alert(GL("lum_empty"));
+    document.getElementById("nclgbrightness").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("lum_inv"));
+    document.getElementById("nclgbrightness").value = "";
+    document.getElementById("nclgbrightness").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("lum_num"));
+    document.getElementById("nclgbrightness").value = "";
+    document.getElementById("nclgbrightness").focus();
+    return false;
+  }
+  return true;
+}
+function CheckNLGBrightness(min, max)
+{
+  var value = document.getElementById("nlgbrightness").value;
+  if (value.length == 0)
+  {
+    alert(GL("lum_empty"));
+    document.getElementById("nlgbrightness").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("lum_inv"));
+    document.getElementById("nlgbrightness").value = "";
+    document.getElementById("nlgbrightness").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("lum_num"));
+    document.getElementById("nlgbrightness").value = "";
+    document.getElementById("nlgbrightness").focus();
+    return false;
+  }
+  return true;
+}
+function CheckNCSysSharp(min, max)
+{
+  var value = document.getElementById("ncsyssharpness").value;
+  if (value.length == 0)
+  {
+    alert(GL("sha_empty"));
+    document.getElementById("ncsyssharpness").focus();
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("sha_inv"));
+    document.getElementById("ncsyssharpness").value = "";
+    document.getElementById("ncsyssharpness").focus();
+    return false;       
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("sha_num_256"));
+    document.getElementById("ncsyssharpness").value = "";
+    document.getElementById("ncsyssharpness").focus();
+    return false;
+  }
+  return true;
+}
+function CheckNSysSharp(min, max)
+{
+  var value = document.getElementById("nsyssharpness").value;
+  if (value.length == 0)
+  {
+    alert(GL("sha_empty"));
+    document.getElementById("nsyssharpness").focus();
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("sha_inv"));
+    document.getElementById("nsyssharpness").value = "";
+    document.getElementById("nsyssharpness").focus();
+    return false;       
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("sha_num_256_256"));
+    document.getElementById("nsyssharpness").value = "";
+    document.getElementById("nsyssharpness").focus();
+    return false;
+  }
+  return true;
+}
+function CheckNCLGSharp(min, max)
+{
+  var value = document.getElementById("nclgsharpness").value;
+  if (value.length == 0)
+  {
+    alert(GL("sha_empty"));
+    document.getElementById("nclgsharpness").focus();
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("sha_inv"));
+    document.getElementById("nclgsharpness").value = "";
+    document.getElementById("nclgsharpness").focus();
+    return false;       
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("sha_num_256"));
+    document.getElementById("nclgsharpness").value = "";
+    document.getElementById("nclgsharpness").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckNLGSharp(min, max)
+{
+  var value = document.getElementById("nlgsharpness").value;
+  if (value.length == 0)
+  {
+    alert(GL("sha_empty"));
+    document.getElementById("nlgsharpness").focus();
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("sha_inv"));
+    document.getElementById("nlgsharpness").value = "";
+    document.getElementById("nlgsharpness").focus();
+    return false;       
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("sha_num_256"));
+    document.getElementById("nlgsharpness").value = "";
+    document.getElementById("nlgsharpness").focus();
+    return false;
+  }
+  return true;
+}
+
+
+function MY_ONUNLOAD() {  
+    StopActiveX();
+  }
+
+function MY_ONLOAD() {
+  g_lockLink = false;
+  StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+}
+
+  function MY_BEFORE_SUBMIT() {
+    if (ParaCheck() == false)
+    {
+      alert(GL("para_not_change"));
+      ChangeActive();
+      return false;
+    }
+
+
+    if (CheckNCSysContrast(0, 255) == false)
+      return false;
+    if (CheckNCSysBrightness(0, 255) == false)
+      return false;
+    if (CheckNCSysSharp(0, 255) == false)
+      return false;
+
+    if (CheckNCLGContrast(0, 255) == false)
+      return false;
+    if (CheckNCLGBrightness(0, 255) == false)
+      return false;
+    if (CheckNCLGSharp(0, 255) == false)
+      return false;
+    if (CheckNCLGSat(0, 255) == false)
+      return false; 
+
+    if (CheckNSysContrast(0, 255) == false)
+      return false;
+    if (CheckNSysBrightness(0, 255) == false)
+      return false;
+    if (CheckNSysSharp(0, 255) == false)
+      return false;
+
+    if (CheckNLGContrast(0, 255) == false)
+      return false;
+    if (CheckNLGBrightness(0, 255) == false)
+      return false;
+    if (CheckNLGSharp(0, 255) == false)
+      return false;
+    if (CheckNLGSat(0, 255) == false)
+      return false;
+
+    if (ParaCheck() == false)
+      return false;
+    return true;
+  }
+
+  function MY_SUBMIT_OK() {
+    alert(GL("submit_success"));
+    // ReFresh();
+    // window.location.reload();
+  }
+
+
+</script>
+
+<script>
+  DW('<div class="layout" id="tabs-5" >');
+  DW('<table>');
+
+  DW('<tr><td><div><table>');
+
+  DW('<tr><td>' + GL("nightwithcolorparam") + '</td></tr>');
+  DW('<tr><td colspan=2>' + GL("ncsyscontrast") + ': </td><td>');
+  WH("ncsyscontrast");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("ncsysbrightness") + ': </td><td>');
+  WH("ncsysbrightness");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("ncsyssharpness") + ': </td><td>');
+  WH("ncsyssharpness");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("ncsys2ddnr") + ': </td><td>');
+  WH("ncsys2ddnr");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nclgcontrast") + ': </td><td>');
+  WH("nclgcontrast");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nclgbrightness") + ': </td><td>');
+  WH("nclgbrightness");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nclgsharpness") + ': </td><td>');
+  WH("nclgsharpness");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nclg2ddnr") + ': </td><td>');
+  WH("nclg2ddnr");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nclgsaturation") + ': </td><td>');
+  WH("nclgsaturation");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nclgagc") + ': </td><td>');
+  WH("nclgagc");
+  DW('</td></tr>');
+
+  DW('</table></div><td><div><table>');
+
+  DW('<tr><td>' + GL("nightwithoutcolorparam") + '</td></tr>');
+  DW('<tr><td colspan=2>' + GL("nsyscontrast") + ': </td><td>');
+  WH("nsyscontrast");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nsysbrightness") + ': </td><td>');
+  WH("nsysbrightness");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nsyssharpness") + ': </td><td>');
+  WH("nsyssharpness");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nsys2ddnr") + ': </td><td>');
+  WH("nsys2ddnr");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nlgcontrast") + ': </td><td>');
+  WH("nlgcontrast");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nlgbrightness") + ': </td><td>');
+  WH("nlgbrightness");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nlgsharpness") + ': </td><td>');
+  WH("nlgsharpness");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nlg2ddnr") + ': </td><td>');
+  WH("nlg2ddnr");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nlgsaturation") + ': </td><td>');
+  WH("nlgsaturation");
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("nlgagc") + ': </td><td>');
+  WH("nlgagc");
+  DW('</td></tr>');
+
+  DW('</table></div></td></tr>');
+
+  DW('</table>');
+  DW('</div>');
+
+</script>
+</body>
+</html>

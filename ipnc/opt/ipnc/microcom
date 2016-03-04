@@ -1,0 +1,1 @@
+microcom -t 80000 -s 115200 /dev/ttyUSB2

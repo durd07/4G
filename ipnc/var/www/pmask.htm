@@ -1,0 +1,1055 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+		<link rel="stylesheet" type="text/css" href="css/pmask.css"/>
+		<script src="js/jquery-1.10.2.js"></script>
+		<script src="js/osd.js"></script>
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script>
+            InitLoad();
+         </script>
+        <title>
+            
+        </title>
+<style type="text/css">
+body {
+	margin: 0;		
+	height:100%;
+	min-width:1200px;
+	min-height:580px;
+	background:#D5D5D5;
+}
+
+
+#rightDiv {
+	position:absolute;
+	left:450px;
+	top:0px;
+}
+.floatDiv {
+	position:absolute;
+	border:1px solid #999;
+	filter:alpha(opacity=0);
+}
+table
+{
+	font-size:13px;
+}
+</style>
+
+    </head>
+<body onLoad="MY_ONLOAD()" onUnload="MY_ONUNLOAD()">
+<script>
+  /*add by dsl, 2013-9-13*/
+  var bgImage = "D:\\BackgroundImage.png";
+  var sleepTimer;
+  var index = -1;
+
+  var pmaskarea = "7_0_0_100_100_100_100_100_100_200_200_200_200";//"<%osdcontent07%>";
+  var pmaskarealist = pmaskarea.split('_');
+
+  var pmaskenable1 = pmaskarealist[0] & 0x01;
+  var pmaskenable2 = pmaskarealist[0] >> 1 & 0x01;
+  var pmaskenable3 = 0;//pmaskarealist[0] >> 2 & 0x01;
+  
+  var pmaskx1 = pmaskarealist[1];
+  var pmasky1 = pmaskarealist[2];
+  var pmaskw1 = pmaskarealist[3];
+  var pmaskh1 = pmaskarealist[4];
+
+  var pmaskx2 = pmaskarealist[5];
+  var pmasky2 = pmaskarealist[6];
+  var pmaskw2 = pmaskarealist[7];
+  var pmaskh2 = pmaskarealist[8];
+
+  var pmaskx3 = pmaskarealist[9];
+  var pmasky3 = pmaskarealist[10];
+  var pmaskw3 = pmaskarealist[11];
+  var pmaskh3 = pmaskarealist[12];
+
+  pmaskarea = "<%osdcontent07%>";//"7_0_0_100_100"
+  pmaskarealist = pmaskarea.split('_');
+  pmaskenable1 = pmaskarealist[0] & 0x01;
+  
+  pmaskx1 = pmaskarealist[1];
+  pmasky1 = pmaskarealist[2];
+  pmaskw1 = pmaskarealist[3];
+  pmaskh1 = pmaskarealist[4];
+
+  pmaskarea = "<%osdcontent17%>";//"7_0_0_100_100"
+  pmaskarealist = pmaskarea.split('_');
+  pmaskenable2 = pmaskarealist[0] & 0x01;
+  
+  pmaskx2 = pmaskarealist[1];
+  pmasky2 = pmaskarealist[2];
+  pmaskw2 = pmaskarealist[3];
+  pmaskh2 = pmaskarealist[4];
+  
+  
+  var pmask_x = [pmaskx1, pmaskx2, pmaskx3];
+  var pmask_y = [pmasky1, pmasky2, pmasky3];
+  var pmask_w = [pmaskw1, pmaskw2, pmaskw3];
+  var pmask_h = [pmaskh1, pmaskh2, pmaskh3];
+  CTRLARY = {
+    pmaskenable1: new Ctrl_Check("pmaskenable1", pmaskenable1, "regionofinterestenable1=", "Fixpmask1()"),
+    pmaskx1: new Ctrl_Text("pmaskx1", 5, 5, pmaskx1, "str1x1="),
+    pmasky1: new Ctrl_Text("pmasky1", 5, 5, pmasky1, "str1y1="),
+    pmaskw1: new Ctrl_Text("pmaskw1", 5, 5, pmaskw1, "str1w1="),
+    pmaskh1: new Ctrl_Text("pmaskh1", 5, 5, pmaskh1, "str1h1="),
+    pmaskenable2: new Ctrl_Check("pmaskenable2", pmaskenable2, "regionofinterestenable2=", "Fixpmask2()"),
+    pmaskx2: new Ctrl_Text("pmaskx2", 5, 5, pmaskx2, "str2x1="),
+    pmasky2: new Ctrl_Text("pmasky2", 5, 5, pmasky2, "str2y1="),
+    pmaskw2: new Ctrl_Text("pmaskw2", 5, 5, pmaskw2, "str2w1="),
+    pmaskh2: new Ctrl_Text("pmaskh2", 5, 5, pmaskh2, "str2h1="),
+    pmaskenable3: new Ctrl_Check("pmaskenable3", pmaskenable3, "regionofinterestenable3=", "Fixpmask3()"),
+    pmaskx3: new Ctrl_Text("pmaskx3", 5, 5, pmaskx3, "str3x1="),
+    pmasky3: new Ctrl_Text("pmasky3", 5, 5, pmasky3, "str3y1="),
+    pmaskw3: new Ctrl_Text("pmaskw3", 5, 5, pmaskw3, "str3w1="),
+    pmaskh3: new Ctrl_Text("pmaskh3", 5, 5, pmaskh3, "str3h1=")
+  };
+
+  function Fixpmask1()
+  {
+    var value = document.getElementById("pmaskenable1").value;
+    // alert(value);
+    if (GetCCV("pmaskenable1") == 0)
+      document.getElementById("clear_1").disabled = 1;
+    else
+      document.getElementById("clear_1").disabled = 0;     
+  }
+
+  function Fixpmask2()
+  {
+    if (GetCCV("pmaskenable2") == 0)
+      document.getElementById("clear_2").disabled = 1;
+    else
+      document.getElementById("clear_2").disabled = 0;
+  }
+  function Fixpmask3()
+  {
+    if (GetCCV("pmaskenable3") == 0)
+      document.getElementById("clear_3").disabled = 1;
+    else
+      document.getElementById("clear_3").disabled = 0;      
+  }
+
+  function Disablepmask()
+  {
+    document.getElementById("pmaskx1").disabled = 1;
+    document.getElementById("pmasky1").disabled = 1;
+    document.getElementById("pmaskw1").disabled = 1;
+    document.getElementById("pmaskh1").disabled = 1;
+    document.getElementById("pmaskx2").disabled = 1;
+    document.getElementById("pmasky2").disabled = 1;
+    document.getElementById("pmaskw2").disabled = 1;
+    document.getElementById("pmaskh2").disabled = 1;
+    document.getElementById("pmaskx3").disabled = 1;
+    document.getElementById("pmasky3").disabled = 1;
+    document.getElementById("pmaskw3").disabled = 1;
+    document.getElementById("pmaskh3").disabled = 1;
+  }
+
+function MY_ONUNLOAD() {
+	VideoActiveXControl.videoStop();
+}
+
+  function MY_ONLOAD() {
+    g_lockLink = false;
+  //  StopActiveX();
+   // StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+   VideoActiveXControl.videoPlay(1,0,300);
+    Fixpmask1();
+    Fixpmask2();
+    Fixpmask3();
+    Disablepmask();
+    sleepTimer = setTimeout(showPmaskArea, 1500);
+  }
+
+function CheckStrX()
+{
+  return true;
+}
+
+function SubmitPa()
+{
+  var res = true;
+
+  if (MY_BEFORE_SUBMIT() == false)
+    return false;
+    for (var key in CTRLARY) {
+      var obj = CTRLARY[key];
+      if (obj.active) {
+        res = obj.IsPass();
+        if (!res) {
+          return res;
+        }
+      }
+    }
+  var str = '';
+  for (var key in CTRLARY) {
+    str += GetSetterCmd(CTRLARY[key], GetCtrlValue(CTRLARY, key));
+  } 
+  
+  // alert(str);
+  SendHttp(c_iniUrl + str, false);
+  MY_SUBMIT_OK();
+}
+
+function pmaskRangeSplit()
+{
+  var pmaskrange = pmaskRange();
+  var pmaskrange1 = pmaskrange.split('|');
+  var pmaskrange = pmaskrange1[0];
+  // alert(pmaskrange);
+  var pmaskrange1 = pmaskrange.split('&');
+    // alert(pmaskrange1);
+    document.getElementById("pmaskx").value = pmaskrange1[1];
+    document.getElementById("pmasky").value = pmaskrange1[2];
+    document.getElementById("pmaskw").value = pmaskrange1[3];
+    document.getElementById("pmaskh").value = pmaskrange1[4];
+
+}
+
+function CheckX1(min, max)
+{
+  var value = document.getElementById("pmaskx1").value;
+  if (value.length == 0)
+  {
+    alert(GL("pmaskx1_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("pmaskx1_inv"));
+    document.getElementById("pmaskx1").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("pmaskx1_num"));
+    document.getElementById("pmaskx1").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function CheckY1(min, max)
+{
+  var value = document.getElementById("pmasky1").value;
+  if (value.length == 0)
+  {
+    alert(GL("pmasky1_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("pmasky1_inv"));
+    document.getElementById("pmasky1").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("pmasky1_num"));
+    document.getElementById("pmasky1").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function CheckW1(min, max)
+{
+  var value = document.getElementById("pmaskw1").value;
+  if (value.length == 0)
+  {
+    alert(GL("pmaskw1_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("pmaskw1_inv"));
+    document.getElementById("pmaskw1").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("pmaskw1_num"));
+    document.getElementById("pmaskw1").value = "";
+    return false;
+  }
+
+  return true;
+}
+function CheckH1(min, max)
+{
+  var value = document.getElementById("pmaskh1").value;
+  if (value.length == 0)
+  {
+    alert(GL("pmaskh1_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("pmaskh1_inv"));
+    document.getElementById("pmaskh1").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("pmaskh1_num"));
+    document.getElementById("pmaskh1").value = "";
+    return false;
+  }
+
+  return true;
+}
+function CheckX2(min, max)
+{
+  var value = document.getElementById("pmaskx2").value;
+  if (value.length == 0)
+  {
+    alert(GL("pmaskx2_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("pmaskx2_inv"));
+    document.getElementById("pmaskx2").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("pmaskx2_num"));
+    document.getElementById("pmaskx2").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function CheckY2(min, max)
+{
+  var value = document.getElementById("pmasky2").value;
+  if (value.length == 0)
+  {
+    alert(GL("pmasky2_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("pmasky2_inv"));
+    document.getElementById("pmasky2").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("pmasky2_num"));
+    document.getElementById("pmasky2").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function CheckW2(min, max)
+{
+  var value = document.getElementById("pmaskw2").value;
+  if (value.length == 0)
+  {
+    alert(GL("pmaskw2_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("pmaskw2_inv"));
+    document.getElementById("pmaskw2").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("pmaskw2_num"));
+    document.getElementById("pmaskw2").value = "";
+    return false;
+  }
+
+  return true;
+}
+function CheckH2(min, max)
+{
+  var value = document.getElementById("pmaskh2").value;
+  if (value.length == 0)
+  {
+    alert(GL("pmaskh2_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("pmaskh2_inv"));
+    document.getElementById("pmaskh2").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("pmaskh2_num"));
+    document.getElementById("pmaskh2").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function CheckX3(min, max)
+{
+  var value = document.getElementById("pmaskx3").value;
+  if (value.length == 0)
+  {
+    alert(GL("pmaskx3_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("pmaskx3_inv"));
+    document.getElementById("pmaskx3").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("pmaskx3_num"));
+    document.getElementById("pmaskx3").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function CheckY3(min, max)
+{
+  var value = document.getElementById("pmasky3").value;
+  if (value.length == 0)
+  {
+    alert(GL("pmasky3_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("pmasky3_inv"));
+    document.getElementById("pmasky3").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("pmasky3_num"));
+    document.getElementById("pmasky3").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function CheckW3(min, max)
+{
+  var value = document.getElementById("pmaskw3").value;
+  if (value.length == 0)
+  {
+    alert(GL("pmaskw3_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("pmaskw3_inv"));
+    document.getElementById("pmaskw3").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("pmaskw3_num"));
+    document.getElementById("pmaskw3").value = "";
+    return false;
+  }
+
+  return true;
+}
+function CheckH3(min, max)
+{
+  var value = document.getElementById("pmaskh3").value;
+  if (value.length == 0)
+  {
+    alert(GL("pmaskh3_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("pmaskh3_inv"));
+    document.getElementById("pmaskh3").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("pmaskh3_num"));
+    document.getElementById("pmaskh3").value = "";
+    return false;
+  }
+
+  return true;
+}
+  function MY_BEFORE_SUBMIT() {
+    if (GetCCV("pmaskenable1") == 1)
+    {
+      if (CheckX1(0, 1920) == false)
+        return false;
+
+      if (CheckY1(0, 1080) == false)
+        return false;
+
+      if (CheckW1(0, 1920) == false)
+        return false;
+
+      if (CheckH1(0, 1080) == false)
+        return false;
+    }
+    if (GetCCV("pmaskenable2") == 1)
+    {
+      if (CheckX2(0, 1920) == false)
+        return false;
+
+      if (CheckY2(0, 1080) == false)
+        return false;
+
+      if (CheckW2(0, 1920) == false)
+        return false;
+
+      if (CheckH2(0, 1080) == false)
+        return false;
+    }
+    if (GetCCV("pmaskenable3") == 1)
+    {
+      if (CheckX3(0, 1920) == false)
+        return false;
+
+      if (CheckY3(0, 1080) == false)
+        return false;
+
+      if (CheckW3(0, 1920) == false)
+        return false;
+
+      if (CheckH3(0, 1080) == false)
+        return false;
+    }
+    return true;
+  }
+
+function SubmitPMask () {
+  var enable1 = GetCCV("pmaskenable1");
+  var enable2 = GetCCV("pmaskenable2");
+  var enable3 = GetCCV("pmaskenable3");
+
+  var enable = 0;
+  enable |= (enable3 << 2) | (enable2 << 1) | enable1;
+
+  // alert(enable);
+/*
+  var pmaskvalue = enable + '_' + GetCCV("pmaskx1") + '_' + GetCCV("pmasky1")  + '_' + GetCCV("pmaskw1")  + '_' + GetCCV("pmaskh1");
+
+  pmaskvalue += '_' + GetCCV("pmaskx2") + '_' + GetCCV("pmasky2")  + '_' + GetCCV("pmaskw2")  + '_' + GetCCV("pmaskh2");
+
+  pmaskvalue += '_' + GetCCV("pmaskx3") + '_' + GetCCV("pmasky3")  + '_' + GetCCV("pmaskw3")  + '_' + GetCCV("pmaskh3");
+*/
+  var pmaskvalue1 = enable1 + '_' + GetCCV("pmaskx1") + '_' + GetCCV("pmasky1")  + '_' + GetCCV("pmaskw1")  + '_' + GetCCV("pmaskh1");
+
+  var pmaskvalue2 = enable2 + '_' + GetCCV("pmaskx2") + '_' + GetCCV("pmasky2")  + '_' + GetCCV("pmaskw2")  + '_' + GetCCV("pmaskh2");
+  //alert(pmaskvalue1 + "----" + pmaskvalue2);
+
+  //SendHttp(c_iniUrl + GetSetterCmdKV("osdprivacymask", pmaskvalue), false);
+  SendHttp(c_iniUrl + GetSetterCmdKV("osdcontent07", pmaskvalue1) + "&" +GetSetterCmdKV("osdcontent17", pmaskvalue2), false);
+  MY_SUBMIT_OK();
+  // body...
+}
+
+
+  function MY_SUBMIT_OK() {
+    alert(GL("submit_success"));
+    //ChangeContent(null, true);
+    reloadcount = 2;
+    wait();
+   // window.location.reload();
+  }
+
+function wait()
+{
+  reloadcount--;
+  if (reloadcount > 0)
+  {
+    timerID =  setTimeout("wait()", 1000);
+  }
+  else
+  {
+    window.location.reload();
+  }
+
+}
+  function pmaskClear1(){
+    if (GetCCV("pmaskenable1") == 1)
+    {
+      document.getElementById("pmaskx1").value = 0;
+      document.getElementById("pmasky1").value = 0;
+      document.getElementById("pmaskw1").value = 0;
+      document.getElementById("pmaskh1").value = 0;
+      clearInterestedArea(1);
+    }    
+  }
+
+  function pmaskClear2(){
+    if (GetCCV("pmaskenable2") == 1)
+    {
+      document.getElementById("pmaskx2").value = 0;
+      document.getElementById("pmasky2").value = 0;
+      document.getElementById("pmaskw2").value = 0;
+      document.getElementById("pmaskh2").value = 0;
+      clearInterestedArea(2);
+    }    
+  }
+
+  function pmaskClear3(){
+    if (GetCCV("pmaskenable3") == 1)
+    {
+      document.getElementById("pmaskx3").value = 0;
+      document.getElementById("pmasky3").value = 0;
+      document.getElementById("pmaskw3").value = 0;
+      document.getElementById("pmaskh3").value = 0;
+      clearInterestedArea(3);
+    }    
+  }
+
+  /*add by dsl, 2013-9-13*/
+   function showPmaskArea()
+  {
+    convertNum();
+    vlcTakeSnap();
+    setBackground();
+    initPMaskArea();
+  }
+
+  function convertNum()
+  {
+    for(var i = 0; i < 3; i++) {
+      pmask_x[i] = serverXToLocal(pmask_x[i]);
+      pmask_y[i] = serverYToLocal(pmask_y[i]);
+      pmask_w[i] = serverWToLocal(pmask_w[i]);
+      pmask_h[i] = serverHToLocal(pmask_h[i]);
+    }
+  }
+  function vlcTakeSnap()
+  {
+    clearTimeout(sleepTimer);
+    var obj = GE(AxID);
+    if (obj != null)
+    {
+      try
+      {
+        obj.takeSnapshot(bgImage);
+      }
+      catch (e)    
+      {
+        alert("Take Snap Error!");
+      }
+    }
+  }
+
+   function setBackground()
+  {  
+    document.getElementById("Area").style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + bgImage + "',sizingMethod='scale')";
+    document.getElementById("Area").onmousedown = mouseDown; 
+    document.getElementById("Area").onmouseup  = mouseUp;
+  }
+
+  function initPMaskArea()
+  {
+    var i = 0;
+    for (i = 0; i < 3; i++) {
+      if(document.getElementById("pmaskenable" + (i+1)).checked == true){
+        //alert(i + "checked;x=" + pmask_x[i]+";y="+pmask_y[i]+";w="+pmask_w[i]+";h="+pmask_h[i]);
+      //if (GetCCV("pmaskenable" + (i+1)) == 1)) {
+        //document.getElementById('div' + i).className = "selected";
+        document.getElementById('div' + i).style.left = pmask_x[i];
+        document.getElementById('div' + i).style.top = pmask_y[i];
+        document.getElementById('div' + i).style.width = pmask_w[i];
+        document.getElementById('div' + i).style.height = pmask_h[i];
+        document.getElementById('div' + i).style.filter="alpha(opacity=50)";
+      }
+        
+    }
+  }
+
+  function clearInterestedArea(val)
+  {
+    if (val == 1)
+    {
+      if(document.getElementById("pmaskenable1").checked == true)
+      {
+        document.getElementById('div0').style.left = 0;
+        document.getElementById('div0').style.top = 0;
+        document.getElementById('div0').style.width = 0;
+        document.getElementById('div0').style.height = 0;
+        document.getElementById('div0').style.filter="alpha(opacity=0)";
+        pmask_x[0] = pmask_y[0] = pmask_w[0] = pmask_h[0] = 0;
+        //selectArea(document.getElementById("div0"));
+        index = 0;
+      }
+    } else if (val == 2)
+    {
+      if(document.getElementById("pmaskenable2").checked == true)
+      {
+        document.getElementById('div1').style.left = 0;
+        document.getElementById('div1').style.top = 0;
+        document.getElementById('div1').style.width = 0;
+        document.getElementById('div1').style.height = 0;
+        document.getElementById('div1').style.filter="alpha(opacity=0)";
+        pmask_x[1] = pmask_y[1] = pmask_w[1] = pmask_h[1] = 0;
+        //selectArea(document.getElementById("div1"));
+        index = 1;
+      }
+    } else if (val == 3)
+    {
+      if(document.getElementById("pmaskenable3").checked == true)
+      {
+        document.getElementById('div2').style.left = 0;
+        document.getElementById('div2').style.top = 0;
+        document.getElementById('div2').style.width = 0;
+        document.getElementById('div2').style.height = 0;
+        document.getElementById('div2').style.filter="alpha(opacity=0)";
+        pmask_x[2] = pmask_y[2] = pmask_w[2] = pmask_h[2] = 0;
+       // selectArea(document.getElementById("div2"));
+       index = 2;
+      }
+    }
+    
+  }
+
+
+  function mouseDown(ev)
+  {
+    if(index==-1)
+      return;
+    ev = ev || window.event; 
+    var mousePos = mousePosition(ev);
+    pmask_x[index] = mousePos.x;
+    pmask_y[index] = mousePos.y;
+     document.getElementById("pmaskx" + (1+index)).value = localXToServer(pmask_x[index]);
+    document.getElementById("pmasky" + (1+index)).value = localYToServer(pmask_y[index]);
+    document.onmousemove = mouseMove;
+
+    
+  } 
+  function mouseUp(ev)
+  {
+    if(index==-1)
+      return;
+    ev = ev || window.event; 
+    var mousePos = mousePosition(ev);
+    pmask_w[index] = mousePos.x - pmask_x[index];
+    pmask_h[index] = mousePos.y - pmask_y[index];
+    document.getElementById("pmaskw" + (1+index)).value = localWToServer(pmask_w[index]);
+    document.getElementById("pmaskh" + (1+index)).value = localHToServer(pmask_h[index]);
+    document.onmousemove = '';
+    //alert("x00=" + x00 +";y00=" + y00 + ";x01=" + x01 + ";y01=" + y01);
+  } 
+
+  function mouseMove(ev){ 
+    if(index==-1)
+      return;
+    ev = ev || window.event; 
+    var mousePos = mousePosition(ev); 
+    //xxx document.getElementById('div1').value = mousePos.x; 
+    //xxx document.getElementById('div2').value = mousePos.y; 
+    
+    if(mousePos.y<pmask_y[index] || mousePos.x<pmask_x[index]) {
+      document.onmousemove = '';
+      pmask_x[index] = 0;
+      pmask_y[index] = 0;
+      pmask_w[index] = 0;
+      pmask_h[index] = 0;
+      document.getElementById("pmaskx" + (1+index)).value = 0;
+      document.getElementById("pmasky" + (1+index)).value = 0;
+      document.getElementById("pmaskw" + (1+index)).value = 0;
+      document.getElementById("pmaskh" + (1+index)).value = 0;
+      alert(GL("mouse_range"));
+      return;
+    }
+    document.getElementById('div' + index).style.top= pmask_y[index];
+    document.getElementById('div' + index).style.left= pmask_x[index];
+    pmask_w[index] = mousePos.x - pmask_x[index];
+    pmask_h[index] = mousePos.y - pmask_y[index];
+    document.getElementById('div' + index).style.height = pmask_h[index];
+    document.getElementById('div' + index).style.width = pmask_w[index];
+    document.getElementById('div' + index).style.filter="alpha(opacity=50)";
+
+    //document.getElementById("pmaskw" + (1+index)).value = localWToServer(pmask_w[index]);
+    //document.getElementById("pmaskh" +(1+index)).value = localHToServer(pmask_h[index]);
+  } 
+
+  function mousePosition(ev){ 
+    if(ev.pageX || ev.pageY){ 
+      return {x:ev.pageX, y:ev.pageY}; 
+    } 
+    return { 
+      x:ev.clientX + document.body.scrollLeft - document.body.clientLeft, 
+      y:ev.clientY + document.body.scrollTop - document.body.clientTop 
+    }; 
+  } 
+
+  function checkStateChanged(id)
+  {
+   /* if(id.checked == true){
+      alert("checked");
+    } else {
+      alert("unchecked");
+    }*/
+    if(id == document.getElementById("pmaskenable1")) {
+      index = 0;
+    } else if(id == document.getElementById("pmaskenable2")) {
+      index = 1;
+    } else {
+      index = 2;
+    }
+    if(id.checked==true) {
+      showArea();
+    } else {
+      hideArea();
+      index = -1;
+    }
+
+
+    /*  following add by zdy, 2013-09-13  */
+    if (id == document.getElementById("pmaskenable1"))
+    {
+      var value = GetCCV("pmaskenable1");
+      if (value == 1)
+        document.getElementById("clear_1").disabled = 0;
+      else
+        document.getElementById("clear_1").disabled = 1;
+    }
+
+    if (id == document.getElementById("pmaskenable2"))
+    {
+      var value = GetCCV("pmaskenable2");
+      if (value == 1)
+        document.getElementById("clear_2").disabled = 0;
+      else
+        document.getElementById("clear_2").disabled = 1;
+    }
+
+    if (id == document.getElementById("pmaskenable3"))
+    {
+      var value = GetCCV("pmaskenable3");
+      if (value == 1)
+        document.getElementById("clear_3").disabled = 0;
+      else
+        document.getElementById("clear_3").disabled = 1;
+    }
+    /*  end added, zdy, 2013-09-13  */
+    /*if(document.getElementById("pmaskenable1").checked!=true && 
+      document.getElementById("pmaskenable2").checked!=true &&
+      document.getElementById("pmaskenable3").checked!=true){
+      index = -1
+    }*/
+  }
+
+  function showArea()
+  {
+    document.getElementById('div' + index).style.top = pmask_y[index];
+    document.getElementById('div' + index).style.left = pmask_x[index];
+    document.getElementById('div' + index).style.height = pmask_h[index];
+    document.getElementById('div' + index).style.width = pmask_w[index];
+    document.getElementById('div' + index).style.filter="alpha(opacity=50)";
+  }
+  function hideArea()
+  {
+    document.getElementById('div' + index).style.filter="alpha(opacity=0)";
+  }
+  function selectArea(id)
+  {
+    for(var i = 0; i < 3; i++) {
+      if(id==document.getElementById("div" + i)){
+        if(document.getElementById('pmaskenable' + (i + 1)).checked == true) {
+          index = i;
+        } 
+        return;
+      }
+    }
+    index = -1;
+  }
+
+  function localXToServer(localx)
+  {
+    return Math.round(1920*localx/448);
+  }
+  function localYToServer(localy){
+    return Math.round(1080*localy/252);
+  }
+  function localWToServer(localw)
+  {
+    return Math.round(1920*localw/448);
+  }
+  function localHToServer(localh){
+    return Math.round(1080*localh/252);
+  }
+  function serverXToLocal(serverx)
+  {
+    return Math.round(448*serverx/1920);
+  }
+  function serverYToLocal(servery)
+  {
+    return Math.round(252*servery/1080);
+  }
+  function serverWToLocal(serverw)
+  {
+    return Math.round(448*serverw/1920);
+  }
+  function serverHToLocal(serverh)
+  {
+    return Math.round(252*serverh/1080);
+  }
+  /*end added, dsl, 2013-9-13*/
+  </script>
+
+  <script>
+  DW('<div id="motiondiv">');
+  DW('<table cellpadding="0" cellspacing="2"><tr><td style="vertical-align:text-top;">');
+  
+  DW('<div class="videoview1">');
+  WriteImgtuneVideoHidden();
+  DW('</div>');
+  </script>
+
+  <div width="448" height="252">
+  <table id="Area" name="Area" style="left:0px;top:0px;" width="448" height="252" border="0" style="position:absolute;">
+  <tr>
+  <td></td>
+  </tr>
+  </table>
+  </div>
+  </td>
+
+  <div class="floatDiv" id="div0" onClick="selectArea(this)" style=" filter:alpha(opacity=0);height=0;width=0;background:#f00;">1</div>
+  <div class="floatDiv" id="div1" onClick="selectArea(this)" style=" filter:alpha(opacity=0);height=0;width=0;background:#f00;">2</div>
+  <div class="floatDiv" id="div2" onClick="selectArea(this)" style=" filter:alpha(opacity=0);height=0;width=0;background:#f00;">3</div>
+
+
+  <script>
+  DW('<td>');
+
+  DW('<div id="rightDiv" class="layout" id="tabs-pmask" >');
+  DW('<table>');
+  // DW("<tr><td colspan=2 align=center>" + GetImageLeftVideo(true) + "</td></tr>");
+
+  DW('<tr><td>');
+
+  DW('<div id="pmask1">');
+  DW('<table>');
+
+  DW('<tr><td colspan=2>');
+  WH("pmaskenable1");
+  DW(GL("pmaskenable1") + '</td>');
+  DW('<td>');
+  DW('<input type="button" id="clear_1" value="' + GL("clear_pmask1") + '" class="m1" onClick="pmaskClear1()">');
+  DW('</td></tr>');
+
+  /*add by dsl, 2013-9-13*/
+  document.getElementById("pmaskenable1").onclick= function() 
+    {
+      checkStateChanged(this);
+    };
+  /*end added, dsl, 2013-9-13*/
+
+
+  DW('<tr><td>X: ');
+  WH("pmaskx1");
+  DW('</td><td>Y: ');
+  WH("pmasky1");
+  DW('</td></tr>');
+  DW('<tr><td>W: ');
+  WH("pmaskw1");
+  DW('</td><td>H: ');
+  WH("pmaskh1");
+  DW('</td></tr>');
+  DW('</table>');
+  DW('</div>');
+
+  DW('<div id="pmask2">');
+  DW('<table>');
+
+  DW('<tr><td colspan=2>');
+  WH("pmaskenable2");
+  DW(GL("pmaskenable2") + '</td>');
+  DW('<td>');
+  DW('<input type="button" id="clear_2" value="' + GL("clear_pmask2") + '" class="m1" onClick="pmaskClear2()">');
+  DW('</td></tr>');
+
+  /*add by dsl, 2013-9-13*/
+  document.getElementById("pmaskenable2").onclick= function() 
+    {
+      checkStateChanged(this);
+    };
+  /*end added, dsl, 2013-9-13*/
+
+  DW('<tr><td>X: ');
+  WH("pmaskx2");
+  DW('</td><td>Y: ');
+  WH("pmasky2");
+  DW('</td></tr>');
+  DW('<tr><td>W: ');
+  WH("pmaskw2");
+  DW('</td><td>H: ');
+  WH("pmaskh2");
+  DW('</td></tr>');
+  DW('</table>');
+  DW('</div>');
+
+  DW('<div id="pmask3" style="display:none">');
+  DW('<table>');
+
+  DW('<tr><td colspan=2>');
+  WH("pmaskenable3");
+  DW(GL("pmaskenable3") + '</td>');
+  DW('<td>');
+  DW('<input type="button" id="clear_3" value="' + GL("clear_pmask3") + '" class="m1" onClick="pmaskClear3()">');
+  DW('</td></tr>');
+
+  /*add by dsl, 2013-9-13*/
+  document.getElementById("pmaskenable3").onclick= function() 
+    {
+      checkStateChanged(this);
+    };
+  /*end added, dsl, 2013-9-13*/
+
+  DW('<tr><td>X: ');
+  WH("pmaskx3");
+  DW('</td><td>Y: ');
+  WH("pmasky3");
+  DW('</td></tr>');
+
+  DW('<tr><td>W: ');
+  WH("pmaskw3");
+  DW('</td><td>H: ');
+  WH("pmaskh3");
+  DW('</td></tr>');
+  DW('</table>');
+  DW('</div>');
+
+  DW('</td></tr>');
+  DW('</table>');
+  DW('<table><tr><td align="center">');
+  DW('<input type="button" value="' + GL("submit") + '" onclick="SubmitPMask()">');
+  DW('</td></tr></table>');
+
+  DW('</div>');
+
+  DW('</td></tr></table></div>');
+ 
+  ALC();
+</script>
+</body>
+</html>

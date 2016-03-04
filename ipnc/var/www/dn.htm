@@ -1,0 +1,544 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script language="javascript" src="var.js"></script>
+    <script language="javascript" src="common.js"></script>
+    <script language="javascript" src="js/panasonic.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <title> Day Night </title>
+    <style type="text/css">
+      td {font-size:12px;}
+      div.headline {
+        font-size: 13px;
+        background-color:#F0F0F0;
+        margin-top:10px;
+        height: auto;
+      }
+    </style>
+    <script>
+      var daynightlist = GL("day") + ";" + GL("night") + ";" + GL("auto");
+      var dnlevellist = GL("low") + ";" + GL("mid") + ";" + GL("high");
+      var dndelaylist = "5s;10s;15s;20s";
+      var irmodelist = GL("off") + ";" + GL("auto") + ";" + GL("manual");
+      var scenechslist = GL("indoor") + ";" + GL("outdoorligt") + ";" + GL("outdoordark");
+      var lightlist = "0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20";
+      var extalarmlist = GL("enableoff") + ";" + GL("enableon");
+      var dnrlist = "0;1;2;3;4;5";
+      var maxGainList = GL("off") + ";" + GL("low") + ";" + GL("mid") + ";" + GL("high") + ";" + GL("Low1") + ";" + GL("Low2") + ";" + GL("Mid1") + ";" + GL("High1");
+
+      var irmo = "<%irmode%>";
+      CTRLARY = {
+        // day night
+        daynight: new Ctrl_Select("daynight", daynightlist, panasonicGetDayNight(), "daynight=", "ChangeDN()"),
+        dnlevel: new Ctrl_Select("dnlevel", dnlevellist, panasonicGetDNLevel(), "dnsensitivity=", "ChangeDnSens()"),
+        dndelay: new Ctrl_Select("dndelay", dndelaylist, panasonicGetDNDelay(), "dndelay=", "ChangeDelay()"),
+        colorMaxGain: new Ctrl_Select("colorMaxGain", maxGainList, panasonicGetColorMaxGain(), "colorMaxGain=", "ChangeColorMaxGain()"),
+        bwMaxGain: new Ctrl_Select("bwMaxGain", maxGainList, panasonicGetBWMaxGain(), "bwMaxGain=", "ChangeBwMaxGain()"),
+        autoMaxGain: new Ctrl_Select("autoMaxGain", maxGainList, panasonicGetAutoMaxGain(), "autoMaxGain=", "ChangeAutoMaxGain()"),
+        irmode: new Ctrl_Select("irmode", irmodelist, "<%irmode%>", "irmode=", "ChangeIrMode()"),
+        scenechs: new Ctrl_Select("scenechs", scenechslist, "<%scenechs%>", "scenechs=", "ChangeScen()"),
+        dnr: new Ctrl_Check("dnr", panasonicGetDNR(), "dnr=", "ChangeDNR()"),
+        dnrLevel: new Ctrl_Select("dnrLevel", dnrlist, panasonicGetDNRLevel(), "dnrLevel=", "ChangeDNRLevel()"),
+        // exteralarm: new Ctrl_Check("exteralarm", "<%exteralarm%>", "exteralarm=", "ChangeExteralarm()"),
+        // motionalarm: new Ctrl_Check("motionalarm", "<%motiondec%>", "motiondec=", "Changemotionalarm()"),
+        // 手动红外灯
+        manualnp: new Ctrl_Select("manualnp", lightlist, "<%manualnp%>", "manualnp=", "ChangeManlp()"),
+        manualmp: new Ctrl_Select("manualmp", lightlist, "<%manualmp%>", "manualmp=", "ChangeManmp()"),
+        manualfp1: new Ctrl_Select("manualfp1", lightlist, "<%manualfp1%>", "manualfp1=", "ChangeManfp1()"),
+        manualfp2: new Ctrl_Select("manualfp2", lightlist, "<%manualfp2%>", "manualfp2=", "ChangeManfp2()"),
+        manualwp: new Ctrl_Select("manualwp", lightlist, "<%manualwp%>", "manualwp=", "ChangeManwp()")
+      }
+    </script>
+  </head>
+
+  <body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+
+<script>
+function ChangeDN()
+{
+  FixDN();
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetDayNightCmd(GetCCV("daynight"))), false, SendImgCallBack);
+}
+
+function ChangeDnSens()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetDNLevelCmd(GetCCV("dnlevel"))), false, SendImgCallBack);
+}
+
+function ChangeDelay()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetDNDelayCmd(GetCCV("dndelay"))), false, SendImgCallBack);
+}
+
+function ChangeColorMaxGain()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetColorMaxGainCmd(GetCCV("colorMaxGain"))), false, SendImgCallBack);
+}
+
+function ChangeBWMaxGain()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetBWMaxGainCmd(GetCCV("bwMaxGain"))), false, SendImgCallBack);
+}
+
+function ChangeAutoMaxGain()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetAutoMaxGainCmd(GetCCV("autoMaxGain"))), false, SendImgCallBack);
+}
+
+function ChangeIrMode()
+{
+  FixIrMode();
+  SendHttp(c_iniUrl + GetSetterCmdKV("irmode", GetCCV("irmode")), false, SendImgCallBack);
+}
+
+function ChangeScen()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("scenechs", GetCCV("scenechs")), false, SendImgCallBack);
+}
+
+function ChangeDNR()
+{
+  FixDNR();
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetDNRCmd(GetCCV("dnr"))), false, SendImgCallBack);
+}
+
+function FixDNR()
+{
+  var dnr = document.getElementById("dnr").checked;
+  if (dnr){
+    CTRLARY["dnrLevel"].Disable(0);
+  }
+  else {
+    CTRLARY["dnrLevel"].Disable(1);
+  }
+}
+
+function ChangeDNRLevel()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetDNRLevelCmd(GetCCV("dnrLevel"))), false, SendImgCallBack);
+}
+
+// function ChangeExteralarm()
+// {
+//   SendHttp(c_iniUrl + GetSetterCmdKV("exteralarm", GetCCV("exteralarm")), false, SendImgCallBack);
+// }
+
+// function Changemotionalarm()
+// {
+//   SendHttp(c_iniUrl + GetSetterCmdKV("motiondec", GetCCV("motionalarm")), false, SendImgCallBack);
+// }
+
+function ChangeManlp()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("manualnp", GetCCV("manualnp")), false, SendImgCallBack);
+}
+function ChangeManmp()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("manualmp", GetCCV("manualmp")), false, SendImgCallBack);
+}
+function ChangeManfp1()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("manualfp1", GetCCV("manualfp1")), false, SendImgCallBack);
+}
+function ChangeManfp2()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("manualfp2", GetCCV("manualfp2")), false, SendImgCallBack);
+}
+function ChangeManwp()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("manualwp", GetCCV("manualwp")), false, SendImgCallBack);
+}
+function ParaCheck()
+{
+  var flag = false;
+
+  var daynight = GetCCV("daynight");
+  if (daynight == "<%daynight%>")
+  {
+    CTRLARY["daynight"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var dnlevel = GetCCV("dnlevel");
+  if (dnlevel == "<%dnsensitivity%>")
+  {
+    CTRLARY["dnlevel"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var dndelay = GetCCV("dndelay");
+  if (dndelay == "<%dndelay%>")
+  {
+    CTRLARY["dndelay"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var irmode = GetCCV("irmode");
+  if (irmode == "<%irmode%>")
+  {
+    CTRLARY["irmode"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var scenechs = GetCCV("scenechs");
+  if (scenechs == "<%scenechs%>")
+  {
+    CTRLARY["scenechs"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  // var exteralarm = GetCCV("exteralarm");
+  // if (exteralarm == "<%exteralarm%>")
+  // {
+  //   CTRLARY["exteralarm"].active = 0;
+  // }
+  // else if (flag == false)
+  //   flag = true;
+
+  // var motionalarm = GetCCV("motionalarm");
+  // if (motionalarm == "<%motionalarm%>")
+  // {
+  //   CTRLARY["motionalarm"].active = 0;
+  // }
+  // else if (flag == false)
+  //   flag = true;
+
+  if (document.getElementById("irmode").selectedIndex == 0)
+  {
+    var manualnp = GetCCV("manualnp");
+    if (manualnp == "<%manualnp%>")
+    {
+      CTRLARY["manualnp"].active = 0;
+    }
+    else if (flag == false)
+      flag = true;
+
+    var manualmp = GetCCV("manualmp");
+    if (manualmp == "<%manualmp%>")
+    {
+      CTRLARY["manualmp"].active = 0;
+    }
+    else if (flag == false)
+      flag = true;
+
+    var manualfp1 = GetCCV("manualfp1");
+    if (manualfp1 == "<%manualfp1%>")
+    {
+      CTRLARY["manualfp1"].active = 0;
+    }
+    else if (flag == false)
+      flag = true;
+
+    var manualfp2 = GetCCV("manualfp2");
+    if (manualfp2 == "<%manualfp2%>")
+    {
+      CTRLARY["manualfp2"].active = 0;
+    }
+    else if (flag == false)
+      flag = true;
+
+    var manualwp = GetCCV("manualwp");
+    if (manualwp == "<%manualwp%>")
+    {
+      CTRLARY["manualwp"].active = 0;
+    }
+    else if (flag == false)
+      flag = true;
+
+  }
+
+  return flag;
+}
+  // if daynight == auto, dnlevel and dndelay.disabled==false
+  function FixDN()
+  {
+    var dn = document.getElementById("daynight").selectedIndex;
+    switch (dn) {
+      case 0:
+        CTRLARY["dnlevel"].Disable(1);
+        CTRLARY["dndelay"].Disable(1);
+        document.getElementById("color_max_gain").style.display = "";
+        document.getElementById("bw_max_gain").style.display = "none";
+        document.getElementById("auto_max_gain").style.display = "none";
+        break;
+      case 1:
+        CTRLARY["dnlevel"].Disable(1);
+        CTRLARY["dndelay"].Disable(1);
+        document.getElementById("color_max_gain").style.display = "none";
+        document.getElementById("bw_max_gain").style.display = "";
+        document.getElementById("auto_max_gain").style.display = "none";
+        break;
+      default:
+        CTRLARY["dnlevel"].Disable(0);
+        CTRLARY["dndelay"].Disable(0);
+        document.getElementById("color_max_gain").style.display = "none";
+        document.getElementById("bw_max_gain").style.display = "none";
+        document.getElementById("auto_max_gain").style.display = "";
+        break;
+    }
+  }
+
+function FixIrMode()
+{
+  var irmode = document.getElementById("irmode").selectedIndex;
+  // var scen = document.getElementById("scenechs").selectedIndex;
+  // alert(irmode);
+  // alert(scen);
+  if (irmode == 0) // off
+  {
+    document.getElementById("mamualir").style.display="none";
+    document.getElementById("autopara").style.display="none";
+    CTRLARY["scenechs"].Disable(1);
+    // CTRLARY["exteralarm"].Disable(1);
+    // CTRLARY["motionalarm"].Disable(1);
+    DisableIR(2);
+  }
+  else if (irmode == 2) // manual
+  {
+    document.getElementById("mamualir").style.display="";
+    document.getElementById("autopara").style.display="none";
+    DisableIR(0);
+  }
+  else if (irmode == 1) //auto indoor
+  {
+    document.getElementById("mamualir").style.display="none";
+    document.getElementById("autopara").style.display="";
+    DisableIR(1);
+  }
+}
+
+function DisableIR(value)
+{
+  // alert(value);
+  switch (value)
+  {
+    case 0: // manual
+      CTRLARY["scenechs"].Disable(1);
+      // CTRLARY["exteralarm"].Disable(1);
+      // CTRLARY["motionalarm"].Disable(1);
+      CTRLARY["manualnp"].Disable(0);
+      CTRLARY["manualmp"].Disable(0);
+      CTRLARY["manualfp1"].Disable(0);
+      CTRLARY["manualfp2"].Disable(0);
+      CTRLARY["manualwp"].Disable(0);
+    break;
+    case 1: // auto indoor
+      CTRLARY["scenechs"].Disable(0);
+      // CTRLARY["exteralarm"].Disable(0);
+      // CTRLARY["motionalarm"].Disable(0);
+      CTRLARY["manualnp"].Disable(1);
+      CTRLARY["manualmp"].Disable(1);
+      CTRLARY["manualfp1"].Disable(1);
+      CTRLARY["manualfp2"].Disable(1);
+      CTRLARY["manualwp"].Disable(1);
+    break;
+    case 2: // off
+      CTRLARY["scenechs"].Disable(1);
+      // CTRLARY["exteralarm"].Disable(1);
+      // CTRLARY["motionalarm"].Disable(1);
+      CTRLARY["manualnp"].Disable(1);
+      CTRLARY["manualmp"].Disable(1);
+      CTRLARY["manualfp1"].Disable(1);
+      CTRLARY["manualfp2"].Disable(1);
+      CTRLARY["manualwp"].Disable(1);
+    break;
+  }
+}
+function ExportPara()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("exportirpara", "1"), false);
+  count = 2;
+  Wait();
+}
+
+function Wait()
+{
+  if (count > 0)
+  {
+    count --;
+    timerID = setTimeout("Wait()", 1000);
+  }
+  else
+  {
+    window.location.href = "/para/irautopara.ini";
+  }
+}
+function ImportPara()
+{
+  if( document.getElementById('PARAFILE').value == '' ){
+    alert("请选择文件！");
+    return false;
+  }
+  var filename1 = document.getElementById('PARAFILE').value;
+  var filenamelist = filename1.split('\\');
+  // alert(filenamelist);
+  var len = filenamelist.length;
+  var filename = filenamelist[len-1];
+
+  var suflist = filename.split('.');
+  len = suflist.length;
+  var suf = suflist[len - 1];
+
+  var name = suflist[0];
+
+  if (suf != "ini")
+  {
+    alert(GL("filesuf"));
+    document.getElementById('PARAFILE').value = "";
+    return false;
+  }
+
+  if (name != "irautopara")
+  {
+    alert(GL("filename_err"));
+    document.getElementById('PARAFILE').value = "";
+    return false;
+  }
+  document.getElementById('importform').submit();
+}
+
+  function MY_ONUNLOAD() {
+    // StopActiveX();
+  }
+
+function MY_ONLOAD() {
+  g_lockLink = false;
+  // StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+  FixDN();
+  FixDNR();
+  //FixIrMode();
+  // SendHttp(c_iniUrl + GetSetterCmdKV("importirpara"), false);
+}
+
+  function MY_BEFORE_SUBMIT() {
+    if (ParaCheck() == false)
+    {
+      alert(GL("para_not_change"));
+      ChangeActive();
+
+      return false;
+    }
+
+
+    return true;
+  }
+
+  function MY_SUBMIT_OK() {
+    // alert(GL("submit_success"));
+    // window.location.reload();
+  }
+
+function DayNightDefault()
+{
+  var o = '';
+  o += c_iniUrl;
+  o += GetSetterCmdKV("dndefault");
+  SendHttp(o, false, DefaultCallBack);
+}
+
+function IRPowerDefault()
+{
+  var o = '';
+  o += c_iniUrl;
+  o += GetSetterCmdKV("irpowerdefault");
+  SendHttp(o, false, DefaultCallBack);
+}
+
+function DefaultCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      if (txt.indexOf("NG") >= 0 || txt.indexOf("UW") >= 0)
+      {
+        alert(GL("submit_fail"));
+        WS(GL("fail_"));
+      }
+      else
+      {
+        alert(GL("submit_success"));
+        WS(GL("ok_"));
+        window.location.reload();
+      }
+    }
+  }
+}
+</script>
+
+    <div id="dndiv">
+      <table>
+        <tr>
+          <td style="vertical-align:text-top;">
+            <div class="layout" id="tabs-1">
+              <table>
+                <tr>
+                  <td><script>DW(GL("d_n"));</script></td>
+                  <td><script>WH("daynight");</script></td>
+                </tr>
+                <tr>
+                  <td><script>DW(GL("dnlevel"));</script></td>
+                  <td><script>WH("dnlevel");</script></td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <!input id="default" type="button" style="width:80px;height:20px" onclick="DayNightDefault()">
+                    <script>
+					//document.getElementById("default").value = GL("_default");
+					</script>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td width="30px"></td>
+          <td style="vertical-align:text-top;">
+            <div class="layout" id="tabs-2">
+              <table>
+                <tr>
+                  <td><script>DW(GL("dndelay"));</script></td>
+                  <td><script>WH("dndelay");</script></td>
+                </tr>
+                <tr id="color_max_gain">
+                  <td><script>DW(GL("agc"));</script></td>
+                  <td><script>WH("colorMaxGain");</script></td>
+                </tr>
+                <tr id="bw_max_gain">
+                  <td><script>DW(GL("agc"));</script></td>
+                  <td><script>WH("bwMaxGain");</script></td>
+                </tr>
+                <tr id="auto_max_gain">
+                  <td><script>DW(GL("agc"));</script></td>
+                  <td><script>WH("autoMaxGain");</script></td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td width="30px"></td>
+          <td style="vertical-align:text-top;">
+            <div class="layout" id="tabs-3">
+              <table>
+                <tr>
+                  <td><script>DW(GL("DNR"));</script></td>
+                  <td><script>WH("dnr");</script></td>
+                </tr>
+                <tr>
+                  <td><script>DW(GL("DNR_level"));</script></td>
+                  <td><script>WH("dnrLevel");</script></td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

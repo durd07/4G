@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link type="text/css" href="css/preview.css" rel="stylesheet">
+<link rel="stylesheet" href="jquery/themes/base/jquery.ui.all.css" />
+<script src="jquery/jquery-1.9.1.min.js"></script>
+<script src="jquery/jquery-ui.js"></script>
+<script type="text/javascript" src="js/json2.js"></script>
+<script language="javascript" src="js/preview.js"></script>
+<script language="javascript" src="var.js"></script>
+<script language="javascript" src="common.js"></script>
+<script> 
+InitLoad(); 
+var dev_type = device_type;
+var video_cache_time; 
+var TDPosition = 0;
+ //selected the first stream by default, will change by stream selected
+var selectedStreamIndex = 1; 
+$(document).ready(function(){
+	$(window).resize(function() {
+		setTimeout(function(){adaptionComponent("ocx_video","vlc",16/9,250);},10);
+	});	
+});
+
+</script>
+
+<title>preview</title>
+<style>
+
+</style>
+</head>
+<body onload="MY_ONLOAD()" onbeforeunload="MY_ONUNLOAD()">
+<script>
+
+var streamtype = "<%videocodec%>";          
+var v_MotionEnable = "<%motionenable%>";
+if (v_MotionEnable == 2)
+	v_MotionEnable = 1;
+
+function MY_ONLOAD() { 
+	get_ocx_cache();
+	document.getElementById("selvideo").selectedIndex = 0;
+	if (streamtype == 0)
+	{
+		document.getElementById("selvideo").disabled = 1;     
+	}
+	g_lockLink = false;
+}
+
+//重复代码，暂时放到这里。
+function get_ocx_cache()
+{
+	var requestStr = {"Factory":"POWER_VIEW",
+					  "Type":"PV8340-F2",
+					  "Action_Item":"Cache_Settings",
+					  "Param":"0"
+					  };
+	var cmd = JSON.stringify(requestStr);//字符串化
+	$.get(c_iniUrl+GetSetterCmdKV("camera_parameters_get",cmd),function(data){
+		var back;
+		if ((data.indexOf("OK camera_parameters_get") >= 0)&&(data.indexOf("POWER_VIEW") >= 0) ) {		
+			back = data.substring(36);
+		}		
+		if(back==undefined)
+		{
+			video_cache_time = 300;
+		}
+		else
+		{
+			back=JSON.parse(back);//转换为json
+			if(back.Param)
+			{
+				video_cache_time = back.Param;
+			}
+		}
+		VideoIconControl.startPlay(videostartBtn,videoStopBtn,selectedStreamIndex,TDPosition,video_cache_time);
+	});
+}
+
+
+function SelVideo()
+{
+	selectedStreamIndex = document.getElementById("selvideo").selectedIndex+1;		
+	VideoIconControl.startPlay(videostartBtn,videoStopBtn,selectedStreamIndex,TDPosition,video_cache_time);
+}
+
+
+
+function MY_ONUNLOAD()
+{
+	VideoActiveXControl.videoStop();
+}
+	
+	
+	
+function WriteVideoEnd()
+{
+	var o = '';
+	o += '<div id="videoend">';
+	o += '<table style="width:80%"><tr><td  align="left">';
+	o += '<div id="buttonall">';
+	o += '<table><tr><td>';
+	//o += '<input id="startpause" type="image" src="../images/play.PNG"   onclick="StartVideoPlayer('+selectedStreamIndex+','+TDPosition+','+video_cache_time+')">';
+	o += '<input id="videostartBtn" type="image" src="images/play.PNG" ';
+	o += '        onmouseover="VideoIconControl.changePic(this,\'images/start_out.png\')" ';
+	o += '       onmouseout="VideoIconControl.changePic(this,\'images/play.PNG\')"  ';
+	o += '   	 onclick="VideoIconControl.startPlay(this,videoStopBtn,selectedStreamIndex,TDPosition,video_cache_time);"/> ';
+	o += '<input id="videoStopBtn" type="image" src="images/stop.PNG" style="display:none;" onclick="VideoIconControl.stopPlay(this,videostartBtn,recordStartBtn,recordStopBtn);"/>'; 	o += '</td><td width="10px"></td><td>';
+	//o += '<input id="stopvideo" type="image" onclick="StopVideo()" src="../images/stop.PNG" title="' + GL("stop") + '">';
+	o += '<input id="snapBtn" type="image"  src="images/snapshot.PNG"  onmousedown="VideoIconControl.changePic(this,\'images/snapshot_on.png\')"   ';
+	o += '														 onmouseup="VideoIconControl.changePic(this,\'images/snapshot.PNG\')"   ';
+    o += '                                                         onclick="VideoIconControl.snapPicture();"/> ';
+	
+
+	o += '</td><td  ></td><td>';
+	o += '</td><td  ></td><td>';
+	o += '<input id="recordStartBtn" type="image"  src="images/save_out.PNG"  onclick="VideoIconControl.startRecord(this,recordStopBtn);"/> ';
+	o += '<input id="recordStopBtn" type="image"  src="images/save_on.PNG"  style="display:none;" onclick="VideoIconControl.stopRecord(this,recordStartBtn);"/>';
+
+	o += '</td></tr></table>';
+	o += '</div>';
+	
+	o += '</td>';
+	if (v_MotionEnable == 1)
+	{
+		o += '<td>';
+		o += '<div id="motionalarm">';
+		o += '<table><tr>';
+		o += '<td style=" font-size:12px;color: white;"">' + GL("motion_status") + '</td>';
+		o += "<td height=30 align='center'><input width='12px' height='12px' id='alarmstatus' type='image' src='../images/green.png' title='" + GL("nomotion_alarm")+ "'></td>";
+		setInterval("GetAlarmStatus()",1000);
+		o += '</tr></table>';
+		o += '</div>';
+		o += '</td>';
+	
+	}
+	
+	o += '	<td  width="140px">';
+	o += '		<table id="table_protocal">';
+	o += '			<tr><td id="protocal_td_1" class="tcp_style_1" onclick="protocalIconControl.switchProctocal(1)"></td>';
+	o += '              <td id="protocal_td_2" class="tcp_style_2" onclick="protocalIconControl.switchProctocal(2)"></td></tr>';
+	o += '		</table>';
+	o += '	</td>';
+	
+	
+	
+	
+	o += '<td width="90px">';
+	o += '<div id="streamtype">';
+	o += '<table><tr text-align="right"><td text-align="right">';
+	o += '<select style="background:#303a40 0px 0px; color: #ffffff; font-size: 14px; border: #000000 1px solid; padding: 0px;" id="selvideo" onchange="SelVideo()">';
+	o += '<option selected value = "0">' + GL("stream1");
+	//if (streamtype != 0)
+	//{
+		o += '<option  value = "1">' + GL("stream2");
+	//	if (streamtype == 2)
+	//	{
+			o += '<option  value = "2">' + GL("stream3");
+	//	}                  
+	//}
+	o += '</select>';
+	o += '</td></tr></table>';
+	o += '</div>';
+	
+	o += '</td></tr></table>';
+	
+	o += '</div>';
+	return o;
+}
+
+
+
+
+
+
+
+      function GetAlarmStatus()
+      {
+        var o = '';
+        o += c_iniUrl;
+        o += GetSetterCmdKV("getalarmstatus");
+        SendHttp(o, false, SendImgCallBack);
+      }
+
+      function SendImgCallBack()
+      {
+        if (g_SubmitHttp.readyState == 4) {
+          if (g_SubmitHttp.status == 200) {
+            var txt = g_SubmitHttp.responseText;
+            var alarmstatuslist = txt.split('=');
+            var alarmstatus = parseInt(alarmstatuslist[1]);
+            // alert(alarmstatus);
+            if (alarmstatus == 0)
+            {
+              var srcimg = "../images/green.png";
+
+              document.getElementById("alarmstatus").title = GL("nomotion_alarm");
+              document.getElementById("alarmstatus").src = srcimg;
+            }
+            else if (alarmstatus == 2 || alarmstatus == 32)
+            {
+              var srcimg = "../images/red.png";
+
+              document.getElementById("alarmstatus").title = GL("motion_alarm");
+              document.getElementById("alarmstatus").src = srcimg;
+            }
+          } 
+        } 
+      }      
+
+	</script>
+	<div id="outer_div">        	
+			 <script>
+			 WritePreview();
+			 </script>  
+		<script language="JavaScript" event="OnDrawRect(x1, y1, x2, y2)" for="vlc">  
+			//var r = VLC1.SetRange(index, x1, y1, x2, y2, 0x00FF0000);//=====add by jackie for 3D
+			//if (r == 0) {
+			path =  "d:\\bit\\v\\2.txt";
+			var wid = x2-x1;
+			var hig = y2-y1;			
+			var neirong = x1+','+ y1 +','+wid+','+hig;
+			//if((wid==0)&&(hig==0)){
+				//neirong = x1+','+ y1 +','+1920+','+1080;
+			//}
+			SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_contral", neirong), false);
+				
+			//
+			//alert(i);
+			//alert(neirong);
+			//writeFile(path,i);			
+			//}//===========================================================================
+		</script>				 
+       
+		<div id="ptz_control">
+		<script>
+			//alert("Problem.");//云台类。
+			if((dev_type==1)||(dev_type==2)||(dev_type==5)){
+				 DW('<iframe src="ptz_qj.htm" id="ptz_ctrl" allowtransparency="false" scrolling="no" frameborder="0" name="pre_right_iframe"  width="240px" height="100%">');
+					DW('</iframe>');
+			}
+			else
+			{
+				DW('<iframe src="ptz.htm" id="ptz_ctrl" allowtransparency="false" scrolling="no" frameborder="0" name="pre_right_iframe"  width="240px" height="100%">');
+					DW('</iframe>');
+			}			
+		</script>		
+		</div>
+   </div>
+    
+</body>

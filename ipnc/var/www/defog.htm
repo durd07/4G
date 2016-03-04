@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script>
+            InitLoad();
+         </script>
+        <title>
+            
+        </title>
+    </head>
+<body onload="MY_ONLOAD()">
+<script>
+
+    function DefogOn(){
+      SendHttp(c_iniUrl + GetSetterCmdKV("defogctrl", "1"), false); 
+    }
+
+    function DefogOff(){
+      SendHttp(c_iniUrl + GetSetterCmdKV("defogctrl", "0"), false);
+    }
+
+
+function MY_ONLOAD()
+{
+  g_lockLink = false;
+}
+
+var o = '';
+o += c_iniUrl + GetSetterCmdKV("defogtemp");
+o += GetSetterCmdKV("rtemp");
+o += GetSetterCmdKV("rhum");
+o += GetSetterCmdKV("dewpoint");
+
+SendHttp(o, false, SendImgCallBack);
+
+function SendImgCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      // alert(txt);
+      var defogtemplist = txt.split('=');
+      // alert(defogtemplist[0]);
+      // alert(defogtemplist[1]);
+      // alert(defogtemplist[2]);
+      // alert(defogtemplist[3]);
+      // alert(defogtemplist[4]);
+      document.getElementById("defogtemp").value = parseFloat(defogtemplist[1]).toFixed(2);
+      document.getElementById("rt").value = parseFloat(defogtemplist[2]).toFixed(2);
+      document.getElementById("rh").value = parseFloat(defogtemplist[3]).toFixed(2);
+      document.getElementById("dewpoint").value = parseFloat(defogtemplist[4]).toFixed(2);
+    } 
+  } 
+}
+
+      // alert(window.defogtemp);
+
+  DW('<div class="layout" id="tabs-1" >');
+  DW('<table>');
+
+  DW('<tr><td>')
+  DW('<input type="button" id="wiperon" style="width:60px" value = "' + GL("mandefog_on") + '" onmousedown="DefogOn()">');
+  DW('</td><td>');
+  DW('<input type="button" id="wiperoff" style="width:60px" value = "' + GL("mandefog_off") + '" onmousedown="DefogOff()">');
+  DW('</td></tr>');
+
+  DW('<tr><td>');
+  DW(GL("defog_temp") + '</td>');
+  DW('<td><input type="text" id="defogtemp" value="" disabled>');
+  DW('</td></tr>');
+
+  DW('<tr><td>');
+  DW(GL("rt") + '</td>');
+  DW('<td><input type="text" id="rt" value="" disabled>');
+  DW('</td></tr>');
+
+  DW('<tr><td>');
+  DW(GL("rh") + '</td>');
+  DW('<td><input type="text" id="rh" value="" disabled>');
+  DW('%</td></tr>');
+
+  DW('<tr><td>');
+  DW(GL("dewpoint") + '</td>');
+  DW('<td><input type="text" id="dewpoint" value="" disabled>');
+  DW('</td></tr>');
+
+
+  DW('</table>');
+  DW('</div>');
+</script>
+</body>
+</html>

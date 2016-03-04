@@ -1,0 +1,193 @@
+﻿body {
+	margin: 0;
+	padding:0;
+	height:100%;
+	min-width:1200px;
+	min-height:580px;
+	font-size:12px;
+}
+html {
+	height: 100%;
+}
+
+#top_div
+{
+	width:100%;
+	height:5%;
+	min-width:1200px;
+	min-height:30px;
+	background:#666;
+	
+}
+
+#main_div
+{
+	position:relative;
+	background:#999;
+	width:100%;
+	min-width:1200px;
+	height:95%;
+	min-height:550px;
+}
+#video_ocx_div
+{
+	margin-right:300px;
+	background:#999;
+	height:100%;
+}
+#ocx_object
+{
+	position:relative;
+	top:5px;
+	width:99%;
+	height:98%;
+	background:black;
+	margin-left:auto;
+	margin-right:auto;
+	
+	
+}
+#image_config_div
+{
+	position:absolute;
+	top:0px;
+	right:0;
+	width:300px;
+	min-width:300px;
+	height:100%;
+}
+#config_div
+{
+	height:90%;
+}
+
+#save_div
+{
+	height:10%;
+	min-height:25px;
+	width:100%;
+	text-align:right;
+}
+#empty_div
+{
+	height:100%;
+}
+#tab_container
+{
+	position:relative;
+	top:-25px;
+	width:300px;
+	height:25px;
+}
+#tab_container span
+{
+	float:left;
+	color:white;
+	margin-left:5px;
+	line-height:25px;
+	cursor:pointer;
+	text-align:center;
+	width:70px;
+	background:#333;
+	border:solid solid none solid;
+}
+
+th
+{
+	background:#303A40;
+}
+
+td
+{
+	padding:5px 0 5px 5px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #999;
+	
+}
+
+table
+{
+	color:white;
+	width:100%;
+	height:50%;
+	border-collapse: collapse;
+}
+
+
+* {
+	margin:0;
+	padding:0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+
+ul {
+	list-style-type: none;
+}
+
+.accordion {
+	position:relative;
+	top:5px;
+	width: 100%;
+	max-width: 296px;
+	background:#333;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+}
+
+.accordion .link {
+	cursor: pointer;
+	display: block;
+	padding: 10px;
+	color: white;
+	font-weight: 700;
+	border-bottom: 1px solid #CCC;
+	position: relative;
+	-webkit-transition: all 0.4s ease;
+	-o-transition: all 0.4s ease;
+	transition: all 0.4s ease;
+}
+
+.accordion li:last-child .link {
+	border-bottom: 0;
+}
+
+.accordion li i {
+	position: absolute;
+	top: 10px;
+	left: 12px;
+	color: white;
+	-webkit-transition: all 0.4s ease;
+	-o-transition: all 0.4s ease;
+	transition: all 0.4s ease;
+}
+
+.accordion li i.fa-chevron-down {
+	right: 12px;
+	left: auto;
+}
+
+.accordion li.open .link {
+	color: white;
+}
+
+.accordion li.open i {
+	color: white;
+}
+.accordion li.open i.fa-chevron-down {
+	-webkit-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+
+.submenu {
+	display: none;
+	background:#E4E4E4;
+}
+
+

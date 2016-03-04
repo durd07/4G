@@ -1,0 +1,24 @@
+TIMEOUT 5
+
+'' AT
+
+'OK-+++\c-OK' AT+MODODR=2
+
+OK AT+CGDCONT=1,"IP","CMNET" 
+
+OK ATE0V1
+
+OK AT 
+
+OK ATS0=0
+
+OK AT
+
+OK ATE0V1
+
+OK AT
+
+
+OK ATDT*99*#
+CONNECT ''
+

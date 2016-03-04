@@ -1,0 +1,126 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+		<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <link rel="shortcut icon" href="skin/favicon.ico" type="image/x-icon" />
+    <script language="javascript" src="var.js"></script>
+    <script language="javascript" src="common.js"></script>
+    <script language="javascript" src="jquery/jquery-1.9.1.min.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <title>
+    </title>
+    <style type="text/css">
+      .box {
+        width: 500px;
+        border: 1px solid #666666;
+        margin: 0px;
+        font-size: 14px;
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+      }
+      .menu ul,li {
+        list-style: none;
+      }
+      ul.menu li {
+        float: left;
+        margin-bottom: 1px;
+        line-height: 16px;
+        height: 14px;
+        margin: 5px 0 0 -1px;
+        border-left: 1px solid #666666;
+        text-align: center;
+        padding: 0 12px;
+        cursor: pointer;
+      }
+      ul.menu li.current {
+        border: 1px solid #666666;
+        border-bottom: none;
+        background: #fff;
+        height: 25px;
+        line-height: 26px;
+        margin: 0;
+      }
+      .content {
+        padding: 10px;
+      }
+      a {
+        text-decoration: none;
+      }
+      a:link {
+        text-decoration: none;
+        color: black;
+      }
+      a:active {
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: none;
+        color: black;
+      }
+      a:visited {
+        text-decoration: none;
+        color: black;
+      }
+    </style>
+  </head>
+
+  <body onload="MY_ONLOAD()">
+  <script>
+    CTRLARY = {
+	  serverv: new Ctrl_Select("serverv", "<%serverv%>", "serverv="),
+	  boav: new Ctrl_Select("boav","<%boav%>", "boav="),
+	  vdv: new Ctrl_Select("vdv", "<%vdv%>", "vdv="),
+	  mcfwv: new Ctrl_Select("mcfwv","<%mcfwv%>", "mcfwv="),
+	  dspv: new Ctrl_Select("dspv","<%dspv%>", "dspv="),
+	  vpssv: new Ctrl_Select("vpssv","<%vpssv%>", "vpssv=")    
+    }
+  </script>
+
+  <script>  
+
+    function MY_ONLOAD() {
+      g_lockLink = false;
+     }
+   
+   
+  </script>
+	<div class="box">
+	 <table>
+		<tr>
+		<td>Server版本信息&nbsp;</td>
+		<td id="ser_v"><script>WH("serverv");</script></td>
+		</tr>
+		
+		<tr>
+		<td>Boa版本信息&nbsp;</td>
+		<td id="boa_v"><script>WH("boav");</script></td>
+		</tr>
+		
+		<tr>
+		<td>Vd版本信息&nbsp;</td>
+		<td id="vd_v"><script>WH("vdv");</script></td>
+		</tr>
+		
+		<tr>
+		<td>Mcfw.Out版本信息&nbsp;</td>
+		<td id="mcfw_v"><script>WH("mcfwv");</script></td>
+		</tr>
+		
+		<tr>
+		<td>Dsp版本信息&nbsp;</td>
+		<td id="dsp_v"><script>WH("dspv");</script></td>
+		</tr>
+		
+		<tr>
+		<td>Vpss版本信息&nbsp;</td>
+		<td id="vpss_v"><script>WH("vpssv");</script></td>
+		</tr>
+	 </table>
+	</div>
+  </body>
+</html>

@@ -1,0 +1,458 @@
+<html>
+    <head>
+		<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+		<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script>
+            InitLoad();
+         </script>
+        <title>
+            
+        </title>
+    
+	<style type="text/css">
+	body {
+			margin: 0;
+			padding:0;
+			height:100%;
+			min-width:1200px;
+			min-height:580px;
+			font-size:16px;
+			color: white;
+			background:#999;
+		}
+    td {
+      font-size: 16px;
+    }
+    </style>
+</head>
+<body onLoad="MY_ONLOAD()">
+<script>
+    var eventLocation = parseInt("<%eventlocation%>");
+    var eventPerPage = 10;
+    var PageNum = parseInt("<%pagenum%>");
+    var lockThis = false;
+    // alert("<%timeevent.1%>");
+    var eventcount = "<%timeeventcount%>";
+    if (eventcount == 0)
+        eventcount = 1;
+    var eventList = new Array("<%timeevent.1%>", "<%timeevent.2%>", "<%timeevent.3%>", "<%timeevent.4%>", "<%timeevent.5%>", "<%timeevent.6%>", "<%timeevent.7%>", "<%timeevent.8%>", "<%timeevent.9%>", "<%timeevent.10%>");
+    var mydate = new Date();
+    var year = mydate.getFullYear().toString();
+    var mon = (mydate.getMonth() + 1).toString();
+    var day = mydate.getDate().toString();
+    var hours = mydate.getHours().toString();
+    var mins = mydate.getMinutes().toString();
+
+    if (mon.length == 1)
+        mon = "0" + mon;
+
+    if(day.length == 1)
+        day = "0" + day;
+    /*  Go Page Num     */
+    function GoPage(sid) {
+        // alert(sid);
+        if (lockThis) return;
+        lockThis = true;
+        SendHttp(c_iniUrl + GetSetterCmdKV("eventstart", sid));
+        if (window.flag1 == 1)
+        {
+            window.location.reload("aevttime.htm?0");
+        }
+        else 
+            window.location.reload("aevttime.htm?1");
+        lockThis = false;
+        return true;
+    }
+
+    /*  Go to first page    */
+    function GoFirst() {
+        GoPage(0);
+    }
+
+    /*  Page Up */
+    function PageUp() {
+        window.flag1 = 0;
+        var newLoc = 0;
+        PageNumCheck();
+        if (eventLocation > eventPerPage) {
+            newLoc = eventLocation - eventPerPage;
+        }
+        GoPage(newLoc);
+
+        BtnCheck();
+    }
+
+    /*  Page Down   */
+    function PageDown() {
+        window.flag1 = 0;
+        PageNumCheck();
+        if (eventList[eventPerPage - 1] != "") {
+            GoPage(eventLocation + eventPerPage);
+        }
+
+        BtnCheck();
+    }
+
+    /*  Write Log  */
+    function WriteEventList() {
+        for (var i = 0; i < eventPerPage; i++) {
+            if (eventList[i] != "") {
+                DW("<tr>");
+                //DW("<td align='center' class='fixsize' >" + (eventLocation + i + 1) + ".</td>");
+                DW("<td align='left' class='fixsize' >&nbsp;&nbsp;" + eventList[i].substring(0, 19) + "&nbsp;&nbsp;</td>");
+                DW("<td align='left' class='fixsize' >" + eventList[i].substring(20) + "</td>");
+                DW("</tr>");
+            }
+            if (eventList[0] == "")
+            {
+                DW("<tr>");
+                //DW("<td align='center' class='fixsize' >" + (eventLocation + i + 1) + ".</td>");
+                DW("<td align='left' class='fixsize' >&nbsp;&nbsp;" + GL("no_event") + "&nbsp;&nbsp;</td></tr>");
+                break;
+            }
+        }
+    }
+
+    // function WriteAllEventList() {
+    //     for (var i = 0; i < eventPerPage * PageNum; i++) {
+    //         if (alleventList[i] != "") {
+    //             DW("<tr>");
+    //             //DW("<td align='center' class='fixsize' >" + (eventLocation + i + 1) + ".</td>");
+    //             DW("<td align='left' class='fixsize' >&nbsp;&nbsp;" + alleventList[i].substring(0, 19) + "&nbsp;&nbsp;</td>");
+    //             DW("<td align='left' class='fixsize' >" + alleventList[i].substring(20) + "</td>");
+    //             DW("</tr>");
+    //         }
+    //     }
+    // }
+    function WEBtn(tid, onClick) {
+        DW('<input type="button" id=' + tid + ' value="' + GL(tid) + '" class="m1" onClick="' + onClick + '" style="width:85px;height:30px">&nbsp;&nbsp;');
+    }
+
+    /*  Following add by zdy, 2013-3-6  */
+
+// all log export
+function LogExport()
+{
+    //var o = "/BITcomLog_" + location.hostname.replace(/\./g, '_') + ".log";
+
+    //window.location.href = o;
+	 var logfile = document.getElementById("timelogdiv");
+        logfile.document.execCommand('Saveas', false, 'c:\\ipnc_Log_' + location.hostname.replace(/\./g, '_') + '_' +  parseInt(document.getElementById("tPageNum").value) + '.txt');
+}
+function LogExportall()
+{
+    var o = "/BITcomLog_" + location.hostname.replace(/\./g, '_') + ".log";
+    window.location.href = o;	 
+}
+
+    /*  Check Button Pageup and Pagedown status */
+    function BtnCheck()
+    {
+        var pageval = document.getElementById("tPageNum").value;
+        if (eventLocation == 0) {
+            document.getElementById("pageup").disabled = true;
+        }
+        if (eventList[eventPerPage - 1] == "" || pageval == "<%timeeventcount%>")
+        {
+            document.getElementById("pagedown").disabled = true;
+        }
+        return true;
+    }
+
+    /*  Synchronize Page Text Value    */
+    function PageNumCheck()
+    {
+        var page;
+        if (eventLocation % eventPerPage == 0) {
+            page = parseInt(eventLocation / eventPerPage + 1);//document.getElementById("tPageNum").value = parseInt(eventLocation / eventPerPage + 1);
+        }
+        else
+           page = parseInt(eventLocation / eventPerPage + 2);// document.getElementById("tPageNum").value = parseInt(eventLocation / eventPerPage + 2);
+       return page;
+    }
+
+    /*  Check Page Num is Legal or Not  */
+    function CheckPage(page)
+    {
+        // alert(page);
+        // alert(eventcount);
+        if (page.length == 0)
+        {
+            alert(GL("page_empty"));
+            return false;
+        }
+
+        if (!(IsNumeric(page)))
+        {
+            alert(GL("page_inva"));
+            return false;
+        }
+
+        if(parseInt(page) == 0 || parseInt(page) > eventcount)
+        {
+            alert(GL("page_err"));
+            return false;
+        }
+        return true;
+    }
+
+    // time check
+    var tsstr = new Array(3);
+    var testr = new Array(3);
+    function time_check()
+    {
+        var obj1=window.parent.document.getElementById("shi1").value;
+        var exp=/^(\d{1}|1\d|2[0-3])$/; // Hour:[1-23]
+        var reg1 = obj1.match(exp);
+        var obj2=window.parent.document.getElementById("fen1").value;
+        var exp1=/^(\d{1}|[1-5][0-9])$/; // Minute:[1-59]
+        var reg2 = obj2.match(exp1);
+        var obj3=window.parent.document.getElementById("shi2").value;
+        var reg3 = obj3.match(exp);
+        var obj4=window.parent.document.getElementById("fen2").value;
+        var reg4 = obj4.match(exp1);
+
+        if (obj1.length == 0)
+        {
+            alert(GL("start_hour_empty"));
+            return false;
+        }
+        if (reg1 == null)
+        {
+            alert(GL("start_hour_err"));
+            return false;
+        }
+        if (obj2.length == 0)
+        {
+            alert(GL("start_min_empty"));
+            return false;
+        }
+
+        if (reg2 == null)
+        {
+            alert(GL("start_min_err"));
+            return false;
+        }
+        if (obj3.length == 0)
+        {
+            alert(GL("end_hour_empty"));
+            return false;
+        }
+
+        if (reg3 == null)
+        {
+            alert(GL("end_hour_err"));
+            return false;
+        }
+        if (obj4.length == 0)
+        {
+            alert(GL("end_min_empty"));
+            return false;
+        }
+
+        if (reg4 == null)
+        {
+            alert(GL("end_min_err"));
+            return false;
+        }
+
+        var Tstr = window.parent.document.getElementById("Tstart").value;
+        var Sstr = window.parent.document.getElementById("Tend").value;
+
+        charslice(Tstr,tsstr);
+        charslice(Sstr,testr);
+
+
+        var newdates = new Date(tsstr[0], --tsstr[1], tsstr[2], obj1, obj2);
+        var newdatee = new Date(testr[0], --testr[1], testr[2], obj3, obj4);
+
+        if(newdates > newdatee)
+        {
+            alert(GL("terr_time"));
+            return false;
+        }
+
+        return true;
+    }
+
+    // 
+    function charslice(str,array)
+    {
+        var flg = 0;
+        var dest = 0;
+        for (var t=0; t < str.length; t++){
+            if(str.charAt(t) == "-"){
+                array[dest] = str.substring(flg,t);
+                dest++;
+                flg = t++;
+                flg++;
+            }
+            continue;
+        }
+        array[2] = str.substring(flg,t);
+    }
+    /*  Query Log   */
+    function TimeQuery()
+    {
+        if (!time_check())
+            return false;
+        var obj1 = FixNum(window.parent.document.getElementById("shi1").value, 2) + ':';
+        var obj2 = FixNum(window.parent.document.getElementById("fen1").value, 2);
+        var obj3 = FixNum(window.parent.document.getElementById("shi2").value, 2) + ':';
+        var obj4 = FixNum(window.parent.document.getElementById("fen2").value, 2);
+        var Tstr = window.parent.document.getElementById("Tstart").value;
+        var Sstr = window.parent.document.getElementById("Tend").value;
+
+        var o = Tstr + '_' + obj1 + obj2 + '_' + Sstr + '_' + obj3 + obj4;
+        SendHttp(c_iniUrl + GetSetterCmdKV("timequery", o), false);
+        SendHttp(c_iniUrl + GetSetterCmdKV("timequery", o), true);
+
+        // var url = "time.htm?" + o;
+        window.flag1 = 1;
+        GoPage(0)
+    }
+
+    function Query()
+    {
+        window.flag1 = 0;
+        var page = document.getElementById("tPageNum").value;
+
+        if(!CheckPage(page))
+        {
+            document.getElementById("tPageNum").value = PageNumCheck();
+            return false;
+        }
+        
+        var newLoc = (parseInt(page) -1) * eventPerPage;
+        if (eventLocation != newLoc)
+        {
+            GoPage(newLoc);
+            BtnCheck();
+        }
+
+        return true;
+    }
+
+    function TypeChange()
+    {
+        document.getElementById("tPageNum").value = 1;
+    }
+    
+    function MY_ONLOAD()
+    {
+        g_lockLink = false;
+        // document.getElementById("tPageNum").value = 1;
+        // GoFirst();
+        document.getElementById("tPageNum").value = PageNumCheck();
+        BtnCheck();
+        //typechange();
+        // GetEventList();
+        // TimeQuery();
+        if (PageNum == 0)
+        {
+            document.getElementById("log_export").disabled = 1;
+            document.getElementById("query").disabled = 1;
+        }
+    }
+
+</script>
+    <script>
+    var uri=window.location.href;
+    // alert(uri);
+    var namelist = uri.split('?');
+    var flag1 = namelist[1];
+    // alert(namelist[1]);
+    if (namelist.length == 1)
+    {
+      window.flag = 1;
+      GoPage(0);
+    }
+    else if (namelist[1] == 1)
+    {
+      window.flag = 2;
+    }else if (namelist[1] == 0)
+    {
+        window.flag = 3;
+        GoPage(0);
+    }
+    </script>
+
+
+<script>
+    // DW('</form></div>');
+
+    // WriteGroup("log_query");
+    DW('<div id="timelogdiv" style="left">');
+
+    DW("<table width=730 border=0 cellPadding=0 cellSpacing=0>");
+
+    // DW('<tr><td height=30 colspan=4 style="vertical-align:text-top;"><div text-align="left">');
+    // DW('<table><tr><td width="80px">' + GL('log_type') + '</td>');
+
+    // DW('<td><SELECT style="FONT-FAMILY: Arial,sans-serif" name="ntype" id="type">');
+
+    // DW('<OPTION value="all" selected>' + GL("all") + '</OPTION>');
+
+    // DW('</SELECT>');
+    // DW('</td></tr></table>');
+    // DW('</div></td>');
+
+    // DW("<td colspan=2 align='right' height=30 style='vertical-align:text-top;'>");
+    // DW('<div text-align="right">');
+    // DW('<table><tr><td align=right height=30>');
+    // WEBtn("pageup", "PageUp()");
+    // DW('</td><td align=right height=30>');
+    // DW('<input type="text" id="tPageNum" size=5 maxlength=3 onchange="Query()">');
+    // DW('</td><td align=right height=30>');
+    // DW('<label id=lPageNum>/'+ eventcount +'</label>');
+    // DW('</td><td align=right height=30>');
+    // WEBtn("pagedown", "PageDown()");
+    // DW('</td></tr></table></div>');
+
+    // DW('</td></tr>');
+    // DW("</td></tr>");
+    
+    DW('<tr><td colspan=6 height="300px" style="border: 1px solid #CECECE; vertical-align:text-top;">');
+    // DW('<br>');
+    DW('<div name="log" id="logdiv" ><table id="logtable" >'); 
+     
+    WriteEventList();
+    DW('</table></div>');
+    </script>
+    <script>
+
+    DW('</td></tr>');
+    DW('<tr>');
+    DW('<br>');
+    DW('<td colspan=3>');
+    DW('<div align="left">');
+    DW('<table><tr><td align=right height=30>');
+    WEBtn("pageup", "PageUp()");
+    DW('</td><td align=right height=30>');
+    DW('<input type="text" id="tPageNum" size=5 maxlength=3 onchange="Query()">');
+    DW('</td><td align=right height=30>');
+    DW('<label id=lPageNum>/'+ eventcount +'</label>');
+    DW('</td><td align=right height=30>');
+    WEBtn("pagedown", "PageDown()");
+    DW('</td></tr></table></div>');
+
+    DW('</td><td colspan=3>');
+    // DW('<br>');
+    DW('<div align=right>');
+    WEBtn("query", "TimeQuery()");
+
+    WEBtn("log_export", "LogExport()");
+    WEBtn("log_exportall", "LogExportall()");
+
+    DW('</div>');
+    DW('</td></tr></table></div>');
+</script>
+<script>
+    ALC();
+</script>
+</body>
+</html>

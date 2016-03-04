@@ -1,0 +1,175 @@
+<html>
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+     <style type="text/css">
+		td {font-size:12px}
+ 	</style>
+    <title>
+      SNTP Setting
+    </title>
+    <style type="text/css">
+    td {
+      font-size: 12px;
+    }
+    </style>
+
+  </head>
+
+  <body onload="MY_ONLOAD()">
+
+<script>
+  var v_sntpip = "<%sntpip%>";
+  
+  CTRLARY = {
+    ntpinterval: new Ctrl_Text("ntpinterval", "25", "25", "<%ntpinterval%>", "ntpinterval="),
+    sntpip: new Ctrl_Text("sntpip", "25", "25", v_sntpip, "sntpip=")
+  };
+</script>
+<script> 
+    function MY_ONLOAD() {
+        g_lockLink = false;        
+    }
+
+function CheckSntpIp() {
+  var value = document.getElementById("sntpip").value;
+      var res = false;    
+      var ipary = value.split(".");     
+      var num = ipary.length;
+      if (value.length == 0)
+      {
+        alert(GL("sntpip_empty"));
+        document.getElementById("sntpip").value = "<%sntpip%>";
+        document.getElementById("sntpip").focus();
+        return false;
+      }
+      if(num != 4)
+      {
+        alert(GL("sntpip_err"));
+        document.getElementById("sntpip").value = "<%sntpip%>";
+        document.getElementById("sntpip").focus();
+        return false;
+      }
+      else
+      {
+        var i = 0;
+        if (ipary[0] <= 0 || !(IsNumeric(ipary[0])))
+        {
+          alert(GL("sntpip_err"));
+          document.getElementById("sntpip").value = "<%sntpip%>";
+          document.getElementById("sntpip").focus();
+          return false; 
+        } 
+
+        for (i = 1; i<num;i++)
+        {
+          if(ipary[i] < 0 || ipary[i] >255 || !(IsNumeric(ipary[i])) || ipary[i] == '')
+          {
+            alert(GL("sntpip_err"));  
+            document.getElementById("sntpip").value = "<%sntpip%>";          
+            document.getElementById("sntpip").focus();
+            return false; 
+          }
+        }
+      }
+      return true;
+}
+
+function CheckSntpInterval(min) {
+    var value = document.getElementById("ntpinterval").value;
+
+      if (value.length == 0)
+      {
+        alert(GL("sntpinter_empty"));
+        document.getElementById("ntpinterval").value = "<%ntpinterval%>";
+        document.getElementById("ntpinterval").focus();
+        return false;
+      }
+
+      if (!(IsNumeric(value)))
+      {
+        alert(GL("sntpinter_err"));
+        document.getElementById("ntpinterval").value = "<%ntpinterval%>";
+        document.getElementById("ntpinterval").focus();
+        return false; 
+      }
+
+      if (value < min)
+      {
+        alert(GL("sntpinter_num"));
+        document.getElementById("ntpinterval").value = "<%ntpinterval%>";
+        document.getElementById("ntpinterval").focus();
+        return false; 
+      }
+
+}
+function ParaCheck()
+{
+  var flag = false;
+
+  var sntpip = GetCCV("sntpip");
+  if (sntpip == "<%sntpip%>")
+  {
+    CTRLARY["sntpip"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var sntpinterval = GetCCV("ntpinterval");
+  if (sntpinterval == "<%ntpinterval%>")
+  {
+    CTRLARY["ntpinterval"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  return flag;
+}
+
+  function MY_BEFORE_SUBMIT() {
+    if(CheckSntpIp() == false)
+      return false;
+
+    if(CheckSntpInterval(15) == false)
+      return false;
+
+    if (ParaCheck() == false)
+    {
+      alert(GL("para_not_change"));
+      ChangeActive();
+      return false;
+    }
+
+    return true;
+}
+  function MY_SUBMIT_OK() {
+    alert(GL("submit_success"));
+    // ChangeContent(null, false);
+    window.location.reload();
+  }
+function WIPXGain(tid, ctx, numrange)
+{
+  DW('<tr><td height="30" >');
+  DW(GL(tid) + ':</td><td height=30>' + ctx + GL(numrange)+ '</td></tr>');  
+};
+function WIPGain(tid, id, numrange)
+{
+  WIPXGain(tid, WH_(id), numrange)
+}
+
+</script>
+<script> 
+  DW('<table  style="text-align: left">');
+  WIP("sntp_server", "sntpip");
+  WIPGain("sntp_interval", "ntpinterval", "ntpin_range");
+  WIPSubmit();
+  DW('</table>');
+  ALC();
+</script>
+</body>
+</html>

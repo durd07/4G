@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+    <title>
+      Camera Setting
+    </title>
+    <style type="text/css">
+ td {font-size:12px}
+ </style>
+
+</head>
+<body style="overflow:hidden" onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+
+    <script>
+  var isNoShowWaitImg = (parseInt(GV("<%waitserver%>", "0")) == 0);
+
+  var useActiveX = 1;//GV("<%layoutnum.0%>", 1);//GFL
+
+  function MY_ONUNLOAD() {  
+    // clearTimeout(timerID);
+    StopActiveX();
+  }
+
+  function MY_ONLOAD() { 
+    g_lockLink = false;
+    // StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null); //h264 1080p
+    StartActiveXOneEx(0, 0, Get9001FirstCodec(), 5, null); //h264 1080p
+    var uri = window.location.href;
+    // alert(uri);
+    var namelist = uri.split('?');
+    // alert(namelist[1]);
+    if (namelist[1] == 2)
+    {
+      document.getElementById("videoframe").src = "stream1.htm?2";
+    }
+    else if (namelist[1] == 3)
+    {
+      document.getElementById("videoframe").src = "stream1.htm?3";
+    }
+    else
+    {
+      document.getElementById("videoframe").src = "stream1.htm";
+    }
+
+}
+
+
+  DW('<div id="imgdiv1">');
+  DW('<table><tr><td style="vertical-align:text-top;">');
+  DW('<div id="videoview">');
+  WriteImageTxtPage(useActiveX, isNoShowWaitImg);
+  DW('</div>');
+</script>
+<input type="text" id="hiddentext" style="visibility:hidden" value="1" height="1px" />
+
+<script>
+  DW('</td><td colspan=3 align="left">');
+  DW('<div id="imgcontent" text-align="left">');
+  </script>
+
+  <iframe name="videoframe" id="videoframe" 
+    marginwidth="0" marginheight="0" scrolling="no" frameborder="0">
+  </iframe>
+
+  <script>
+
+  DW('</div>');
+  DW('</td></tr>');
+  </script>
+  <script>
+  DW("</table>");
+  DW('</div>');
+  </script>
+<script>
+  ALC();
+</script>
+</body>
+</html>

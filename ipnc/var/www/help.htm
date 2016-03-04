@@ -1,0 +1,493 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>
+    IPNC HELP
+</title>
+<style type="text/css">
+fieldset {
+    color:#333; 
+    border:#06c dashed 1px;
+} 
+legend {
+    color:#06c;
+    font-weight:800; 
+} 
+
+.button {
+    display: inline-block;
+    outline: none;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    font: 16px/100% 'Microsoft yahei',Arial, Helvetica, sans-serif;
+    padding: .5em 2em .55em;
+    text-shadow: 0 1px 1px rgba(0,0,0,.3);
+    -webkit-border-radius: .5em; 
+    -moz-border-radius: .5em;
+    border-radius: .5em;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+
+.button:hover {
+    text-decoration: none;
+}
+.button:active {
+    position: relative;
+    top: 1px;
+}
+.bigrounded {
+    -webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
+    border-radius: 2em;
+}
+.medium {
+    font-size: 12px;
+    padding: .4em 1.5em .42em;
+}
+.small {
+    font-size: 11px;
+    padding: .2em 1em .275em;
+}
+
+/* blue */
+.blue {
+    color: #d9eef7;
+    border: solid 1px #0076a3;
+    background: #0095cd;
+    background: -webkit-gradient(linear, left top, left bottom, from(#00adee), to(#0078a5));
+    background: -moz-linear-gradient(top,  #00adee,  #0078a5);
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#00adee', endColorstr='#0078a5');
+}
+.blue:hover {
+    background: #007ead;
+    background: -webkit-gradient(linear, left top, left bottom, from(#0095cc), to(#00678e));
+    background: -moz-linear-gradient(top,  #0095cc,  #00678e);
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#0095cc', endColorstr='#00678e');
+}
+.blue:active {
+    color: #80bed6;
+    background: -webkit-gradient(linear, left top, left bottom, from(#0078a5), to(#00adee));
+    background: -moz-linear-gradient(top,  #0078a5,  #00adee);
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#0078a5', endColorstr='#00adee');
+}
+
+/* green */
+.green {
+    color: #e8f0de;
+    border: solid 1px #538312;
+    background: #64991e;
+    background: -webkit-gradient(linear, left top, left bottom, from(#7db72f), to(#4e7d0e));
+    background: -moz-linear-gradient(top,  #7db72f,  #4e7d0e);
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#7db72f', endColorstr='#4e7d0e');
+}
+.green:hover {
+    background: #538018;
+    background: -webkit-gradient(linear, left top, left bottom, from(#6b9d28), to(#436b0c));
+    background: -moz-linear-gradient(top,  #6b9d28,  #436b0c);
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#6b9d28', endColorstr='#436b0c');
+}
+.green:active {
+    color: #a9c08c;
+    background: -webkit-gradient(linear, left top, left bottom, from(#4e7d0e), to(#7db72f));
+    background: -moz-linear-gradient(top,  #4e7d0e,  #7db72f);
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#4e7d0e', endColorstr='#7db72f');
+}
+
+
+</style>
+</head>
+<body onload="Play()">
+<center>
+    <OBJECT id="vlc" height="360" width="640" classid="clsid:A2D1277C-2CC2-4A1A-B715-C6BAB17661D6"
+        events="True">
+        <PARAM NAME="_Version" VALUE="65536">
+        <PARAM NAME="_ExtentX" VALUE="9419">
+        <PARAM NAME="_ExtentY" VALUE="7064">
+        <PARAM NAME="_StockProps" VALUE="1">
+        <PARAM NAME="BackColor" VALUE="16777215">
+    </OBJECT>
+    <span style="width:20"></span>
+    <textarea rows=24  cols=60   readonly name="cmdResults" >root@IPNC # </textarea>
+    <BR><BR>
+    <input type="text"  name="cmdarea" size=80  value="" onkeydown="isEnterPress();isPrevPress()" />
+    <BR><BR>
+
+    <script LANGUAGE="JavaScript",type="text/javascript">	
+        function showPTZ(){
+            var ptz=document.getElementById("ptz");
+            var park=document.getElementById("park");
+            var entrance=document.getElementById("entrance");
+            ptz.style.display='block';
+            park.style.display='none';
+            entrance.style.display='none';
+        }
+        function showPark(){
+            var ptz=document.getElementById("ptz");
+            var park=document.getElementById("park");
+            var entrance=document.getElementById("entrance");
+            ptz.style.display='none';
+            park.style.display='block';
+            entrance.style.display='none';
+        }
+        function showEntrance(){
+            var ptz=document.getElementById("ptz");
+            var park=document.getElementById("park");
+            var entrance=document.getElementById("entrance");
+            ptz.style.display='none';
+            park.style.display='none';
+            entrance.style.display='block';
+        }
+        function showFactoryModeAlert(){
+            var result = confirm("进入工厂调试模式后会杀死vd进程并阻止vd重新启动，\n导致系统不能正常工作，\n如需退出需要重启系统。\n 确认进入工厂调试模式吗？");                
+            if (result) {
+                cmdarea.value = "prevent_vd_start";
+                AjaxFunction();
+            }
+        }
+    </script>
+
+    <input type="button" class="button" onclick="showPTZ();" value="点击打开云台调试选项" /> 
+    <input type="button" class="button green" onclick="showPark();" value="点击打开泊车调试选项" /> 
+    <input type="button" class="button blue" onclick="showEntrance();" value="点击打开出入口调试选项" /> 
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="button" class="button" onclick="showFactoryModeAlert();" value="工厂调试模式" /> 
+    
+</center>
+
+<div id="ptz" style="display:none">
+    <fieldset>
+        <legend>云台</legend>
+        <BR><BR>
+        <input type="button" name="up_yuntai" value="云台上" onMouseDown="light_control_Function(this.name)" onMouseUp="light_control_Function('stop_yuntai')">
+        <input type="button" name="down_yuntai" value="云台下" onMouseDown="light_control_Function(this.name)" onMouseUp="light_control_Function('stop_yuntai')">
+        <input type="button" name="left_yuntai" value="云台左" onMouseDown="light_control_Function(this.name)" onMouseUp="light_control_Function('stop_yuntai')">
+        <input type="button" name="right_yuntai" value="云台右" onMouseDown="light_control_Function(this.name)" onMouseUp="light_control_Function('stop_yuntai')">
+        <input type="button" name="stop_yuntai" style=display:none value="云台停止" onclick="light_control_Function(this.name)">
+        <BR><BR>
+
+        <input type="button" name="near" value="拉近" onMouseDown="light_control_Function(this.name)" onMouseUp="light_control_Function('stop')">
+        <input type="button" name="far" value="拉远" onMouseDown="light_control_Function(this.name)" onMouseUp="light_control_Function('stop')">
+        <input type="button" name="stop" style="display:none" value="停止" onclick="light_control_Function(this.name)">
+        <BR><BR>
+
+        <input type="button" name="open" value="十字叉开" onclick="light_control_Function(this.name)">
+        <input type="button" name="close" value="十字叉关" onclick="light_control_Function(this.name)">
+        <input type="button" name="reset" value="十字叉复位" onclick="light_control_Function(this.name)">
+        <input type="button" name="left" value="十字左移" onclick="light_control_Function(this.name)">
+        <input type="button" name="right" value="十字右移" onclick="light_control_Function(this.name)">
+        <input type="button" name="up" value="十字上移" onclick="light_control_Function(this.name)">
+        <input type="button" name="down" value="十字下移" onclick="light_control_Function(this.name)">
+
+        <label>步长</label>
+        <select name="step">
+            <script LANGUAGE="JavaScript",type="text/javascript">	
+                for(var i=1;i<255;i++)
+                {
+                    document.write('<option value=' + i +'>' + i +'</option>');
+                }
+            </script>
+        </select>
+        <BR><BR>
+    </fieldset>
+</div>
+
+<div id="park" style="display:none">
+    <fieldset>
+        <legend>泊车</legend>
+        <BR><BR>
+        <input type="button" name="ropen"  value="红灯开" onclick="light_control_Function(this.name)">
+        <input type="button" name="gopen"  value="绿灯开" onclick="light_control_Function(this.name)">
+        <input type="button" name="bopen"  value="蓝灯开" onclick="light_control_Function(this.name)">
+        <input type="button" name="wopen"  value="白灯开" onclick="light_control_Function(this.name)">
+        <input type="button" name="allopen"  value="全部开" onclick="light_control_Function(this.name)">
+        <input type="button" name="open_seq" class="button blue medium" value="红绿蓝白顺序开" onclick="light_control_Function(this.name)">
+        <BR><BR>
+        <input type="button" name="rclose" value="红灯关" onclick="light_control_Function(this.name)">
+        <input type="button" name="gclose" value="绿灯关" onclick="light_control_Function(this.name)">
+        <input type="button" name="bclose" value="蓝灯关" onclick="light_control_Function(this.name)">
+        <input type="button" name="wclose" value="白灯关" onclick="light_control_Function(this.name)">
+        <input type="button" name="allclose" value="全部关" onclick="light_control_Function(this.name)">
+        <BR><BR>
+        <input type="button" name="lockup" value="地锁起" onclick="light_control_Function(this.name)">
+        <input type="button" name="lockdown" value="地锁落" onclick="light_control_Function(this.name)">
+        <BR><BR>
+    </fieldset>
+</div>
+
+<div id="entrance" style="display:none">
+    <fieldset>
+        <legend>出入口</legend>
+        <BR><BR>
+        <input type="button" name="ropen_e"  value="红灯开" onclick="light_control_Function(this.name)">
+        <input type="button" name="gopen_e"  value="绿灯开" onclick="light_control_Function(this.name)">
+        <input type="button" name="bopen_e"  value="蓝灯开" onclick="light_control_Function(this.name)">
+        <input type="button" name="wopen_e"  value="白灯开" onclick="light_control_Function(this.name)">
+        <input type="button" name="allopen_e"  value="全部开" onclick="light_control_Function(this.name)">
+        <input type="button" name="open_seq_e" class="button blue medium"  value="红绿蓝白顺序开" onclick="light_control_Function(this.name)">
+        <BR><BR>
+        <input type="button" name="rclose_e" value="红灯关" onclick="light_control_Function(this.name)">
+        <input type="button" name="gclose_e" value="绿灯关" onclick="light_control_Function(this.name)">
+        <input type="button" name="bclose_e" value="蓝灯关" onclick="light_control_Function(this.name)">
+        <input type="button" name="wclose_e" value="白灯关" onclick="light_control_Function(this.name)">
+        <input type="button" name="allclose_e" value="全部关" onclick="light_control_Function(this.name)">
+        <BR><BR>
+        <BR><BR>
+        <input type="button" name="relay1_open"  value="继电器1闭合" onclick="light_control_Function(this.name)">
+        <input type="button" name="relay2_open"  value="继电器2闭合" onclick="light_control_Function(this.name)">
+        <input type="button" name="relay3_open"  value="继电器3闭合" onclick="light_control_Function(this.name)">
+        <input type="button" name="relay_open_all" class="button blue medium" value="继电器123全闭合" onclick="light_control_Function(this.name)">
+        <input type="button" name="out_alert1_open"  value="报警出1开" onclick="light_control_Function(this.name)">
+        <input type="button" name="out_alert2_open"  value="报警出2开" onclick="light_control_Function(this.name)">
+        <BR><BR>
+        <input type="button" name="relay1_close"  value="继电器1断开" onclick="light_control_Function(this.name)">
+        <input type="button" name="relay2_close"  value="继电器2断开" onclick="light_control_Function(this.name)">
+        <input type="button" name="relay3_close"  value="继电器3断开" onclick="light_control_Function(this.name)">
+        <input type="button" name="relay_close_all" class="button blue medium" value="继电器123全断开" onclick="light_control_Function(this.name)">
+        <input type="button" name="out_alert1_close"  value="报警出1关" onclick="light_control_Function(this.name)">
+        <input type="button" name="out_alert2_close"  value="报警出2关" onclick="light_control_Function(this.name)">
+        <BR><BR>
+        <input type="button" name="in_alert1_query"  value="报警入1查询" onclick="light_control_Function(this.name)">
+        <input type="button" name="in_alert2_query"  value="报警入2查询" onclick="light_control_Function(this.name)">
+        <input type="button" name="in_alert3_query"  value="报警入3查询" onclick="light_control_Function(this.name)">
+        <input type="button" name="in_alert_query_all" class="button blue medium"  value="报警入123全查询" onclick="light_control_Function(this.name)">
+        <BR><BR>
+        <BR><BR>
+        <input type="button" name="audio_play"  value="音频播放测试" onclick="light_control_Function(this.name)">
+        <input type="button" name="audio_loopback_on" class="button blue medium" value="音频LoopBack测试" onclick="light_control_Function(this.name)">
+        <input type="button" name="audio_loopback_off"  value="音频LoopBack关闭" onclick="light_control_Function(this.name)">
+        <input type="button" name="rs485_test" class="button blue medium" value="RS485测试" onclick="light_control_Function(this.name)">
+        <BR><BR>
+    </fieldset>
+</div>
+
+<script LANGUAGE="JavaScript",type="text/javascript">	
+var cmdList = new Array("ls", "pwd", "ls -l", "ps");
+var i = cmdList.length;
+
+function isPrevPress()
+{
+    if(window.event.keyCode == 38) //UP
+    {
+        if(i > 0)
+        {
+            i = i - 1;
+            cmdarea.value = cmdList[i].toString();			
+        }
+    }	
+    else if(window.event.keyCode == 40) //Down
+    {
+        if(i < cmdList.length - 1)
+        {
+            i = i + 1;
+            cmdarea.value = cmdList[i].toString();			
+        }
+    }		
+}
+function Play()		// 播放视频
+{
+    vlc.MediaURL ="rtsp://"+document.domain+":8557/h264";
+    vlc.bRtspTcp = 1;
+    vlc.Play();
+}
+function Stop()		// 停止视频播放
+{
+    vlc.Stop();
+}
+function isEnterPress()
+{	
+    if(window.event.keyCode == 13) //Enter
+    {
+        cmdList[cmdList.length] = cmdarea.value;
+        i = cmdList.length;
+
+        AjaxFunction();
+    }
+}
+
+function AjaxFunction()
+{
+    var xmlHttp;
+    try
+    {
+        // Firefox, Opera 8.0+, Safari
+        xmlHttp=new XMLHttpRequest();
+    }
+    catch (e)
+    {
+        // Internet Explorer
+        try
+        {
+            xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
+        }
+        catch (e)
+        {
+
+            try
+            {
+                xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            catch (e)
+            {
+                alert("浏览器不支持AJAX！");
+                return false;
+            }
+        }
+    }
+
+    xmlHttp.onreadystatechange=function()
+    {
+        if(xmlHttp.readyState==4)
+        {					
+            cmdResults.value += "\nroot@IPNC # " + cmdarea.value + "\n";				
+            cmdResults.value += xmlHttp.responseText;
+            cmdResults.scrollTop = cmdResults.scrollHeight;				
+            cmdarea.value = "";				
+        }
+    }
+
+    //hicmdurl = "http://192.168.0.12/cgi-bin/lcmd?cmd=" + cmdarea.value ;
+    hicmdurl = "/cgi-bin/lcmd?" + cmdarea.value ;
+    xmlHttp.open("GET", hicmdurl, true);
+    xmlHttp.send(null);
+}	
+
+function light_control_Function(name)
+{
+    cmdarea.value=name;
+    var s=parseInt(step.value);
+
+
+    var a=s.toString(16);
+
+    switch(name)
+    {
+        case "left": 
+            cmdarea.value="bit_dlsx bb 01 04 53 01 " + a + " ff" ;break;
+        case "right": 
+            cmdarea.value="bit_dlsx bb 01 04 53 02 " + a + " ff" ;break;
+        case "up" :  
+            cmdarea.value="bit_dlsx bb 01 04 53 03 " + a + " ff" ;break;
+        case "down":  
+            cmdarea.value="bit_dlsx bb 01 04 53 04 " + a + " ff" ;break;
+        case "Location":
+            {
+                var temp_Location=parseInt(LocationNum.value);
+                var Location_hex=temp_Location.toString(16);
+                var Location_final=0x01^0x0^0x03^0x0^Location_hex;
+                cmdarea.value="seri_wxy ea d5 05 fa 01 00 03 00 " + Location_hex + " " + Location_final ;
+            }
+            break;
+        case "AddCruisePoint":
+            {
+                var temp_AddCruisePoint=parseInt(Num.value);
+                var AddCruisePoint_hex=temp_AddCruisePoint.toString(16);
+                var AddCruisePoint_final=0x01^0x00^0x23^AddCruisePoint_hex^0x05;
+                cmdarea.value="seri_wxy ea d5 05 fa 01 00 23 "+ AddCruisePoint_hex + " 05 " + AddCruisePoint_final.toString(16);
+            }
+            break;
+
+        case "ClearLocation":
+            {
+                var temp_ClearLocation=parseInt(LocationNum.value);
+                var ClearLocation_hex=temp_ClearLocation.toString(16);
+                var ClearLocation_final=0x01^0^0x05^0^ClearLocation_hex;
+                cmdarea.value="seri_wxy ea d5 05 fa 01 00 05 00 " + ClearLocation_hex + " " + ClearLocation_final;
+            }
+            break;
+        case "ToLocation":
+            {
+                var temp_ToLocation=parseInt(LocationNum.value);
+                var ToLocation_hex=temp_ToLocation.toString(16);
+                var ToLocation_final=0x01^0^0x07^0^ToLocation_hex;
+                cmdarea.value= "seri_wxy ea d5 05 fa 01 00 07 00 " + ToLocation_hex + " " + ToLocation_final; 
+            }
+            break;
+        case "HomingSetting":
+            {
+                var temp_HomingSetting=parseInt(Hsetting.value);
+
+                if (temp_HomingSetting==1)
+                {
+                    var temp_HomingLocation=parseInt(LocationNum.value);
+                    var temp_hex=temp_HomingLocation.toString(16);
+
+                    var temp_final=0x01^0^0x43^temp_hex^0x01;
+
+                    cmdarea.value="seri_wxy ea d5 05 fa 01 00 43 " + temp_hex + " " + "01" +" "+ temp_final.toString(16);
+                }
+                else
+                {
+                    var HomingSetting_hex=temp_HomingSetting.toString(16);
+                    var HomingSetting_final=0x01^0x00^0x043^0x0^HomingSetting_hex;
+                    cmdarea.value="seri_wxy ea d5 05 fa 01 00 43 00 " + HomingSetting_hex + " " + HomingSetting_final.toString(16) ;
+                }
+            }
+            break;
+        case "HomingTimeSetting":
+            {
+                var  temp_HomingTime=parseInt(WaitingTime.value);
+                var  HomingTimeSetting_hex = temp_HomingTime.toString(16);
+                var  HomingTimeSetting_final=0x01^0x0^0x45^0x0^HomingTimeSetting_hex;
+
+                cmdarea.value="seri_wxy ea d5 05 fa 01 00 45 00 "+ HomingTimeSetting_hex + " " + HomingTimeSetting_final.toString(16) ;
+            }
+            break;
+        case "StartRecordStudy":
+            {
+                //ea d5 05 fa 01 00 11 00 01 11
+                var temp_StartRecordStudy=parseInt(RecordNum.value);
+                var StartRecordStudy_hex=temp_StartRecordStudy.toString(16);
+                var StartRecordStudy_final=0x01^0x00^0x11^0x00^StartRecordStudy_hex;
+                cmdarea.value="seri_wxy ea d5 05 fa 01 00 11 00 " + StartRecordStudy_hex + " " + StartRecordStudy_final.toString(16);
+            }
+            break;
+        case "ReplayStudy":
+            {
+                //ea d5 05 fa 01 00 15 00 01 15
+                var temp_ReplayStudy=parseInt(ReplayNum.value);
+                var ReplayStudy_hex=temp_ReplayStudy.toString(16);
+                var ReplayStudy_final=0x01^0x00^0x15^0x00^ReplayStudy_hex;
+                cmdarea.value="seri_wxy ea d5 05 fa 01 00 15 00 " + ReplayStudy_hex + " " + ReplayStudy_final.toString(16);
+            }
+            break;
+        case "CruiseSetting":
+            {
+                //ea d5 05 fa 01 00 21 00 01 21 
+                var temp_CruiseSetting=parseInt(CruiseNum.value);
+                var CruiseSetting_hex=temp_CruiseSetting.toString(16);
+                var CruiseSetting_final=0x01^0x00^0x21^0x00^CruiseSetting_hex;
+                cmdarea.value="seri_wxy ea d5 05 fa 01 00 21 00 " + CruiseSetting_hex + " " + CruiseSetting_final.toString(16);
+            }
+            break;		
+        case "StartCruise":
+            {
+                //ea d5 05 fa 01 00 29 00 01 29
+                var temp_StartCruise=parseInt(StartCruiseNum.value);
+                var StartCruise_hex=temp_StartCruise.toString(16);
+                var StartCruise_final=0x01^0x00^0x29^0x00^StartCruise_hex;
+                cmdarea.value="seri_wxy ea d5 05 fa 01 00 29 00 " + StartCruise_hex + " " + StartCruise_final.toString(16);
+            }
+            break;
+        case "ClearCruise":
+            {
+                //ea d5 05 fa 01 00 27 00 01 27
+                var temp_ClearCruise=parseInt(ClearCruiseNum.value);
+                var ClearCruise_hex=temp_ClearCruise.toString(16);
+                var ClearCruise_final=0x01^0x00^0x27^0x00^ClearCruise_hex;
+                cmdarea.value="seri_wxy ea d5 05 fa 01 00 27 00 " + ClearCruise_hex + " " + ClearCruise_final.toString(16);
+            }break;
+
+        default:   ;break;
+    }
+
+    //alert(cmdarea.value);
+    AjaxFunction();
+}
+</script>
+
+
+</body>
+</html>

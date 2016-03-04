@@ -1,0 +1,68 @@
+   
+<script type="text/javascript">
+  function MY_ONLOAD() { 
+  // alert("onload"); 
+    g_lockLink = false;
+}
+
+
+    function Soft_Upgrade(){
+            if( document.getElementById('FILE1').value == '' ){
+                alert("请选择文件！");
+                return false;
+            }
+            // alert(document.getElementById('FILE1').value);
+            var filename1 = document.getElementById('FILE1').value;
+            var filenamelist = filename1.split('\\');
+            // alert(filenamelist);
+
+            var len = filenamelist.length;
+            var filename = filenamelist[len-1];
+
+            // SendHttp(c_iniUrl + GetSetterCmdKV("mcufilename", filename), false);
+            // alert(filename);
+            document.getElementById('uploadInfo').innerHTML = '' ;
+            document.getElementById('uploadInfo').innerHTML = '数据上传中，请稍候……' ;
+            
+            document.getElementById('form1').submit();
+            SendHttp(c_iniUrl + GetSetterCmdKV("softupgrade", filename), false);
+            // alert(filename);
+    }
+    // function McuUpdate(){
+    //     alert(filename);
+    //     SendHttp(c_iniUrl + GetSetterCmdKV("mcuupdate", "1"), false);
+    // }
+    function WriteGroupSoft(titlekey)
+{
+//alert('WriteGroup');
+    var o = '';
+    //o += '<h3>' + GL(titlekey) + '</h3>';
+    o += '<fieldset id="GroupContainer">';
+    o += '<legend>' + GL(titlekey) + '</legend>';
+    //alert(o);
+    DW(o);
+}
+
+</script>  
+<script>
+  WriteNetPH("soft_upgrade"); //add by zdy, 2012-11-20
+  WriteGroupSoft("soft_upgrade");
+
+  DW('<div>');
+</script>
+        <FORM METHOD="POST" id="form1" name="form1" ENCTYPE="multipart/form-data" ACTION="/cgi-bin/uploadcgi.cgi">
+            选择文件：<INPUT TYPE="FILE" NAME="FILE1" id="FILE1" class="btn"><INPUT TYPE="button" onclick="upload_file()" VALUE="升级" class="btn"><br>
+            <center>
+                <div id="uploadInfo"></div>
+            </center>
+        </FORM>
+<script>
+DW('</div>');
+
+    DW('</fieldset>');
+    DW('<br>');
+    WriteNetPB();
+    ALC();
+
+</script>
+   

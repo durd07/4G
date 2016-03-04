@@ -31,9 +31,9 @@ int main()
         printf("Enter some text: ");  
         fgets(buffer, MAX_TEXT, stdin);  
         some_data.mtype = 1;  
-        strcpy(some_data.mtext, buffer);  
+        strcpy(some_data.data, buffer);  
   
-        if (msgsnd(msgid, (void *)&some_data, sizeof(some_data) - sizeof(long), 0) == -1) {  
+        if (msgsnd(msgid, (void *)&some_data, sizeof(some_data) - sizeof(long), IPC_NOWAIT) == -1) {  
             fprintf(stderr, "msgsnd failed\n");  
             exit(EXIT_FAILURE);  
         }  

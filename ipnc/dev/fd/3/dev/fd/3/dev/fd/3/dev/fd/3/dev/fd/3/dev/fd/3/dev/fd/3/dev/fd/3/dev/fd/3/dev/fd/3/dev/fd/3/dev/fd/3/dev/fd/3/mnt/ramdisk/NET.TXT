@@ -1,0 +1,9 @@
+LocalIP="192.168.8.216"
+NetMask="255.255.255.0"
+Gateway="192.168.8.1"
+DNS="0.0.0.0"
+HTTPPort=0
+DHCPConfig=0
+DHCPEnable=0
+Title="IPNC"
+MAC="7c:66:9d:6a:7d:d0"

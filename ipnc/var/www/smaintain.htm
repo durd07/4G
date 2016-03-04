@@ -1,0 +1,410 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+		<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+	<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script>
+            InitLoad();
+         </script>
+        <title>
+            
+        </title>
+    <style type="text/css">
+		body {
+			margin:0;
+			padding:0;
+			height:100%;
+			min-width:1200px;
+			min-height:580px;
+			background:#D5D5D5;
+		}
+ 
+    div.headline {
+		height:20px;
+		color: white;
+    	background-color:#666;
+    	font-weight:bold;
+    	margin-top:10px;
+		padding:5px;
+        /*margin-left: 10px;*/
+    }
+	table
+	{
+		font-size:12;
+	}
+    </style>
+
+    </head>
+<body onLoad="MY_ONLOAD()">
+<script>
+    function MY_ONLOAD() {
+    	g_lockLink = false;        
+    }
+
+	function ClickRestart() {
+		if (confirm(GL("confirm_restart")))
+        {
+            window.top.location = "wait.htm?restart";
+        }			
+    }
+
+    function PowerDown()
+    {
+        if (confirm(GL("confirm_restart")))
+        {
+            window.top.location = "wait.htm?powerdown";
+        }   
+    }
+
+    function FactoryReset() {
+        if (confirm(GL("confirm_reset")))
+        {
+            window.top.location = "wait.htm?reset";
+        }           
+    }
+    function Soft_Upgrade(){
+        g_lockLink = true;
+            if( document.getElementById('SOFTFILE').value == '' ){
+                alert(GL("selfile"));
+                return false;
+            }
+            var filename1 = document.getElementById('SOFTFILE').value;
+            var filenamelist = filename1.split('\\');
+
+            var len = filenamelist.length;
+            var filename = filenamelist[len-1];
+
+              var suflist = filename.split('.');
+              len = suflist.length;
+              var suf = suflist[len - 1];
+
+              if (suf != "bin")
+              {
+                alert(GL("filesuf"));
+                document.getElementById('SOFTFILE').value = "";
+                return false;
+              }
+
+            document.getElementById('softupgradeinfo').innerHTML = '' ;
+            document.getElementById('softupgradeinfo').innerHTML = GL("uploadfile") ;
+            document.getElementById("softupgrade").disabled = 1;
+           // document.getElementById("mcuupgrade").disabled = 1;
+            document.getElementById("restart").disabled = 1;
+           // document.getElementById("powerdown").disabled = 1;
+            document.getElementById("reset").disabled = 1;
+           // document.getElementById("lgimport").disabled = 1;
+          //  document.getElementById("lgexport").disabled = 1;
+           // document.getElementById("sysimport").disabled = 1;
+           // document.getElementById("sysexport").disabled = 1;
+
+            document.getElementById('softform').submit();
+            g_lockLink = false;
+    }
+
+    function Mcu_Upgrade(){
+        g_lockLink = true;
+            reloadCount = 10;
+            if( document.getElementById('MCUFILE').value == '' ){
+                alert(GL("selfile"));
+                return false;
+            }
+            var filename1 = document.getElementById('MCUFILE').value;
+            var filenamelist = filename1.split('\\');
+
+            var len = filenamelist.length;
+            var filename = filenamelist[len-1];
+
+              var suflist = filename.split('.');
+              len = suflist.length;
+              var suf = suflist[len - 1];
+
+              if (suf != "s19")
+              {
+                alert(GL("filesuf"));
+                document.getElementById('MCUFILE').value = "";
+                return false;
+              }
+            document.getElementById('softupgradeinfo').innerHTML = '' ;
+
+            document.getElementById('mcuupgradeinfo').innerHTML = GL("uploadfile") ;
+
+            document.getElementById("softupgrade").disabled = 1;
+            document.getElementById("mcuupgrade").disabled = 1;
+            document.getElementById("restart").disabled = 1;
+            document.getElementById("powerdown").disabled = 1;
+            document.getElementById("reset").disabled = 1;
+            document.getElementById("lgimport").disabled = 1;
+            document.getElementById("lgexport").disabled = 1;
+            document.getElementById("sysimport").disabled = 1;
+            document.getElementById("sysexport").disabled = 1;
+
+            document.getElementById('mcuform').submit();
+            g_lockLink = false;
+    }
+
+	function LG_Import(){
+		requestsrc = "LG";
+        g_lockLink = true;
+            if( document.getElementById('lgconfigfile').value == '' ){
+                alert(GL("selfile"));
+                return false;
+            }
+            var filename1 = document.getElementById('lgconfigfile').value;
+            var filenamelist = filename1.split('\\');
+
+            var len = filenamelist.length;
+            var filename = filenamelist[len-1];
+
+              var suflist = filename.split('.');
+              len = suflist.length;
+              var suf = suflist[len - 1];
+
+              if (suf != "ini")
+              {
+                alert(GL("filesuf"));
+                document.getElementById('lgconfigfile').value = "";
+                return false;
+              }
+
+            document.getElementById('lgimportinfo').innerHTML = '' ;
+            document.getElementById('lgimportinfo').innerHTML = GL("uploadfile") ;
+            document.getElementById("softupgrade").disabled = 1;
+            document.getElementById("mcuupgrade").disabled = 1;
+            document.getElementById("restart").disabled = 1;
+            document.getElementById("powerdown").disabled = 1;
+            document.getElementById("reset").disabled = 1;
+            document.getElementById("lgimport").disabled = 1;
+            document.getElementById("lgexport").disabled = 1;
+            document.getElementById("sysimport").disabled = 1;
+            document.getElementById("sysexport").disabled = 1;
+            
+            document.getElementById('lgimportform').submit();
+            g_lockLink = false;
+    }
+    
+    function LG_Export()
+	{
+	  SendHttp(c_iniUrl + GetSetterCmdKV("exportlgpara", "1"), false);
+	  count = 2;  
+
+	  LG_Wait();  
+	}
+	
+	function LG_Wait()
+	{
+	  if (count > 0)
+	  {
+	    count --;
+	    timerID = setTimeout("LG_Wait()", 1000);
+	  }
+	  else
+	  {
+        var o = "/para/Camera_config_" + location.hostname.replace(/\./g, '_') + ".ini";		
+        //var filename = "/para/sysenv.cfg";
+	     //alert(o);
+		window.location.href = o;
+	  }
+	}
+
+    function SYS_Import()
+    {
+    	requestsrc = '8147';
+        g_lockLink = true;
+        if( document.getElementById('sysconfigfile').value == '' ){
+            alert(GL("selfile"));
+            return false;
+        }
+        var filename1 = document.getElementById('sysconfigfile').value;
+        var filenamelist = filename1.split('\\');
+
+        var len = filenamelist.length;
+        var filename = filenamelist[len-1];
+
+        var suflist = filename.split('.');
+        len = suflist.length;
+        var suf = suflist[len - 1];
+
+        if (suf != "cfg")
+        {
+          alert(GL("filesuf"));
+          document.getElementById('sysconfigfile').value = "";
+          return false;
+        }
+        document.getElementById('sysimportinfo').innerHTML = '' ;
+        document.getElementById('sysimportinfo').innerHTML = GL("uploadfile") ;
+            document.getElementById("softupgrade").disabled = 1;
+            document.getElementById("mcuupgrade").disabled = 1;
+            document.getElementById("restart").disabled = 1;
+            document.getElementById("powerdown").disabled = 1;
+            document.getElementById("reset").disabled = 1;
+            document.getElementById("lgimport").disabled = 1;
+            document.getElementById("lgexport").disabled = 1;
+            document.getElementById("sysimport").disabled = 1;
+            document.getElementById("sysexport").disabled = 1;
+        document.getElementById('sysimportform').submit();
+        g_lockLink = false;
+    }
+    
+    function SYS_Export()
+	{
+	  SendHttp(c_iniUrl + GetSetterCmdKV("export8147para", "1"), false);
+	  count = 2;
+	  Sys_Wait();  
+	}
+	
+	function Sys_Wait()
+	{
+	  if (count > 0)
+	  {
+	    count --;
+	    timerID = setTimeout("Sys_Wait()", 1000);
+	  }
+	  else
+	  {
+	    var o = "/para/sysenv_cfg_" + location.hostname.replace(/\./g, '_') + ".ini";		
+        //var filename = "/para/sysenv.cfg";
+	     //alert(o);
+		window.location.href = o;
+	  }
+	}
+
+ </script>
+ <script>
+
+ DW('<table><tr><td width="750px" >');
+
+ 	DW('<div class="headline">' + GL("restart") + '</div>');
+    DW('<table><tr><td height="30px" style="vertical-align:text-top;">');
+ 	DW('<div><input type="button" style="width:80px;height:30px" id="restart" value="' + GL("restart") + '" class="m1" onClick="ClickRestart()" ></div>');
+    DW('</td><td style="vertical-align:text-top;">');
+ 	//DW('<div><input type="button" id="powerdown" style="width:80px;height:20px" value="' + GL("power_down") + '" onclick="PowerDown()"></div>');
+    DW('</td></tr></table>');
+ 	//DW('<label>' + GL("reset_explain") + '</label>');
+ 	//DW('</div>');
+DW('</td></tr>');
+
+DW('<tr><td>');
+
+ 	DW('<div class="headline">' + GL("factory_reset") + '</div>');
+    DW('<table><tr><td height="30px" style="vertical-align:text-top;">');
+ 	DW('<div><input type="button" id="reset" value="' + GL("factory_reset") + '" class="m1" onClick="FactoryReset()" style="width:100px;height:30px">');
+    DW('</div>');
+    DW('</td><td>');
+ 	DW('<label>' + GL("freset_msg") + '</label>');
+    DW('</td></tr></table>');
+
+DW('</td></tr>');
+
+DW('<!--tr><td>');
+	
+ 	DW('<div class="headline">' + GL("lg_para") + '</div>');
+ 	/*
+ 	DW('<div><input type="button" id="reset" value="' + GL("factory_reset") + '" class="m1" onClick="FactoryReset()">');
+ 	DW('<label>' + GL("freset_msg") + '</label>');
+ 	DW('</div>');
+ 	*/
+ 	/*LG参数导入*/
+    DW('<table><tr><td style="vertical-align:text-top; height=20px">');
+
+ 	DW('<div>');
+ 	DW('<FORM METHOD="POST" id="lgimportform" name="lgimportform" ENCTYPE="multipart/form-data" ACTION="/uploadcgi.cgi" >');
+    DW(GL("file_sel") + '<INPUT TYPE="FILE" NAME="lgconfigfile" id="lgconfigfile" class="btn" style="width:250px;height:20px">');
+    DW('<INPUT TYPE="button" id="lgimport" onclick="LG_Import()" VALUE="' + GL("txt_impt") + '" class="btn" style="width:60px;height:20px">');
+    DW('<center>');
+    DW('<div id="lgimportinfo"></div>');
+    DW('</center>');
+    DW('</FORM>');
+    DW('</div>');
+
+    DW('</td><td style="vertical-align:text-top;" >');
+    
+    /*LG参数导出*/
+ 	DW('<div>');
+ 	DW('<INPUT TYPE="button" id="lgexport" onclick="LG_Export()" VALUE="' + GL("txt_expt") + '" class="btn" style="width:60px;height:20px">');
+    // DW('<center>');
+    // DW('<div id="lgexportinfo"></div>');
+    // DW('</center>');
+    DW('</div>');
+
+    DW('</td></tr></table>');
+  
+DW('</td></tr-->');
+
+DW('<!--tr><td>');
+ 	
+ 	DW('<div class="headline">' + GL("sys_para") + '</div>');
+ 	/*
+ 	DW('<div><input type="button" id="reset" value="' + GL("factory_reset") + '" class="m1" onClick="FactoryReset()">');
+ 	DW('<label>' + GL("freset_msg") + '</label>');
+ 	DW('</div>');
+ 	*/
+ 	/*8147参数导入*/
+    DW('<table><tr><td style="vertical-align:text-top;">');
+
+ 	DW('<div>');
+ 	DW('<FORM METHOD="POST" id="sysimportform" name="sysimportform" ENCTYPE="multipart/form-data" ACTION="/uploadcgi.cgi">');
+    DW(GL("file_sel") + '<INPUT TYPE="FILE" NAME="sysconfigfile" id="sysconfigfile" class="btn" style="width:250px;height:20px">');
+    DW('<INPUT TYPE="button" id="sysimport" onclick="SYS_Import()" VALUE="' + GL("txt_impt") + '" class="btn" style="width:60px;height:20px">');
+    DW('<center>');
+    DW('<div id="sysimportinfo"></div>');
+    DW('</center>');
+    DW('</FORM>');
+    DW('</div>');
+    
+    DW('</td><td style="vertical-align:text-top;">');
+
+    /*8147参数导出*/
+ 	DW('<div>');
+ 	DW('<INPUT TYPE="button" id="sysexport" onclick="SYS_Export()" VALUE="' + GL("txt_expt") + '" class="btn" style="width:60px;height:20px">');
+    // DW('<center>');
+    // DW('<div id="sysexportinfo"></div>');
+    // DW('</center>');
+    DW('</div>');
+    DW('</td></tr></table>');
+    
+    
+	/* 	 
+ 	DW('<div class="headline">' + GL("upgrade") + '</div>');
+ 	DW('<div><input type="button" id="reset" value="' + GL("factory_reset") + '" class="m1" onClick="FactoryReset()">');
+ 	DW('<label>' + GL("freset_msg") + '</label>');
+ 	DW('</div>');
+ 	*/
+ 	
+DW('</td></tr-->');
+
+DW('<tr><td>');
+ 	
+ 	DW('<div class="headline">' + GL("upgrade") + '</div>');
+    DW('<table><tr><td style="vertical-align:text-top;">');
+
+ 	DW('<div>');
+ 	DW('<FORM METHOD="POST" id="softform" name="softform" ENCTYPE="multipart/form-data" ACTION="/softuploadcgi.cgi">');
+    DW(GL("embeded_file_sel") + '&nbsp;&nbsp;&nbsp;<INPUT TYPE="FILE" NAME="SOFTFILE" id="SOFTFILE" class="btn" value="' + GL("browse")+ '" style="width:250px;height:30px">');
+    DW('<INPUT TYPE="button" id="softupgrade" onclick="Soft_Upgrade()" VALUE="' + GL("upgrade") + '" class="btn" style="width:80px;height:30px">');
+    DW('<center>');
+    DW('<div id="softupgradeinfo"></div>');
+    DW('</center>');
+    DW('</FORM>');
+    DW('</div>');
+    DW('</td></tr><tr><td style="vertical-align:text-top;">');
+    
+    DW('<!--div>');
+    DW('<FORM METHOD="POST" id="mcuform" name="mcuform" ENCTYPE="multipart/form-data" ACTION="/mcuuploadcgi.cgi">');
+    DW(GL("mcu_file_sel") + '<INPUT TYPE="FILE" NAME="MCUFILE" id="MCUFILE" class="btn" style="width:250px;height:20px">');
+    DW('<INPUT TYPE="button" id="mcuupgrade" onclick="Mcu_Upgrade()" VALUE="' + GL("upgrade") + '" class="btn" style="width:60px;height:20px">');
+    DW('<center>');
+    DW('<div id="mcuupgradeinfo"></div>');
+    DW('</center>');
+    DW('</FORM>');
+    DW('</div-->');
+    DW('</td></tr></table>');
+
+DW('</td></tr></table>');
+
+ </script>
+</body>
+</html>

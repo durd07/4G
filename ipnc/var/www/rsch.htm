@@ -1,0 +1,659 @@
+<html xmlns:v=urn:schemas-microsoft-com:vml>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script>
+            InitLoad();
+         </script>
+        <title>
+            
+        </title>
+<style>
+body {
+	margin: 0;		
+	height:100%;
+	min-width:1200px;
+	min-height:580px;
+	background:#D5D5D5;
+
+}
+
+v\:* {
+behavior:url(#default#VML)
+}
+table
+{ font-size:13px;}
+
+</style>
+
+    </head>
+    
+    
+    <body onLoad="MY_ONLOAD()">
+        <script>
+          var v_recFtpEn = "<%rftpenable%>";
+          var ISSD = (g_defaultStorage == 1);
+          var v_cardRecEn = (ISSD) ? "<%sdrenable%>": "<%cfrenable%>";
+          var serviceFtpON = (parseInt("<%serviceftpclient%>") == 1);
+          var b_SDInsert = (parseInt("<%sdinsert%>") == 3);
+          if (!b_SDInsert)
+            v_cardRecEn = "0";
+
+            var oneDay = new Date(2000, 0, 2, 0, 0, 0) - new Date(2000, 0, 1, 0, 0, 0);
+            var oneDayLess = new Date(2000, 0, 1, 23, 59, 59) - new Date(2000, 0, 1, 0, 0, 0);
+            var schList = new Array("<%schedule.0%>", "<%schedule.1%>", "<%schedule.2%>", "<%schedule.3%>", "<%schedule.4%>", "<%schedule.5%>", "<%schedule.6%>", "<%schedule.7%>");
+            var DAYS = GL("sch_day_name_list");
+            var dayC1 = "#ccccff";
+            var dayC2 = "#ffccff";
+            var timeC1 = "#e4e4ff";
+            var timeC2 = "#ffe4ff";
+            var barCols = new Array("#0000cc", "#00cc33", "#9900cc", "#ff3333", "#00cccc", "#006600", "#cc6600");
+            var barColDisable = "#888888";
+            var dayYBase = 450;
+            var dayYGap = 450;
+            var dayW = 700;
+            var timeW = 370;
+            var minW = timeW / 60;
+            var timeTW = timeW * 24;
+            var txtYBase = 100;
+            var days = DAYS.split(";");
+            var schObjList = new Array(new ScheduleObj(0), new ScheduleObj(1), new ScheduleObj(2), new ScheduleObj(3), new ScheduleObj(4), new ScheduleObj(5), new ScheduleObj(6));
+
+            var schObjList1 = new Array(new ScheduleObj(0), new ScheduleObj(1), new ScheduleObj(2), new ScheduleObj(3), new ScheduleObj(4), new ScheduleObj(5), new ScheduleObj(6));
+            
+//            var gv_weeks = new V_NumRange(1, 52, "Number of weeks"); //add by zdy
+//            var gco_weeks = new CheckerObj(gv_weeks); //add by zdy
+            
+            var o = 'CTRLARY = {';
+            o += 'recCard: new Ctrl_Check("recCard", v_cardRecEn, "sdrenable=", "FixStatusEnable()"),';
+
+           o += 'scheduleenable: new Ctrl_Radio("scheduleenable", "<%schedulerepeatenable%>", "schedulerepeatenable=", "FixStatus()"),'; //zdy
+           o += 'schedulenumweeks: new Ctrl_Text("schedulenumweeks", "3", "3", "<%schedulenumweeks%>", "schedulenumweeks="),'; //zdy
+           // o += 'scheduleinfiniteenable: new Ctrl_Radio("scheduleinfiniteenable", "<%scheduleinfiniteenable%>", "scheduleinfiniteenable="),'; //zdy
+            for (var i = 0; i < 7; i++) {
+                o += 'schedule' + i + ' : new Ctrl_Text("schedule' + i + '",1,20,"","schedule=")' + (i == 6 ? "" : ",");
+            }
+            o += '};';
+            eval(o);
+            o = 'DELCTRLARY = {';
+            o += 'delSch : new Ctrl_Text("delSch",1,20,"","delschedule=")';
+            o += '};';
+            eval(o);
+            o = '';
+            for (var i = 0; i < 7; i++) {
+                o += 'var schEn' + i + ' = new Ctrl_Check("schEn' + i + '",0,"","CheckSchEn(' + i + ')");';
+                o += 'var schDay' + i + ' = new Ctrl_Select("schDay' + i + '",GL("sch_day_fullname_list"),0,"","FixDays(' + i + ')");';
+
+                o += 'var schSH' + i + ' = new Ctrl_Text("schSH' + i + '",2,2,"","",null,false,"FixSchdule(' + i + ')","");';
+                o += 'var schEH' + i + ' = new Ctrl_Text("schEH' + i + '",2,2,"","",null,false,"FixSchdule(' + i + ')","");';
+                o += 'var schSM' + i + ' = new Ctrl_Text("schSM' + i + '",2,2,"","",null,false,"FixSchdule(' + i + ')","");';
+                o += 'var schEM' + i + ' = new Ctrl_Text("schEM' + i + '",2,2,"","",null,false,"FixSchdule(' + i + ')","");';
+
+
+                // o += 'var schSH' + i + ' = new Ctrl_SelectNum("schSH' + i + '",0,23,1,0,"","FixSchdule(' + i + ')",null,2);';
+                // o += 'var schEH' + i + ' = new Ctrl_SelectNum("schEH' + i + '",0,23,1,0,"","FixSchdule(' + i + ')",null,2);';
+                // o += 'var schSM' + i + ' = new Ctrl_SelectNum("schSM' + i + '",0,59,1,0,"","FixSchdule(' + i + ')",null,2);';
+                // o += 'var schEM' + i + ' = new Ctrl_SelectNum("schEM' + i + '",0,59,1,0,"","FixSchdule(' + i + ')",null,2);';
+                if (IsVS()) {
+                    for (var j = 0; j < 4; j++) {
+                        o += 'var schEnCh' + i + '_' + j + ' = new Ctrl_Check("schEnCh' + i + '_' + j + '",0,"","FixVSStatus(' + i + ');FixSchdule(' + i + ');");';
+                    }
+                }
+            }
+            eval(o);
+
+            function MY_ONLOAD() {
+                g_lockLink = false;
+                for (var i = 0; i < schObjList.length; i++) {
+                    var obj = schObjList[i];
+                    obj.SV(schList[i]);
+                    SetSchToBar(obj);
+                    if (obj.status > 0) {
+                        eval("schEn" + i + ".SV(1)");
+                    }
+                    SetSchToCtrl(obj);
+                    CheckSchEn(i);
+                }
+                // FixStatus();
+                FixStatusEnable();
+            }
+
+            function FixStatus()
+            {
+                CTRLARY["schedulenumweeks"].Disable(GetCCV("scheduleenable") == 0);
+            }
+            function FixStatusEnable()
+            {
+                // alert("FixStatusEnable");
+                CTRLARY["schedulenumweeks"].Disable(GetCCV("recCard") == 0);
+                CTRLARY["scheduleenable"].Disable(GetCCV("recCard") == 0);
+                CTRLARY["schedule0"].Disable(GetCCV("recCard") == 0);
+                CTRLARY["schedule1"].Disable(GetCCV("recCard") == 0);
+                CTRLARY["schedule2"].Disable(GetCCV("recCard") == 0);
+                CTRLARY["schedule3"].Disable(GetCCV("recCard") == 0);
+                CTRLARY["schedule4"].Disable(GetCCV("recCard") == 0);
+                CTRLARY["schedule5"].Disable(GetCCV("recCard") == 0);
+                CTRLARY["schedule6"].Disable(GetCCV("recCard") == 0);                    
+                FixStatus();
+
+                if (GetCCV("recCard") == 0)
+                {
+                    for (var i = 0; i < schObjList.length; i++) {
+                        var dis = 1;
+                        var ix = i;
+                        DisableObjs(new Array("schEn" + ix, "schDay" + ix, "schSH" + ix, "schEH" + ix, "schSM" + ix, "schEM" + ix), dis);
+                        if (IsVS()) {
+                            for (var i = 0; i < g_maxCH; i++) {
+                                DisableObject("schEnCh" + ix + "_" + i, dis);
+                            }
+                        }
+                        GE("schbar_" + ix).FillColor = ((dis) ? barColDisable : barCols[ix]);
+                        if (!IsVS()) {
+                            schObjList[ix].status = (dis) ? 0 : 1;
+                        }
+                        SetSchToBar(schObjList[ix]);
+                    }
+                }
+                else
+                {
+                    for (var i = 0; i < schObjList.length; i++) {
+                        DisableObjs(new Array("schEn" + i), 0);
+                        CheckSchEn(i);
+                    }
+                }
+
+            }
+
+function ParaCheck()
+{
+  var flag = false;
+
+  var recCard = GetCCV("recCard");
+  if (recCard == v_cardRecEn)
+  {
+    CTRLARY["recCard"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  if (GetCCV("recCard") == 1)
+  {
+    var scheduleenable = GetCCV("scheduleenable");
+    if (scheduleenable == "<%schedulerepeatenable%>")
+    {
+      CTRLARY["scheduleenable"].active = 0;
+    } 
+    else if (flag == false)
+      flag = true;
+
+    var schedulenumweeks = GetCCV("schedulenumweeks");
+    if (schedulenumweeks == "<%schedulenumweeks%>")
+    {
+      CTRLARY["schedulenumweeks"].active = 0;
+    } 
+    else if (flag == false)
+      flag = true;
+
+    for (var i = 0; i < 7; i++) {
+
+      var schObj = schObjList1[i];
+        schObj.SV(schList[i]);
+      var ss = schObj.showDay - 1;
+      if (ss == 6) ss = 7;
+      if (ss == -1) ss = 6;
+
+      var enable = "schEn" + schObj.id;
+      var day = "schDay" + schObj.id;
+      var sh = "schSH" + schObj.id;
+      var eh = "schEH" + schObj.id;
+      var sm = "schSM" + schObj.id;
+      var em = "schEM" + schObj.id;
+
+      var ss1 = parseInt(eval("schDay" + schObj.id + ".GV()"), 10) + 1;
+        // if (ss1 == 7) ss1 = 0;
+        // if (ss1 == 8) ss1 = 7;
+      // alert(ss);
+      // alert(ss1);
+      // alert(ss1);
+      // alert(schObj.day);
+      // alert(schObj.showDay);
+
+        if (schObj.day != ss1)
+            flag = true;
+
+        if (schObj.status != eval("schEn" + schObj.id + ".GV()"))
+            flag = true;
+
+        if (eval("schEn" + schObj.id + ".GV()") == 1)
+        {
+            if (schObj.sHour != parseInt(eval("schSH" + schObj.id + ".GV()"), 10))
+                flag = true;
+
+            if (schObj.sMin != parseInt(eval("schSM" + schObj.id + ".GV()"), 10))
+                flag = true;
+
+            if (schObj.eHour != parseInt(eval("schEH" + schObj.id + ".GV()"), 10))
+                flag = true;
+
+            if (schObj.eMin != parseInt(eval("schEM" + schObj.id + ".GV()"), 10))
+                flag = true;            
+        }
+
+    };
+  }
+
+  return flag;
+}
+function MY_BEFORE_SUBMIT() {
+
+    if (ParaCheck() == false)
+    {
+      alert(GL("para_not_change"));
+      ChangeActive();
+      return false;
+    }
+
+                if (IsVS()) {
+                    for (var i = 0; i < 7; i++) {
+                        FixVSStatus(i);
+                    }
+                }
+
+                var scheduleenablev = GetCCV("scheduleenable");
+                if (scheduleenablev == 0)
+                {
+                    SendHttp(c_iniUrl + GetSetterCmdKV("scheduleinfiniteenable", "1"), false);
+                    // SetCCV("scheduleinfiniteenable", 1);
+                }
+                else if (scheduleenablev == 1)
+                {
+                    if (CheckWeeks(1, 52) == false)
+                        return false;
+                }
+                
+
+                for (var i = 0; i < 7; i++) {
+                    // alert(i);
+                    SetCCV("schedule" + i, schObjList[i].GV());
+                }
+            }
+
+
+            
+            function CheckWeeks(min, max)
+            {
+              var value = document.getElementById("schedulenumweeks").value;
+              if (value.length == 0)
+              {
+                alert(GL("week_empty"));
+                document.getElementById("schedulenumweeks").value = "<%schedulenumweeks%>";
+                document.getElementById("schedulenumweeks").focus();
+                return false;
+              }
+              if (!(IsNumeric(value)))
+              {
+                alert(GL("week_inv"));
+                document.getElementById("schedulenumweeks").value = "<%schedulenumweeks%>";
+                document.getElementById("schedulenumweeks").focus();
+                return false;
+              }
+
+              if (!((value >= min && value <= max)))
+              {
+                alert(GL("week_num"));
+                document.getElementById("schedulenumweeks").value = "<%schedulenumweeks%>";
+                document.getElementById("schedulenumweeks").focus();
+                return false;
+              }
+              return true;
+            }
+
+
+            function MY_SUBMIT_OK(){
+                alert(GL("submit_success"));
+                window.location.reload();
+            }
+
+            function FixVSStatus(ix) {
+                var s = 0;
+                if (eval("schEn" + ix + ".GV()") == 1) {
+                    for (var j = 3; j >= 0; j--) {
+                        var v = parseInt(eval("schEnCh" + ix + "_" + j + ".GV()"), 10);
+                        s += v;
+                        if (j != 0) s <<= 1;
+                    }
+                }
+                schObjList[ix].status = s;
+            }
+
+            function CheckTextValue(ix)
+            {
+                var shour = parseInt(eval("schSH" + ix + ".GV()"), 10);
+                var smin = parseInt(eval("schSM" + ix + ".GV()"), 10);
+                var ehour = parseInt(eval("schEH" + ix + ".GV()"), 10);
+                var emin = parseInt(eval("schEM" + ix + ".GV()"), 10);
+
+                if (!(IsNumeric(shour)))
+                    eval("schSH" + ix + ".SV(0)");
+                else if (shour > 23)
+                    eval("schSH" + ix + ".SV(23)");
+
+                if (!(IsNumeric(ehour)))
+                    eval("schEH" + ix + ".SV(0)");
+                else if (ehour > 23)
+                    eval("schEH" + ix + ".SV(23)");
+
+                if (!(IsNumeric(smin)))
+                    eval("schSM" + ix + ".SV(0)");
+                else if (smin > 59)
+                    eval("schSM" + ix + ".SV(59)");
+
+                if (!(IsNumeric(emin)))
+                    eval("schEM" + ix + ".SV(0)");
+                else if (emin > 59)
+                    eval("schEM" + ix + ".SV(59)");
+
+            }
+            function FetchSchObj(ix) {
+                CheckTextValue(ix);
+                var ss = parseInt(eval("schDay" + ix + ".GV()"), 10) + 1;
+                if (ss == 7) ss = 0;
+                if (ss == 8) ss = 7;
+                schObjList[ix].showDay = ss;
+                schObjList[ix].sHour = parseInt(eval("schSH" + ix + ".GV()"), 10);
+                schObjList[ix].sMin = parseInt(eval("schSM" + ix + ".GV()"), 10);
+                schObjList[ix].eHour = parseInt(eval("schEH" + ix + ".GV()"), 10);
+                schObjList[ix].eMin = parseInt(eval("schEM" + ix + ".GV()"), 10);
+
+                // alert(eval("schSH" + ix + ".GV()"));
+                // alert(schObjList[ix].sHour);
+                if (!(IsNumeric(eval("schSH" + ix + ".GV()"))))
+                    schObjList[ix].sHour = 0;
+            }
+
+            function FixDays(ix) {
+                if (schObjList[ix].showDay == 7) ResetSchBar(ix);
+                FetchSchObj(ix);
+                SetSchToBar(schObjList[ix]);
+            }
+
+            function CheckValue(ix, obj)
+            {
+                var act = document.activeElement.id;
+                var value = document.getElementById(act).value;
+                // alert(act);
+                // alert(value.length);
+                if (value.length == 0 || !(IsNumeric(value)))
+                {
+                    if (act.indexOf("schSH") >= 0)
+                        document.getElementById(act).value = obj.sHour;
+
+                    if (act.indexOf("schSM") >= 0)
+                        document.getElementById(act).value = obj.sMin;
+
+                    if (act.indexOf("schEH") >= 0)
+                        document.getElementById(act).value = obj.eHour;
+                    
+                    if (act.indexOf("schEM") >= 0)
+                        document.getElementById(act).value = obj.eMin; 
+                }
+            }
+
+            function FixSchdule(ix) {
+                var obj = schObjList[ix];
+                CheckValue(ix, obj);
+                FetchSchObj(ix);
+                
+                // alert(obj.eHour);
+                // alert(obj.sHour);
+                if (obj.eHour < obj.sHour) {
+                    eval("schEH" + ix + ".SV(" + obj.sHour + ")");
+                    obj.eHour = obj.sHour;
+                }
+                if (obj.eHour == obj.sHour && obj.eMin < obj.sMin) {
+                    eval("schEM" + ix + ".SV(" + obj.sMin + ")");
+                    obj.eMin = obj.sMin;
+                }
+                SetSchToBar(obj);
+            }
+
+            function CheckSchEn(ix) {
+                var dis = (eval("schEn" + ix + ".GV()") == 0);
+                DisableObjs(new Array("schDay" + ix, "schSH" + ix, "schEH" + ix, "schSM" + ix, "schEM" + ix), dis);
+                if (IsVS()) {
+                    for (var i = 0; i < g_maxCH; i++) {
+                        DisableObject("schEnCh" + ix + "_" + i, dis);
+                    }
+                }
+                GE("schbar_" + ix).FillColor = ((dis) ? barColDisable : barCols[ix]);
+                if (!IsVS()) {
+                    schObjList[ix].status = (dis) ? 0 : 1;
+                }
+                SetSchToBar(schObjList[ix]);
+            }
+
+            function GetScheduleTable() {
+                var o = '<div id="schLayer" ><v:group style="width:500px;height:200px;position:relative;" CoordOrig="0,0" CoordSize="10000,4000">';
+                o += '<v:RoundRect style="width:9600;height:3900" FillColor="#99ff99" >';
+                o += '<v:shadow on="T" type="single" color="#b3b3b3" offset="5px,5px"/>';
+                o += '</v:RoundRect>';
+                for (var i = 0; i < 7; i++) {
+                    var yy = dayYBase + (i * dayYGap);
+                    o += '<v:Rect style="top:' + yy + ';left:0;width:' + dayW + ';height:' + dayYGap + '" FillColor="' + ((i % 2 == 0) ? dayC1 : dayC2) + '"><div class="m1" style="Text-align:center;margin-top:4pt;" >' + days[i] + '</div></v:Rect>';
+                    o += '<v:Rect style="top:' + yy + ';left:' + dayW + ';width:' + timeTW + ';height:' + dayYGap + '" FillColor="' + ((i % 2 == 0) ? timeC1 : timeC2) + '"/>';
+                }
+                for (var i = 0; i < 24; i++) {
+                    o += '<v:shape strokecolor="none" filled="False" style="top:' + txtYBase + ';left:' + (dayW + (i * timeW)) + ';width:' + timeW + ';height:' + (dayYBase - txtYBase) + ';z-index:9" inset="1px,1px,1px,1px" ><div class="m1" style="Text-align:center;" >' + i + '</div></v:shape>';
+                    o += '<v:line from="' + (dayW + (i * timeW)) + ',' + dayYBase + '" to="' + (dayW + (i * timeW)) + ',' + (dayYBase + dayYGap * 7) + '" />';
+                }
+                for (var i = 0; i < 7; i++) {
+                    o += '<v:Rect id="schbar_' + i + '" style="top:0;left:0;width:0;height:0;filter:alpha(opacity=50);-moz-opacity:0.5;opacity:0.5;" FillColor="' + (barCols[i]) + '" ><div id="schbarTxt_' + i + '" class="m1" style="Text-align:center;margin-top:4pt;color:white;" ></div></v:Rect>';
+                }
+                o += '</v:group></div>';
+                return o;
+            }
+
+            function ScheduleObj(id) {
+                this.id = id;
+                this.status = 0;
+                this.day = 0;
+                this.sHour = 0;
+                this.sMin = 0;
+                this.sSec = 0;
+                this.eHour = 0;
+                this.eMin = 0;
+                this.eSec = 0;
+                this.showDay = 0;
+                this.GT_S = function () {
+                    return new Date(2000, 0, 1, this.sHour, this.sMin, this.sSec);
+                };
+                this.GT_E = function () {
+                    return new Date(2000, 0, 1, this.eHour, this.eMin, this.eSec);
+                };
+                this.GetDuration = function () {
+                    if (this.status > 0 && this.sHour == 0 && this.sMin == 0 && this.sSec == 0 && this.eHour == 0 && this.eMin == 0 && this.eSec == 0) {
+                        return (oneDay);
+                    }
+                    return (this.GT_E().getTime() - this.GT_S().getTime());
+                };
+                this.SV = function (data) {
+                    var res = false;
+                    if (data.length >= 15) {
+                        this.status = parseInt(data.substr(0, 1), 16);
+                        this.day = parseInt(data.substr(1, 2), 10);
+                        this.showDay = this.day;
+                        if (this.day == 7) this.showDay = 0;
+                        if (this.day == 8) this.showDay = 7;
+                        this.sHour = parseInt(data.substr(3, 2), 10);
+                        this.sMin = parseInt(data.substr(5, 2), 10);
+                        this.sSec = parseInt(data.substr(7, 2), 10);
+                        var tH = parseInt(data.substr(9, 2), 10);
+                        var tM = parseInt(data.substr(11, 2), 10);
+                        var tS = parseInt(data.substr(13, 2), 10);
+                        var tmpTime2 = new Date(2000, 0, 1, this.sHour + tH, this.sMin + tM, this.sSec + tS);
+                        var iniDate = new Date(2000, 0, 1, 0, 0, 0);
+                        if ((tmpTime2 - iniDate) == oneDayLess) {
+                            tmpTime2 = iniDate;
+                        }
+                        this.eHour = tmpTime2.getHours();
+                        this.eMin = tmpTime2.getMinutes();
+                        this.eSec = tmpTime2.getSeconds();
+                        res = true;
+                    }
+                    return res;
+                };
+                this.GV = function () {
+                    var o = '';
+                    o += FixNum(this.id, 2);
+                    o += this.status.toString(16);
+                    this.day = this.showDay;
+                    if (this.showDay == 0) this.day = 7;
+                    if (this.showDay == 7) this.day = 8;
+                    o += FixNum(this.day, 2);
+                    o += FixNum(this.sHour, 2);
+                    o += FixNum(this.sMin, 2);
+                    o += FixNum(this.sSec, 2);
+                    var diffTime = this.GetDuration();
+                    if (diffTime == oneDay) {
+                        o += "235959";
+                    } else {
+                        var dd = new Date(2000, 0, 1, 0, 0, 0);
+                        var nn = new Date(dd.getTime() + diffTime);
+                        o += FixNum(nn.getHours(), 2);
+                        o += FixNum(nn.getMinutes(), 2);
+                        o += FixNum(nn.getSeconds(), 2);
+                    }
+                    return o;
+                };
+            }
+
+            function ResetSchBar(id) {
+                SetPos("schbar_" + id, 0, 0, 0, 0);
+                SetSchTxt("schbarTxt_" + id, "");
+            }
+
+            function SetSchTxt(id, txt) {
+                var obj = GE(id);
+                if (obj != null) {
+                    obj.innerHTML = txt;
+                }
+            }
+
+            function SetSchToCtrl(schObj) {
+                if (IsVS()) {
+                    var s = schObj.status;
+                    for (var j = 0; j < 4; j++) {
+                        eval("schEnCh" + schObj.id + "_" + j + ".SV(" + (s % 2) + ")");
+                        s >>= 1;
+                    }
+                }
+                var ss = schObj.showDay - 1;
+                if (ss == 6) ss = 7;
+                if (ss == -1) ss = 6;
+                eval("schDay" + schObj.id + ".SV(" + ss + ")");
+                eval("schSH" + schObj.id + ".SV(" + (schObj.sHour) + ")");
+                eval("schSM" + schObj.id + ".SV(" + (schObj.sMin) + ")");
+                eval("schEH" + schObj.id + ".SV(" + (schObj.eHour) + ")");
+                eval("schEM" + schObj.id + ".SV(" + (schObj.eMin) + ")");
+            }
+
+            function SetSchToBar(schObj) {
+                var day = schObj.showDay;
+                var txt = FixNum(schObj.sHour, 2) + ":" + FixNum(schObj.sMin, 2) + " - " + FixNum(schObj.eHour, 2) + ":" + FixNum(schObj.eMin, 2);
+                if (day < 7) {
+                    SetPos("schbar_" + schObj.id, dayW + (schObj.sHour * timeW) + (schObj.sMin * minW), dayYBase + (dayYGap * day), schObj.GetDuration() * minW / 60000, dayYGap);
+                } else {
+                    SetPos("schbar_" + schObj.id, dayW + (schObj.sHour * timeW) + (schObj.sMin * minW), dayYBase, schObj.GetDuration() * minW / 60000, (dayYGap * 7));
+                }
+                if (schObj.GetDuration() <= 0) {
+                    SetSchTxt("schbarTxt_" + schObj.id, "");
+                } else {
+                    SetSchTxt("schbarTxt_" + schObj.id, txt);
+                }
+            }
+
+            function RemoveAllSch() {
+                SetCtrlValue(DELCTRLARY, "delSch", "1");
+                for (var i = 0; i < 7; i++) {
+                    var obj = schObjList[i];
+                    obj.SV("000000000000000");
+                    SetSchToBar(obj);
+                    eval("schEn" + i + ".SV(0)");
+                    SetSchToCtrl(obj);
+                    CheckSchEn(i);
+                }
+                ValidateCtrlAndSubmit(DELCTRLARY);
+            }
+
+            function WriteSchCtrl(ix) {
+                var o = '';
+                o += '<tr ><td >' + eval("schEn" + ix + ".html") + '</td><td valign=middle><v:Rect style="top:0;left:0;width:10;height:10" FillColor="' + barCols[ix] + '"/></td>';
+                if (IsVS()) {
+                    for (var i = 0; i < 4; i++) {
+                        o += '<td>' + eval('schEnCh' + ix + '_' + i + '.html') + '</td>';
+                    }
+                }
+                o += '<td width=' + ((IsVS()) ? 540 : 415) + '>' + eval('schDay' + ix + '.html') + " " + GL('sch_from') + " " + eval('schSH' + ix + '.html') + " : " + eval('schSM' + ix + '.html') + " " + GL('sch_to') + " " + eval('schEH' + ix + '.html') + " : " + eval('schEM' + ix + '.html') + '</td>';
+                o += '</tr>';
+                DW(o);
+            }
+
+            function WSI1(ctx) {
+                DW("<tr><td colspan=" + (IsVS() ? 7 : 3) + " height=30>" + ctx + "</td></tr>");
+            }
+
+           DW('<table>');
+
+              if (b_SDInsert) {
+    DW("<tr><td height=30>");
+    DW(GetHtmlbyId("recCard") + " " + GL("enable_rec") + " - " + GL("save_into") + GL("sd_card"));//GetContentLink("app_sd_card", "setcard.htm"));
+    // DW("</td><td>");
+    // DW('<a href="setcard.htm" target="content1" class="a1" onfocus="this.blur()">' + GL("sd_card") +' </a>');
+    // DW("</td></tr>");
+    // WIAppR("recCard", "enable_rec", GL("save_into") + " " +  '<a href="setcard.htm" target="content1" class="a1">' + GL("sd_card") + '</a>'); //GetContentLink(((ISSD) ? "app_sd_card": "app_cf_card"), "setcard.htm"));
+  }
+  else {
+    SetCIA("recCard");
+    DW("<tr><td height=30 colspan='2'>");
+    DW(GetHtmlbyId("recCard") + " " + GL("msg_insert_card") + " - " + GL("save_into") + " "  + GL("sd_card"));//GetContentLink("app_sd_card", "setcard.htm"));
+    DW("</td></tr>");
+  }
+
+
+
+
+           DW("<tr><td>");
+           WHRsch("scheduleenable"); 
+           // DW("&nbsp;" + GL("schedules_expires_after"));
+           DW("<td>");
+           WH("schedulenumweeks");
+           DW("&nbsp;" + GL("weeks") + "</td><td>" + GL("week_range") + "</td></tr>");
+           // DW("<td class='b1' height=20 colspan=2>&nbsp;");
+           // WH("scheduleenable");
+           // DW("&nbsp;" + GL("run_infinite_times") + "</td></tr>");
+           // DW("</td></tr>");
+           DW('</table>');
+
+
+
+            DW("<div class=cssViewChLayer style='display:none'>");
+            for (var i = 0; i < 7; i++) {
+                WH('schedule' + i);
+            }
+            DW('<br>' + GetCtrlHtml(DELCTRLARY, 'delSch'));
+            DW("</div>");
+            DW('<table>');
+            DW("<tr><td></td><td></td>" + (IsVS() ? "<td>CH1</td><td>CH2</td><td>CH3</td><td>CH4</td>" : "") + "<td></td></tr>");
+            for (var i = 0; i < 7; i++) {
+                WriteSchCtrl(i);
+            }
+            WSI1(GetScheduleTable());
+            DW("<tr><td colspan=" + (IsVS() ? 7 : 3) + " height=30 align='right'>" + CreateSubmitButton_() + "&nbsp;<input type=button class=m1 value='" + GL("remove_all_sch") + "' onClick='RemoveAllSch()' style='width:150px;height:30px'></td></tr>");
+            // WSI1("<br>" + CreateSubmitButton_() + "&nbsp;<input type=button class=m1 value='" + GL("remove_all_sch") + "' onClick='RemoveAllSch()' style='width:100px;height:20px'>");
+            DW('</table>');
+            ALC();
+        </script>
+    </body>
+
+</html>

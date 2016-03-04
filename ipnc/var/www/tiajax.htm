@@ -1,0 +1,131 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<META http-equiv="Pragma" content="no-cache" />
+<META http-equiv="Cache-Control" content="no-cache" />
+<title>
+TI Web
+</title>
+
+<script LANGUAGE="JavaScript",type="text/javascript">	
+	function TextEnableClick()
+	{			
+		sendRequestGet('http://172.16.128.218/vb.htm?logoenable1=1', '');
+	}
+	function TextDisableClick()
+	{			
+		sendRequestGet('http://172.16.128.218/vb.htm?logoenable1=0', '');
+	}
+	
+	var xmlHttp;
+	function createXMLHttpRequest()
+	{		
+		try
+		{
+			// Firefox, Opera 8.0+, Safari
+			xmlHttp=new XMLHttpRequest();
+		}
+		catch (e)
+		{
+			// Internet Explorer
+			try
+			{
+				xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
+			}
+			catch (e)
+			{
+
+				try
+				{
+					xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				catch (e)
+				{
+					alert("Your browser don't support Ajax!");
+					return false;
+				}
+			}
+		}
+	}
+
+    //Method GET
+    function sendRequestGet(url,param)
+	{  
+        createXMLHttpRequest();  
+        xmlHttp.open("GET",url,false); //第三个参数设置请求是否为异步模式。如果是TRUE，JavaScript函数将继续执行，而不等待服务器响应 
+		//xmlHttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded"); 
+		xmlHttp.setRequestHeader("If-Modified-Since", "0");
+        xmlHttp.onreadystatechange = processGetResponse;
+		xmlHttp.send(null);//发送请求
+	}	
+   
+    function processGetResponse()
+	{  
+        if(xmlHttp.readyState == 4)
+		{  
+            if(xmlHttp.status == 200)
+			{  
+                var res = xmlHttp.responseText;  
+                window.alert(res);
+				///ggg();
+            }
+			else
+			{  
+                window.alert("GET wrong.");  
+            }  
+        }  
+    }  
+
+	function ggg()
+	{
+		xmlHttp.open("GET", "http://172.16.128.218/sdt.htm", false);
+		xmlHttp.setRequestHeader("If-Modified-Since", "1");
+		// finally send the call
+		xmlHttp.send(null);
+	}
+
+	//Method POST   
+    function sendRequestPost(url,param)
+	{  
+        createXMLHttpRequest(); 
+        xmlHttp.open("POST",url,true);  
+        xmlHttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded"); 	 
+        xmlHttp.onreadystatechange = processPostResponse;          
+		xmlHttp.send(param);  
+    }  
+  
+    function processPostResponse()
+	{  
+        if(xmlHttp.readyState == 4)
+		{  
+            if(xmlHttp.status == 200)
+			{  
+                var res = xmlHttp.responseText;
+				window.alert(res); 
+            }
+			else
+			{  
+                window.alert("POST wrong.");  
+            }  
+        }  
+    }  
+
+</script>
+</head>
+
+<body>
+<center>
+<h2>
+TI Web
+</h2>
+<BR><BR>
+<input type="button"  style="width: 120px;" value="Text Enable" onclick="TextEnableClick()" />
+<input type="button"  style="width: 120px;" value="Text Disable" onclick="TextDisableClick()" />
+</center>
+
+
+<script LANGUAGE="JavaScript",type="text/javascript">	
+
+</script>	
+</body>
+</html>

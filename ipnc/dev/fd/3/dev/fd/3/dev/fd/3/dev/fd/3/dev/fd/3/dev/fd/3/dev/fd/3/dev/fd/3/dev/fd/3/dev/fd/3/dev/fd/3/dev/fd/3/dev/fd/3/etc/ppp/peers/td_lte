@@ -1,0 +1,19 @@
+noauth
+debug
+
+connect '/usr/sbin/chat -v -f /etc/ppp/peers/tdlte_connect' 
+/dev/ttyUSB1
+115200
+defaultroute
+noipdefault
+#novj
+#novjccomp
+#noccp
+#ipcp-accept-local
+#ipcp-accept-remote
+#local
+dump
+#nodetach
+nocrtscts
+persist
+usepeerdns

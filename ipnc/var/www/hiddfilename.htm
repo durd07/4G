@@ -1,0 +1,108 @@
+<html>
+    <head>
+		<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+		<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+
+        <script>
+            InitLoad();
+        </script>
+        <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+	</head>	
+	<body onload="MY_ONLOAD()">
+		<script>
+		// alert(document.getElementById("mcufilename").value);
+		// http://192.168.1.168/hiddfilename.htm?mcuupdate=/var/ftp/NVC2650_mcu.abs.s19
+		
+		function MY_ONLOAD() {
+			reloadCount = 3;
+			var uri=window.location.href;
+			// alert(uri);
+			var namelist = uri.split('?');
+
+			var error = namelist[2];
+			// alert(error);
+
+			var upgradenamelist = namelist[1].split('=');
+
+			var upgradename = upgradenamelist[0];
+			var upvaluelist = upgradenamelist[1].split('/');
+			var len = upvaluelist.length;
+			var upvalue = upvaluelist[len - 1];
+
+			// alert(upvalue);
+			// alert(upgradename);
+			if (error == "success"){
+				document.getElementById('upinfo').innerHTML = '上传成功，正在更新，请稍候……' ;
+				var o = '';
+				o += c_iniUrl + GetSetterCmdKV(upgradename, upvalue);
+				// alert(o);
+				SendHttp(o, false, CallBack);
+
+				// Wait();
+			}
+			else
+			{
+				document.getElementById('upinfo').innerHTML = '上传失败，请重试！' ;
+			}
+		}
+
+		function CallBack()
+		{
+			 if (g_SubmitHttp.readyState == 4) {
+			    if (g_SubmitHttp.status == 200) {
+			    var txt = g_SubmitHttp.responseText;
+			    // alert(txt);
+			    if (txt.indexOf("NG") >= 0) {
+			        document.getElementById('upinfo').innerHTML = GL("upgrade_fail") ;
+			        window.flag = 0;
+			        // alert(window.flag);
+			        WS(GL("fail_"));
+			        Wait();					
+			      }
+			      else
+			      {
+			        document.getElementById('upinfo').innerHTML = GL("upgrade_success") ;
+			        window.flag = 1;
+			        WS(GL("ok_"));
+			        Wait();
+			      }			        
+			    }
+			    else
+			    {
+			    	document.getElementById('upinfo').innerHTML = GL("upgrade_fail") ;
+			    	window.flag = 0;
+			    	WS(GL("fail_"));
+			    	Wait();
+			    }
+  			}
+		}
+
+		function Wait()
+    	{
+
+	        g_lockLink = true;
+	        reloadCount--;
+	        if (reloadCount>0)
+	        {
+	            timerID = setTimeout("Wait()", 1100);
+	            // document.getElementById('mcuupgradeinfo').innerHTML = '数据上传中，请稍候……' ;
+	        }          
+	        else
+	        {
+	          g_lockLink = false;
+	          if (window.flag == 0)
+	          	window.location = "smaintain.htm";
+	          else if (window.flag == 1)
+	          	window.top.location = "wait.htm?restart";
+	        }
+    	}
+
+
+		</script>
+		<div id="upinfo"></div>
+	</body>
+</html>

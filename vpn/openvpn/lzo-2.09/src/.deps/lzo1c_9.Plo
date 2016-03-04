@@ -1,0 +1,104 @@
+src/lzo1c_9.lo: src/lzo1c_9.c src/compr1c.h src/config1c.h src/lzo_conf.h \
+ include/lzo/lzoconf.h config.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include-fixed/limits.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include-fixed/syslimits.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/limits.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/features.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/predefs.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/cdefs.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/wordsize.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/gnu/stubs.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/posix1_lim.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/local_lim.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/linux/limits.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/posix2_lim.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include/stddef.h \
+ include/lzo/lzodefs.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/string.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/xlocale.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/string.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/string2.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/stdlib.h \
+ src/lzo_supp.h \
+ /home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/assert.h \
+ src/lzo_func.h src/lzo_ptr.h include/lzo/lzo1c.h src/lzo1b_de.h \
+ src/lzo_dict.h src/stats1c.h src/stats1b.h src/lzo1c_cc.h src/lzo1b_c.ch \
+ src/lzo1b_sm.ch src/lzo1b_tm.ch src/lzo1b_cr.ch src/lzo1b_cm.ch
+
+src/compr1c.h:
+
+src/config1c.h:
+
+src/lzo_conf.h:
+
+include/lzo/lzoconf.h:
+
+config.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include-fixed/limits.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include-fixed/syslimits.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/limits.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/features.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/predefs.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/sys/cdefs.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/wordsize.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/gnu/stubs.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/posix1_lim.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/local_lim.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/linux/limits.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/posix2_lim.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../lib/gcc/arm-arago-linux-gnueabi/4.5.3/include/stddef.h:
+
+include/lzo/lzodefs.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/string.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/xlocale.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/string.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/bits/string2.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/stdlib.h:
+
+src/lzo_supp.h:
+
+/home/durd/work/ti_tools/linux_devkit/bin/../arm-arago-linux-gnueabi/usr/include/assert.h:
+
+src/lzo_func.h:
+
+src/lzo_ptr.h:
+
+include/lzo/lzo1c.h:
+
+src/lzo1b_de.h:
+
+src/lzo_dict.h:
+
+src/stats1c.h:
+
+src/stats1b.h:
+
+src/lzo1c_cc.h:
+
+src/lzo1b_c.ch:
+
+src/lzo1b_sm.ch:
+
+src/lzo1b_tm.ch:
+
+src/lzo1b_cr.ch:
+
+src/lzo1b_cm.ch:

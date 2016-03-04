@@ -1,0 +1,929 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<link type="text/css" href="css/ptz.css" rel="stylesheet">
+<link rel="stylesheet" href="jquery/themes/base/jquery.ui.all.css"/>
+<script src="jquery/jquery-1.9.1.min.js"></script>
+<script src="jquery/jquery-ui.js"></script>
+<script language="javascript" src="var.js"></script>
+<script language="javascript" src="common.js"></script>
+<script language="javascript" src="js/ptz.js"></script>
+<script language="javascript" src="js/minking.js"></script>
+<script language="javascript" src="js/panasonic.js"></script>
+<script type="text/javascript" src="js/json2.js"></script>
+<script> InitLoad(); 
+var speedjx = 5;//-机芯动作速度
+var speedyt = 30;//-云台动作默认速度
+var LaserValue = 0;
+var gorb=G_or_B;
+var vmorvp = device_type;
+var jx = C_Movement;
+ 
+</script>
+
+<title>ptzctl</title>
+<style>
+
+</style>
+</head>
+
+<script>
+$(function() {
+	$( "#yt_speed" ).slider({
+		range: "min",
+		animate: "fast",
+		min: 1,
+		max: 63,
+		value: 30,
+		slide: function( event, ui ) {
+			$( "#yt_speed_val" ).val( ui.value );
+			if( gorb == 0){//枪
+			speedyt = ui.value;//---------jackie
+			}
+			else{
+			speedyt = ui.value;
+			}
+		}
+	});
+	$( "#yt_speed_val" ).val( $( "#yt_speed" ).slider( "value" ) );
+});
+	  
+	  
+ $(function() {
+        $( "#zf_speed" ).slider({
+          range: "min",
+          min: 1,
+          max: 10,
+          value: 5,
+          slide: function( event, ui ) {
+            $( "#zf_speed_val" ).val( ui.value );
+			speedjx = ui.value;//---------jackie
+          }
+        });
+        $( "#zf_speed_val" ).val( $( "#zf_speed" ).slider( "value" ) );
+      });
+  
+  
+  $(function() {
+	$( "#laser_adjust" ).bind("click", function(){
+		Laser_ValueSet();	
+	});	
+  
+	$( "#laser_adjust" ).slider({
+	  range: "min",
+	  min: 0,
+	  max: 63,
+	  value: 5,
+	  slide: function( event, ui ) {
+		$( "#laser_adjust_val" ).val( ui.value );
+		LaserValue = ui.value;
+	  }
+	});	
+	$( "#laser_adjust_val" ).val( $( "#laser_adjust" ).slider( "value" ) );
+  });
+</script>
+<script>
+var qcontrl_list = GL("preset") + ";" + GL("fan") + ";" + GL("wiper") + ";" + GL("turn_over")+ ";" + GL("ir");
+var gcontrl_list = GL("preset") + ";" + GL("fan") + ";" + GL("wiper");
+var tkcontrl_list = GL("preset") + ";" + GL("fan") + ";" + GL("wiper")+ ";" + GL("ir")+ ";" + GL("laser");
+var exposureswitchlist = GL("ex_off") + ";" + GL("ex_on"); 
+var algswitchlist = GL("alg_off") + ";" + GL("alg_on"); 
+var presetnamelist = '';
+for (var i = 1; i <= 64; i++ ) {
+  presetnamelist += i;
+  if (i != 64)
+    presetnamelist += ';';
+};
+
+
+CTRLARY = {
+		 qcontrl_config: new Ctrl_Select("qcontrl_config", qcontrl_list, 0, "qcontrl_config=", "Changeqcontrl_config()"),//控制内容
+		 gcontrl_config: new Ctrl_Select("gcontrl_config", gcontrl_list, 0, "gcontrl_config=", "Changegcontrl_config()"),//控制内容
+		 tkcontrl_config: new Ctrl_Select("tkcontrl_config", tkcontrl_list, 0, "tkcontrl_config=", "Changetkcontrl_config()"),//控制内容
+		 exposureswitch: new Ctrl_Select("exposureswitch", exposureswitchlist, "<%exposureswitch%>", "exposureswitch=", "Change_exposureswitch()"),//曝光策略
+		 algswitch: new Ctrl_Select("algswitch", algswitchlist, "<%algswitch%>", "algswitch=", "Change_algswitch()"),//算法开关策略
+		 presetflag: new Ctrl_Select("presetflag", presetnamelist, "16", "presetflag=")  //预置位
+		 //presetflag_vm: new Ctrl_Select("presetflag_vm", presetvmnamelist, "16", "presetflag_vm=")  //预置位
+
+};
+
+</script>
+<body onload="MY_ONLOAD()">
+<script>
+
+/*
+function choseb_g()
+{	
+	if( gorb == 0)//枪
+	{
+		document.getElementById("tkcontrl_config").style.display = "none";
+		document.getElementById("qcontrl_config").style.display = "none";
+		document.getElementById("gcontrl_config").style.display = "";
+	}
+	if( gorb == 1)//球
+	{
+		document.getElementById("tkcontrl_config").style.display = "none";
+		document.getElementById("qcontrl_config").style.display = "";
+		document.getElementById("gcontrl_config").style.display = "none";
+	}
+	if( gorb == 2)//tk26红外枪机
+	{
+		document.getElementById("tkcontrl_config").style.display = "";
+		document.getElementById("qcontrl_config").style.display = "none";
+		document.getElementById("gcontrl_config").style.display = "none";
+	}
+}
+
+function fixsomeset()
+{	
+	var flag =  GetCCV("qcontrl_config");
+	if(flag==0){//预置位
+			
+						
+			}
+		if(flag==1){//风扇
+			
+		}
+		if(flag==2){//雨刷
+					
+			}
+		if(flag==3){//反转
+			
+			}
+		if(flag==4){//红外
+			
+			}
+	
+}
+function fixgsomeset()
+{	
+	var flag =  GetCCV("gcontrl_config");
+	if(flag==0){//预置位
+			
+			}
+		if(flag==1){//风扇
+			
+		}
+		if(flag==2){//雨刷
+			
+		}
+		
+}
+function fixtksomeset()
+{	
+	var flag =  GetCCV("tkcontrl_config");
+	if(flag==0){//预置位
+			
+			}
+		if(flag==1){//风扇
+			
+		}
+		if(flag==2){//雨刷
+			
+		}
+		if(flag==3){//红外
+			
+		}
+		if(flag==4){//激光
+			
+		}
+		
+}
+function Vm_or_Vp()
+{
+	//alert(vmorvp);
+	if(vmorvp == 3)//vm_p
+	{
+		
+		
+	}
+	if(vmorvp == 4)//vp
+	{
+		
+	}
+}
+
+function Changeqcontrl_config()
+{
+	fixsomeset();
+}
+
+function Changegcontrl_config()
+{
+	fixgsomeset();
+}
+
+function Changetkcontrl_config()
+{
+	fixtksomeset();
+}
+
+
+function AddPreset()
+{ 
+  if(vmorvp == 4){
+	 if (Checkprepos() == false)
+			return ;
+	else{
+	 var flag = document.getElementById("presetflag").selectedIndex +1; 
+	  //var flaglist = flag + ':1';
+	  var tishi = '添加预置位'+flag+'成功';  
+	  SendHttp(c_iniUrl + GetSetterCmdKV("add_prepos_set", flag), false,SendImgCallBack);
+	}
+  }
+  else {
+	  var flag = document.getElementById("presetflag").selectedIndex +1; 
+	  //var flaglist = flag + ':1';
+	  var tishi = '添加预置位'+flag+'成功';  
+	  SendHttp(c_iniUrl + GetSetterCmdKV("add_prepos_set", flag), false,SendImgCallBack);
+	  //alert(tishi);
+  }
+}
+function DelPreset()
+{  
+if(vmorvp == 4){
+	 if (Checkprepos() == false)
+		return ;
+	else{
+		var flag = document.getElementById("presetflag").selectedIndex +1;
+	  //var flaglist = flag + ':0';
+	   var tishi = '删除预置位'+ flag +'成功';  
+	   SendHttp(c_iniUrl + GetSetterCmdKV("del_prepos_set", flag), false,SendImgCallBack);
+	   //alert(tishi);
+	}
+}
+else{
+	  var flag = document.getElementById("presetflag").selectedIndex +1;
+	  //var flaglist = flag + ':0';
+	   var tishi = '删除预置位'+ flag +'成功';  
+	   SendHttp(c_iniUrl + GetSetterCmdKV("del_prepos_set", flag), false,SendImgCallBack);
+	   //alert(tishi);
+   }
+}
+function GoPreset()
+{
+  var flag = document.getElementById("presetflag").selectedIndex +1;
+  var tishi = '调用预置位'+ flag +'成功';  
+  SendHttp(c_iniUrl + GetSetterCmdKV("go_prepos_set", flag), false);
+  //alert(tishi);   
+}	
+
+*/
+
+
+function MY_ONLOAD()
+{
+	
+	/*
+	fixsomeset();
+	fixgsomeset();
+	fixtksomeset();
+	choseb_g();	
+	Vm_or_Vp();
+	*/
+	getCurrent3DState();//初始化当前3D定位参数
+	enable3DButton(threeDposition);//按钮开还是关
+	
+}
+
+
+function PtzStop_PS()
+{
+	var value = panasonicGetFocusMode();			
+	if(value<2||value>2){			
+		SendHttp(c_iniUrl + GetSetterCmdKV("ptz_stop_set", speedyt), false);
+	}
+	if(value==2){			
+		SendHttp(c_iniUrl + GetSetterCmdKV("ptz_stop_set", speedyt)+ GetSetterCmdKV("one_push_trigger", 1), false);
+	}	
+}
+function PtzStop_PV()
+{
+	SendHttp(c_iniUrl + GetSetterCmdKV("ptz_stop_set", speedyt), false);
+}
+function PtzStop() {  
+			
+	if(jx == 1)//松下
+	{
+		PtzStop_PS();
+	}
+	if( jx== 2)//动力视讯
+	{
+		PtzStop_PV();
+	}	
+}
+
+//新抽取的方法。
+function PtzControl(command)
+{
+	switch(command)
+	{
+		case 'U' : SendHttp(c_iniUrl + GetSetterCmdKV("ptz_up_set", speedyt), false);  break;
+		case 'D' : SendHttp(c_iniUrl + GetSetterCmdKV("ptz_down_set", speedyt), false);  break;
+		case 'L' : SendHttp(c_iniUrl + GetSetterCmdKV("ptz_left_set", speedyt), false);  break;
+		case 'R' : SendHttp(c_iniUrl + GetSetterCmdKV("ptz_right_set", speedyt), false);  break;
+		
+		case 'RU' : SendHttp(c_iniUrl + GetSetterCmdKV("ptz_right_up_set", speedyt), false);  break;
+		case 'RD' : SendHttp(c_iniUrl + GetSetterCmdKV("ptz_right_down_set", speedyt), false);  break;
+		case 'LU' : SendHttp(c_iniUrl + GetSetterCmdKV("ptz_left_up_set", speedyt), false);  break;
+		case 'LD' : SendHttp(c_iniUrl + GetSetterCmdKV("ptz_left_down_set", speedyt), false);  break;
+		default : PtzStop(); break;
+	}
+}
+
+function ZoomTele_PS()
+{
+	//("IN the FocusNear!!");//--jackie 拉近
+	//var cmd = panasonicFocusNearCmd();
+	//alert("zoomtele_set");
+	SendHttp(c_iniUrl + GetSetterCmdKV("zoomspeed", speedjx)+ GetSetterCmdKV("zoomtele_set",1), false);
+}
+function ZoomTele_PV()
+{
+	var ctrl = null;
+	var ctrljson = {"Factory":"POWER_VIEW",
+				  "Type":"PV8340-F2",
+				  "Action_Item":"Zoom_Near",
+				  "Param":"5"
+				  };
+		if(speedjx > 7){
+			speedjx =7;
+		}
+		ctrljson.Param = speedjx.toString();
+		ctrl = JSON.stringify(ctrljson);
+		//alert(ctrl);
+	SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);				  
+}
+
+function ZoomTele() {
+	if(jx == 1)//松下
+	{
+		ZoomTele_PS();
+	}
+	if( jx== 2)//动力视讯
+	{
+		ZoomTele_PV();
+	}	
+}
+function ZoomWide_PS()
+{
+	//("IN the FocusNear!!");//--jackie 拉近
+	//var cmd = panasonicFocusNearCmd();
+	//alert("zoomtele_set");
+	SendHttp(c_iniUrl + GetSetterCmdKV("zoomspeed", speedjx)+ GetSetterCmdKV("zoomwide_set", 1), false);
+}
+function ZoomWide_PV()
+{
+	var ctrl = null;
+	var ctrljson = {"Factory":"POWER_VIEW",
+				  "Type":"PV8340-F2",
+				  "Action_Item":"Zoom_Far",
+				  "Param":"5"
+				  };
+		if(speedjx > 7){
+			speedjx =7;
+		}
+		ctrljson.Param = speedjx.toString();
+		ctrl = JSON.stringify(ctrljson);
+		//alert(ctrl);
+	SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);				  
+}
+
+
+function ZoomWide() {
+	if(jx == 1)//松下
+	{
+		ZoomWide_PS();
+	}
+	if( jx== 2)//动力视讯
+	{
+		ZoomWide_PV();
+	}
+}
+
+function ZoomStop_PS()
+{//var cmd = panasonicZoomStopCmd();	
+	 var value = panasonicGetFocusMode();
+	 //alert(value);
+	 if(value<2||value>2){
+	SendHttp(c_iniUrl + GetSetterCmdKV("zoomstop_set", 1), false);
+	}
+	if(value==2){
+	SendHttp(c_iniUrl + GetSetterCmdKV("zoomstop_set", 1)+ GetSetterCmdKV("one_push_trigger", 1), false);
+	}
+	//alert(speedjx);
+}
+
+function ZoomStop_PV()
+{
+	var ctrl = null;
+	var ctrljson = {"Factory":"POWER_VIEW",
+				  "Type":"PV8340-F2",
+				  "Action_Item":"Zoom_Stop",
+				  "Param":"5"
+				  };
+	if(speedjx > 7){
+		speedjx =7;
+	}
+	ctrljson.Param = speedjx.toString();
+	ctrl = JSON.stringify(ctrljson);
+	SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);				  
+}  
+  
+  
+function ZoomStop() {
+if(jx == 1)//松下
+	{
+		ZoomStop_PS();
+	}
+	if( jx== 2)//动力视讯
+	{
+		ZoomStop_PV();
+	}
+}
+function FocusStop_PS()
+{
+	SendHttp(c_iniUrl + GetSetterCmdKV("camera_focusstop_set", 1), false);
+}
+function FocusStop_PV()
+{
+	var ctrl = null;
+	var ctrljson = {"Factory":"POWER_VIEW",
+				  "Type":"PV8340-F2",
+				  "Action_Item":"Focus_Stop",
+				  "Param":"5"
+				  };
+		ctrljson.Param = speedjx.toString();
+		ctrl = JSON.stringify(ctrljson);
+		//alert(ctrl);
+	SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);				  
+}
+  
+function FocusStop() { 
+	if(jx == 1)//松下
+		{
+			FocusStop_PS();
+		}
+	if( jx== 2)//动力视讯
+	{
+		FocusStop_PV();
+	}
+}
+function FocusFar_PS()
+{
+	SendHttp(c_iniUrl + GetSetterCmdKV("camera_focusstop_set", 1), false);
+}
+function FocusFar_PV()
+{
+	var ctrl = null;
+	var ctrljson = {"Factory":"POWER_VIEW",
+				  "Type":"PV8340-F2",
+				  "Action_Item":"Focus_Far",
+				  "Param":"5"
+				  };
+		if(speedjx > 7){
+			speedjx =7;
+		}
+		ctrljson.Param = speedjx.toString();
+		ctrl = JSON.stringify(ctrljson);
+		//alert(ctrl);
+	SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);				  
+}  
+  
+
+  function FocusFar() {
+	if(jx == 1)//松下
+	{
+		FocusFar_PS();
+	}
+	if( jx== 2)//动力视讯
+	{
+		FocusFar_PV();
+	}
+  }
+function FocusNear_PS()
+{
+	SendHttp(c_iniUrl + GetSetterCmdKV("camera_focusnear_set", 1), false);
+}
+function FocusNear_PV()
+{
+	var ctrl = null;
+	var ctrljson = {"Factory":"POWER_VIEW",
+				  "Type":"PV8340-F2",
+				  "Action_Item":"Focus_Near",
+				  "Param":"5"
+				  };
+		if(speedjx > 7){
+			speedjx =7;
+		}
+		ctrljson.Param = speedjx.toString();
+		ctrl = JSON.stringify(ctrljson);
+		//alert(ctrl);
+	SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);				  
+}  
+
+function FocusNear() {
+	if(jx == 1)//松下
+	{
+		FocusNear_PS();
+	}
+	if( jx== 2)//动力视讯
+	{
+		FocusNear_PV();
+	}
+}
+function Turn_On() {
+	/*
+	var on_info;
+	if(gorb==0){
+		on_info = GetCCV("gcontrl_config");
+	}
+	if(gorb==1){
+		on_info = GetCCV("qcontrl_config");
+	}
+	if(gorb==2){
+		on_info = GetCCV("tkcontrl_config");
+	}
+	alert(on_info);
+	*/
+	//SendHttp(c_iniUrl + GetSetterCmdKV("ptz_turnon", on_info), false);
+	
+	SendHttp(c_iniUrl + GetSetterCmdKV("wiper_on"), false);
+}   
+ /* 
+function Turn_Off() {
+
+var off_info;
+if(gorb==0){
+	off_info = GetCCV("gcontrl_config");
+}
+if(gorb==1){
+	off_info = GetCCV("qcontrl_config");
+}
+if(gorb==2){
+	off_info = GetCCV("tkcontrl_config");
+}
+//alert(on_info);
+SendHttp(c_iniUrl + GetSetterCmdKV("ptz_turnoff", off_info), false);
+}	
+*/
+function IR_power_up()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("ir_power_up", 1), false);
+}
+function IR_power_down()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("ir_power_down", 1), false);
+} 
+function IR_far()
+{  
+  SendHttp(c_iniUrl + GetSetterCmdKV("ir_far", 1), false);
+}
+function IR_near()
+{  
+  SendHttp(c_iniUrl + GetSetterCmdKV("ir_near", 1), false);
+}
+
+function Change_exposureswitch()//曝光策略开关
+{
+  //alert(GetCCV("exposureswitch"));//--jackie
+  SendHttp(c_iniUrl + GetSetterCmdKV("exposure_switch", GetCCV("exposureswitch")), false);
+}
+function Change_algswitch()//算法开关
+{
+  //alert(GetCCV("algswitch"));//--jackie
+  SendHttp(c_iniUrl + GetSetterCmdKV("alg_switch", GetCCV("algswitch")), false);
+}
+function Checkprepos()
+{
+	var flag = document.getElementById("presetflag").selectedIndex +1;
+	if(flag<=16)
+	{
+		alert(GL("please_chose_num_after"));
+		document.getElementById("presetflag").value = 16;
+		return false;
+	}
+}
+
+function Turn_Onlaser(){
+	var ctrl = null;
+	var ctrljson = {"Factory":"MINKING",
+			  "Type":"TC26",
+			  "Action_Item":"Laser",
+			  "Param":"On"
+			  };
+	ctrl = JSON.stringify(ctrljson);
+	//alert(ctrl);
+	SendHttp(c_iniUrl + GetSetterCmdKV("ptz_parameters_set", ctrl), false);	  
+}
+function Turn_Offlaser(){
+	var ctrl = null;
+	var ctrljson = {"Factory":"MINKING",
+				  "Type":"TC26",
+				  "Action_Item":"Laser",
+				  "Param":"Off"
+			  };
+	ctrl = JSON.stringify(ctrljson);
+	//alert(ctrl);
+	SendHttp(c_iniUrl + GetSetterCmdKV("ptz_parameters_set", ctrl), false);	  
+}
+function Turn_autolaser(){
+	var ctrl = null;
+	var ctrljson = {"Factory":"MINKING",
+				  "Type":"TC26",
+				  "Action_Item":"Laser",
+				  "Param":"Auto"
+			  };
+	ctrl = JSON.stringify(ctrljson);
+	//alert(ctrl);
+	SendHttp(c_iniUrl + GetSetterCmdKV("ptz_parameters_set", ctrl), false);	  
+}
+
+function Laser_ValueSet(){
+	var ctrl = null;
+	var ctrljson = {"Factory":"MINKING",
+				  "Type":"TC26",
+				  "Action_Item":"Laser_Adjust",
+				  "Param":"5"
+			  };
+	ctrljson.Param = LaserValue;
+	ctrl = JSON.stringify(ctrljson);
+	//alert(ctrl);
+	SendHttp(c_iniUrl + GetSetterCmdKV("ptz_parameters_set", ctrl), false);	  
+}
+
+function Turn_OnIR(){
+	var ctrl = null;
+	var ctrljson = {"Factory":"MINKING",
+			  "Type":"TC26",
+			  "Action_Item":"IR",
+			  "Param":"On"
+			  };
+	ctrl = JSON.stringify(ctrljson);
+	//alert(ctrl);
+	SendHttp(c_iniUrl + GetSetterCmdKV("ptz_parameters_set", ctrl), false);	  
+}
+function Turn_OffIR(){
+	var ctrl = null;
+	var ctrljson = {"Factory":"MINKING",
+				  "Type":"TC26",
+				  "Action_Item":"IR",
+				  "Param":"Off"
+			  };
+	ctrl = JSON.stringify(ctrljson);
+	//alert(ctrl);
+	SendHttp(c_iniUrl + GetSetterCmdKV("ptz_parameters_set", ctrl), false);	  
+}
+function Turn_autoIR(){
+	var ctrl = null;
+	var ctrljson = {"Factory":"MINKING",
+				  "Type":"TC26",
+				  "Action_Item":"IR",
+				  "Param":"Auto"
+			  };
+	ctrl = JSON.stringify(ctrljson);
+	//alert(ctrl);
+	SendHttp(c_iniUrl + GetSetterCmdKV("ptz_parameters_set", ctrl), false);	  
+}
+
+</script>
+
+
+	<div style="width:100%; height:100%; position:relative;background:#333;">		
+		<div class = "ptz_control">
+			<table  class="ptz_control1">
+				<tr> 
+				  <td id="ptz_button_left_up" class="ptz_button_left_up" style="cursor:hand" onmousedown="PtzControl('LU')" onmouseup="PtzStop()" onmouseout="PtzStop()"></td>			
+				   <script> document.getElementById("ptz_button_left_up").title = GL("ptz_left_up"); </script> 
+				  <td id="ptz_up" class="ptz_button_up" style="cursor:hand" onmousedown="PtzControl('U')" onmouseup="PtzStop()" onmouseout="PtzStop()"></td>		
+				  <script> document.getElementById("ptz_up").title = GL("ptz_up"); </script> 
+				  <td id="ptz_button_right_up" class="ptz_button_right_up" style="cursor:hand" onmousedown="PtzControl('RU')" onmouseup="PtzStop()" onmouseout="PtzStop()"></td> 		
+				  <script> document.getElementById("ptz_button_right_up").title = GL("ptz_right_up"); </script> 
+				 </tr>
+				 <tr>
+				  <td id="ptz_button_left" class="ptz_button_left" style="cursor:hand"  onmousedown="PtzControl('L')" onmouseup="PtzStop()" onmouseout="PtzStop()"></td>		
+				   <script> document.getElementById("ptz_button_left").title = GL("ptz_left"); </script> 
+				  <td id="ptz_button_right" class="ptz_button_right" style="cursor:hand" onmousedown="PtzControl('R')" onmouseup="PtzStop()" onmouseout="PtzStop()"></td>		
+				   <script> document.getElementById("ptz_button_right").title =GL("ptz_right"); </script> 
+				 </tr>
+				 <tr>			  
+				  <td id="ptz_button_left_down" class="ptz_button_left_down" style="cursor:hand" onmousedown="PtzControl('LD')" onmouseup="PtzStop()" onmouseout="PtzStop()"></td>		
+				  <script> document.getElementById("ptz_button_left_down").title = GL("ptz_left_down"); </script> 
+				  <td id="ptz_button_down" class="ptz_button_down" style="cursor:hand" onmousedown="PtzControl('D')" onmouseup="PtzStop()" onmouseout="PtzStop()"></td>	
+				  <script> document.getElementById("ptz_button_down").title = GL("ptz_down"); </script> 
+				  <td id="ptz_button_right_down" class="ptz_button_right_down" style="cursor:hand" onmousedown="PtzControl('RD')" onmouseup="PtzStop()" onmouseout="PtzStop()"></td>	
+				  <script> document.getElementById("ptz_button_right_down").title = GL("ptz_right_down"); </script> 
+				</tr>
+			</table>
+            <div id="switch_3d" onclick="change3DState();"> </div>
+       			
+			<table style="position:absolute; top:145px;">
+				<tr>
+                    <td style="color:#d8d8d8;font-size:12px; width:55px;">
+                        <script>DW(GL("pan_speed"));</script>
+                    </td>
+                     <td  class ="ptz_ytspeed" style=" width:130px; vertical-align:middle;"> 
+                     	 <div id="yt_speed" style="height:7px; width:100%;float:left"></div>
+                      </td>
+                     <td> <input type="text" id="yt_speed_val" readonly="readonly" class = "ptz_ytspeed_num" maxlength=1 size=1/></td>
+                 </tr>
+            </table>
+            
+            
+			<table style="position: absolute;top:180px; width:100%;">
+            	<tr>
+                	<th colspan="3" style="background:#333;color:white; height:20px;">机芯操作</th>
+                </tr>
+                 <tr><td colspan="3" style="height:5px;"></td></tr>
+                <tr>
+                	<td style="width:80px;"><script>DW(GL("zoom_contrl"));</script></td>
+                    <td id= "zoomnear" class = "ptz_zoomnear" style="cursor:hand" onmousedown="ZoomTele()" onmouseup="ZoomStop()"> </td>
+                    <script> document.getElementById("zoomnear").title = GL("zoom_tele"); </script>
+                    <td id= "zoomfar" class = "ptz_zoomfar" style="cursor:hand" onmousedown="ZoomWide()" onmouseup="ZoomStop()">
+                    <script> document.getElementById("zoomfar").title = GL("zoom_wide"); </script>
+                </tr>
+                <tr>
+                	<td><script>DW(GL("focus_contrl"));</script></td>
+                    <td id= "focusnear" class = "ptz_focusnear" style="cursor:hand" onmousedown="FocusNear()" onmouseup="FocusStop()"></td>
+                    <script> document.getElementById("focusnear").title = GL("focus_near"); </script>
+                    <td id= "focusfar" class = "ptz_focusfar" style="cursor:hand" onmousedown="FocusFar()" onmouseup="FocusStop()"></td>
+                    <script> document.getElementById("focusfar").title = GL("focus_far"); </script>
+                </tr>
+                
+				 <!--tr>
+                     <td id= "zoomnear" class = "ptz_zoomnear" style="cursor:hand" onmousedown="ZoomTele()" onmouseup="ZoomStop()"> </td>
+                     <script> document.getElementById("zoomnear").title = GL("zoom_tele"); </script>
+                     <td style= "position:absolute;left:40px;top: 5px; width:60px; color:#d8d8d8;font-size:13px;text-align:center;">
+                     <script>DW(GL("zoom_contrl"));</script>				
+                     </td>
+                     <td id= "zoomfar" class = "ptz_zoomfar" style="cursor:hand" onmousedown="ZoomWide()" onmouseup="ZoomStop()">
+                     <script> document.getElementById("zoomfar").title = GL("zoom_wide"); </script>
+                     </td>
+				 </tr>
+				 <tr>
+                     <td id= "focusnear" class = "ptz_focusnear" style="cursor:hand" onmousedown="FocusNear()" onmouseup="FocusStop()"></td>
+                     <script> document.getElementById("focusnear").title = GL("focus_near"); </script>
+                     <td style= "position:absolute;left:40px;top: 38px; width:60px; color:#d8d8d8;font-size:13px;text-align:center;">
+                     <script>DW(GL("focus_contrl"));</script>				
+                     </td>
+                     <td id= "focusfar" class = "ptz_focusfar" style="cursor:hand" onmousedown="FocusFar()" onmouseup="FocusStop()"></td>
+                      <script> document.getElementById("focusfar").title = GL("focus_far"); </script>
+				 </tr-->			
+			 </table>
+             
+             <table style="position: absolute;top:280px;">
+             	<tr>
+                	<td style="width:55px;"><script>DW(GL("move_speed"));</script></td>
+                    <td style="width:130px;"> 
+                     	 <div id="zf_speed" style="height:7px; width:100%;float:left"></div>
+                     </td>
+                     <td><input type="text" id="zf_speed_val" readonly="readonly" class = "ptz_zfspeed_num" maxlength=1 size=1/></td>
+                </tr>
+             </table>
+			 
+			 <!--table style="position: absolute;top:250px;">
+                  <tr>
+                      <td style= "color:#d8d8d8;font-size:12px">
+                      <script>DW(GL("move_speed"));</script>			 
+                      </td>
+                     <td id="zf_speed" class = "ptz_zfspeed">
+                     	<input type="text" id="zf_speed_val" readonly="readonly" class = "ptz_zfspeed_num" maxlength=1 size=1/>	 
+                     </td>
+                  </tr> 			
+			</table-->
+			
+            
+            <div class="ptz_control2"><!--云台控制下-->
+            	<!--下面这个div放图标控制-->
+            	<div id="icon_container" style="position:absolute;width:98%;height:70px;top:2px;">
+                	<table id="ptz_icon_table" width="90%">
+                    	<tr>
+                        	<td style="width:5px"></td>
+                        	<td id="brush_td" onclick="PTZ_Ctrl.brush();" title="雨刷"></td>
+                            <td id="red_td_1" class="red_ligth_1_off" onclick="PTZ_Ctrl.redLightClick();"  title="红外"></td>
+                            <td id="red_td_2" class="red_ligth_2_off" onclick="PTZ_Ctrl.redLightAutoClick();" title="红外自动"></td>
+                            <td></td>
+                            <td id="laser_td_1" class="laser_1_off" onclick="PTZ_Ctrl.laserClick();"  title="激光"></td>
+                            <td id="laser_td_2" class="laser_2_off" onclick="PTZ_Ctrl.laserAutoClick();"  title="激光自动"></td>
+                         </tr>                         
+                    </table>
+                    
+                     <table style=" position:absolute;top:35px;">
+                        <tr>
+                        	 <td style="width:55px;"><script>DW(GL("Laser_Set"));</script></td>
+                        	 <td style="width:130px;"> 
+                                 <div id="laser_adjust" style="height:7px; width:100%;float:left"></div>
+                             </td>
+                             <td><input type="text" id="laser_adjust_val" readonly="readonly" class="laser_adjust_value" maxlength=1 size=1/></td>
+                        </tr>
+                     </table>
+                
+                </div>
+            	<!--div style="position:absolute; width:100%;height:20px; top:50px;">
+                	<span style="display:block;color:white; background:#666; padding-top:5px; width:100%; height:100%; text-align:center; font-size:12px;">预置位</span>
+				</div-->
+                
+                <div id="preset_container">
+                    <!--这里不要放东西，js自动生代码放这里-->  
+                </div>
+           
+         
+           
+			<table style="display:none;">			    
+				<script>
+					DW('<tr><td id ="contrl_cfg">');
+					WH("qcontrl_config");
+					WH("gcontrl_config");
+					WH("tkcontrl_config");
+					DW('</td></tr>');
+					DW('<tr><td id="exposure_switch">');
+					WH("exposureswitch");
+					DW('</td></tr>');
+					DW('<tr><td id="alg_switch">');
+					WH("algswitch");
+					DW('</td></tr>');
+					DW('<tr><td id="preset_flag">');
+					WH("presetflag");
+					WH("presetflag_vm");
+					DW('</td></tr>');
+				</script>					
+			</table>
+             <!--  
+			<table id="switch_set"  style="position: absolute;left:15px;display:none;">
+				<script>
+				DW('<tr><td>');
+				DW('<input type="button" id="turn_on" style="width:95px;height:25px" value="' + GL("on") + '" title = "' + GL("on") + '" onclick="Turn_On()">');
+				DW('</td><td>');
+				DW('<input type="button" id="turn_off" style="width:95px;height:25px" value="' + GL("off") + '" title = "' + GL("off") + '" onclick="Turn_Off()">');
+				DW('</td></tr>');
+				
+				DW('<tr>');
+				DW('<table>');
+				DW('<tr><td>');
+				DW('<input type="button" id="turn_onlaser" style="width:70px;height:25px" value="' + GL("on") + '" title = "' + GL("on") + '" onclick="Turn_Onlaser()">');
+				DW('</td><td>');
+				DW('<input type="button" id="turn_offlaser" style="width:70px;height:25px" value="' + GL("off") + '" title = "' + GL("off") + '" onclick="Turn_Offlaser()">');
+				DW('</td><td>');
+				DW('<input type="button" id="turn_autolaser" style="width:70px;height:25px" value="' + GL("auto") + '" title = "' + GL("auto") + '" onclick="Turn_autolaser()">');
+				DW('</td></tr>');
+				DW('</table>');
+				DW('</tr>');
+				
+				DW('<br>');
+				DW('<tr>');
+				DW('<table id = "laser_setvalue" >');
+				DW('<tr>');
+				DW('<td style= "color:#d8d8d8;font-size:12px">');
+				DW(GL("Laser_Set"));			 
+				DW('</td>');
+				DW('<td id="laser_adjust" class = "laser_adjustid">');
+				DW('<input type="text" id="laser_adjust_val" readonly="readonly" class = "laser_adjust_value" maxlength=1 size=1/>	'); 
+				DW('</td>');
+				DW('</tr>'); 			
+				DW('</table>');
+				DW('</tr>');
+				
+				DW('<tr id="ir_ctrl">');
+				DW('<table>')
+				DW('<tr><td>');
+				DW('<input type="button" id="turn_onir" style="width:70px;height:25px" value="' + GL("on") + '" title = "' + GL("on") + '" onclick="Turn_OnIR()">');
+				DW('</td><td>');
+				DW('<input type="button" id="turn_offir" style="width:70px;height:25px" value="' + GL("off") + '" title = "' + GL("off") + '" onclick="Turn_OffIR()">');
+				DW('</td><td>');
+				DW('<input type="button" id="turn_autoir" style="width:70px;height:25px" value="' + GL("auto") + '" title = "' + GL("auto") + '" onclick="Turn_autoIR()">');
+				DW('</td></tr>');
+				DW('</table>');
+				DW('</tr>');							
+				
+				DW('<tr><td>');
+				DW('<input type="button" id="IR_power_up" style="width:95px;height:25px" value="' + GL("IR_power_up") + '" title = "' + GL("IR_power_up") + '" onclick="IR_power_up()">');
+				DW('</td><td>');
+				DW('<input type="button" id="IR_power_down" style="width:95px;height:25px" value="' + GL("IR_power_down") + '" title = "' + GL("IR_power_down") + '" onclick="IR_power_down()">');
+				DW('</td></tr>');
+				DW('<tr><td>');
+				DW('<input type="button" id="IR_far" style="width:95px;height:25px" value="' + GL("IR_far") + '" title = "' + GL("IR_far") + '" onclick="IR_far()">');
+				DW('</td><td>');
+				DW('<input type="button" id="IR_near" style="width:95px;height:25px" value="' + GL("IR_near") + '" title = "' + GL("IR_near") + '" onclick="IR_near()">');
+				DW('</td></tr>');
+				</script>
+			</table>
+			
+			<table id="preset_set" style="display:none;">
+				<script>
+				DW('<tr><td>');
+				DW('<input type="button" id="addpreset" style="width:75px;height:25px" value="'+GL("add_preset") + '" title = "' + GL("add_preset1") + '" onclick="AddPreset()">');
+				DW('</td><td>');
+				DW('<input type="button" id="delpreset" style="width:75px;height:25px" value="'+GL("del_preset") + '" title = "' + GL("del_preset1") + '" onclick="DelPreset()">');			
+				DW('</td><td>');
+				DW('<input type="button" id="gopreset" style="width:75px;height:25px" value="'+GL("go_preset") + '" title = "' + GL("go_preset1") + '" onclick="GoPreset()">');
+				DW('</td></tr>');
+				</script
+			</table>
+       -->
+			</div>
+		</div>
+   </div>
+    
+</body>

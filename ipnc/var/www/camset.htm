@@ -1,0 +1,364 @@
+<!-- ISP configuration ZDY, 2012-11-30 -->
+<script>
+	v_valueRange = new V_NumRange(256, 1023, GL("gain_qa"));
+	v_vgaRange = new V_NumRange(0, 1023, GL("vgagain_qa"));
+	v_blkRange = new V_NumRange(0, 1023, GL("blk_qa"));
+
+    CTRLARY = {
+      exposurectrl: new Ctrl_Radio("exposurectrl", "<%exposurectrl%>", "exposurectrl="),
+    	awb: new Ctrl_Radio("awb", "<%awb%>", "awb=", "FixStatusAWB()"),
+    	//manual awb
+    	rgain: new Ctrl_Text("rgain", "4", "4", "<%rgain%>", "rgain=", new CheckerObj(v_valueRange)), 
+    	ggain: new Ctrl_Text("ggain", "4", "4", "<%ggain%>", "ggain=", new CheckerObj(v_valueRange)),
+    	bgain: new Ctrl_Text("bgain", "4", "4", "<%bgain%>", "bgain=", new CheckerObj(v_valueRange)),
+      autocalib: new Ctrl_Input("autocalib", "calibrationstart", "ClickStartCalibration()"),
+    	//VGA gain
+    	vgaagain: new Ctrl_Text("vgaagain", "4", "4", "<%vgaagain%>", "vgaagain=", new CheckerObj(v_vgaRange)), 
+    	vgabgain: new Ctrl_Text("vgabgain", "4", "4", "<%vgabgain%>", "vgabgain=", new CheckerObj(v_vgaRange)),
+    	vgacgain: new Ctrl_Text("vgacgain", "4", "4", "<%vgacgain%>", "vgacgain=", new CheckerObj(v_vgaRange)),
+    	vgadgain: new Ctrl_Text("vgadgain", "4", "4", "<%vgadgain%>", "vgadgain=", new CheckerObj(v_vgaRange)),
+    	//cds gain
+    	cdsagain: new Ctrl_Radio("cdsagain", "<%cdsagain%>", "cdsagain="),
+    	cdsbgain: new Ctrl_Radio("cdsbgain", "<%cdsbgain%>", "cdsbgain="),
+    	cdscgain: new Ctrl_Radio("cdscgain", "<%cdscgain%>", "cdscgain="),
+    	cdsdgain: new Ctrl_Radio("cdsdgain", "<%cdsdgain%>", "cdsdgain="),    	
+    	//image set
+      // contrast: new Ctrl_Text("contrast", "4", "4", "<%contrast%>", "contrast=", new CheckerObj(v_blkRange)), 
+      luminance: new Ctrl_Text("luminance", "4", "4", "<%luminance%>", "luminance=", new CheckerObj(v_blkRange)), 
+      hue: new Ctrl_Text("hue", "4", "4", "<%hue%>", "hue=", new CheckerObj(v_blkRange)), 
+      saturation: new Ctrl_Text("saturation", "4", "4", "<%saturation%>", "saturation=", new CheckerObj(v_blkRange)), 
+
+      // Black Level channel
+      blka: new Ctrl_Text("blka", "4", "4", "<%blka%>", "blka=", new CheckerObj(v_blkRange)), 
+      blkb: new Ctrl_Text("blkb", "4", "4", "<%blkb%>", "blkb=", new CheckerObj(v_blkRange)),
+      blkc: new Ctrl_Text("blkc", "4", "4", "<%blkc%>", "blkc=", new CheckerObj(v_blkRange)),
+      blkd: new Ctrl_Text("blkd", "4", "4", "<%blkd%>", "blkd=", new CheckerObj(v_blkRange)),
+
+      gamma: new Ctrl_Check("gamma", "<%gamma%>", "gamma="),
+      raw: new Ctrl_Check("raw", "<%raw%>", "raw="),
+      imgmod: new Ctrl_Select("imgmod","<%imgmodname.all%>","<%imgmod%>","imgmod="),
+      lvdsdelay: new Ctrl_Select("lvdsdelay","<%lvdsdelayname.all%>","<%lvdsdelay%>","lvdsdelay="),
+      coloradjust: new Ctrl_Select("coloradjust","<%coloradjustname.all%>","<%coloradjust%>","coloradjust="),
+      
+      peakenable: new Ctrl_Check("peakenable", "<%peakenable%>", "peakenable=", "isPeakEnable()"),
+      nfcoef: new Ctrl_Text("nfcoef", "4", "4", "<%nfcoef%>", "nfcoef=", new CheckerObj(v_blkRange)), 
+      lowthr: new Ctrl_Text("lowthr", "4", "4", "<%lowthr%>", "lowthr=", new CheckerObj(v_blkRange)), 
+      hithr: new Ctrl_Text("hithr", "4", "4", "<%hithr%>", "hithr=", new CheckerObj(v_blkRange)), 
+      peakgain: new Ctrl_Text("peakgain", "4", "4", "<%peakgain%>", "peakgain=", new CheckerObj(v_blkRange)), 
+      ad9928: new Ctrl_Select("ad9928","<%ad9928name.all%>","<%ad9928%>","ad9928="),
+      //software reset
+      softreset: new Ctrl_Input("softreset", "softreset", "SoftReset()")
+    };
+    function FixStatusAWB()
+    {
+    	CTRLARY["rgain"].Disable(GetCCV("awb") == 0 || GetCCV("awb") == 2);
+    	CTRLARY["ggain"].Disable(GetCCV("awb") == 0 || GetCCV("awb") == 2);
+    	CTRLARY["bgain"].Disable(GetCCV("awb") == 0 || GetCCV("awb") == 2);
+    	CTRLARY["autocalib"].Disable(GetCCV("awb") == 0 || GetCCV("awb") == 1);
+    }
+    /*	Following add by zdy, 2012-12-13	*/
+    function GetRadioExpo(list, id)
+	{
+ 		 var o = '';
+ 		 o += '<td height="30">';
+ 		 o += GetRadioCtrlHtml(list, id, 0); //zdy  
+		 o += GL("auto");
+		 o += '</td>';
+		 o += '<td height="30">';
+		 o += GetRadioCtrlHtml(list, id, 1);
+		 o += GL("manual");
+		 o += '</td>';		  
+		 return o;
+	};
+	function GetRadioCDS(list, id)
+	{
+ 		 var o = '';
+ 		 o += '<td height="30">';
+ 		 o += GetRadioCtrlHtml(list, id, 0); //zdy  
+		 o += GL("0(-3 dB)");
+		 o += '</td>';
+		 o += '<td height="30">';
+		 o += GetRadioCtrlHtml(list, id, 1);
+		 o += GL("4(0 dB)");
+		 o += '</td>';
+		 o += '<td height="30">';
+		 o += GetRadioCtrlHtml(list, id, 2);
+		 o += GL("6(+3 dB)");
+		 o += '</td>';
+		 o += '<td height="30">';
+		 o += GetRadioCtrlHtml(list, id, 3);
+		 o += GL("7(+6 dB)");
+		 o += '</td>';		  
+		 return o;
+	};
+    /*	End add	*/
+	function WHAWB(tid, id)
+	{
+		DW('<tr><td height="30" >');		
+		DW(GL(tid) + ':</td>' + GetCtrlAWB(tid, id) + '</tr>');
+		//DW(GetCtrlAWB(id));
+	}
+	function GetCtrlAWB(tid, id){
+		var res = '';
+		var obj = CTRLARY[id];
+		if (obj != null)
+  		{
+  			switch(tid) {
+  				case "white_balance":
+  					res = GetRadioAWB(CTRLARY, id);
+  					break;
+  				case "exposuremode":
+  					res = GetRadioExpo(CTRLARY, id);
+  					break;
+  				case "cds_a_gain":
+  				case "cds_b_gain":
+  				case "cds_c_gain":
+  				case "cds_d_gain":
+  					res = GetRadioCDS(CTRLARY, id);
+  					break;
+  			}  			
+    	}
+    	else
+    	{
+      		res = obj.html;
+    	}
+    	return res;
+	}
+// Following add 2012-12-13
+
+function ClickStartCalibration(){
+	SendHttp(c_iniUrl + GetSetterCmdKV("calibrationstart", "1"), false);  
+ 	ChangeContent();
+}
+function ClickStopCalibration(){	
+	SendHttp(c_iniUrl + GetSetterCmdKV("calibrationstop", "0"), false);
+  ChangeContent();
+}
+
+function ClickStartAutoGain()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("autogainstart", "1"), false);
+  ChangeContent();
+}
+function ClickStartAutoClamp()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("autoclampstart", "1"), false);
+  ChangeContent();
+}
+
+function ClickStopAutoGain(){ 
+  SendHttp(c_iniUrl + GetSetterCmdKV("autogainstop", "0"), false);
+    ChangeContent();
+}
+function ClickStopAutoClamp(){  
+  SendHttp(c_iniUrl + GetSetterCmdKV("autoclampstop", "0"), false);
+    ChangeContent();
+}
+
+// add by zdy, 2012-12-17 
+
+function isPeakEnable(){
+  CTRLARY["peakgain"].Disable(GetCCV("peakenable") == 0);
+  CTRLARY["lowthr"].Disable(GetCCV("peakenable") == 0);
+  CTRLARY["hithr"].Disable(GetCCV("peakenable") == 0);
+  CTRLARY["nfcoef"].Disable(GetCCV("peakenable") == 0);
+}
+// add by zdy, 2012-12-17 
+function ClickDefault() {
+    SendHttp(c_iniUrl + GetSetterCmdKV("imagedefault", "1"), false);
+    ChangeContent();
+}
+
+function SoftReset(){
+  SendHttp(c_iniUrl + GetSetterCmdKV("softreset", "1"), false);
+  ChangeContent();
+}
+
+
+function GetRadioAWB(list, id)
+{
+  var o = '';
+  o += '<td height="30">';
+  o += GetRadioCtrlHtml(list, id, 0); //zdy  
+  o += GL("auto");
+  o += '</td>';
+  o += '<td height="30">';
+  o += GetRadioCtrlHtml(list, id, 1);
+  o += GL("manual");
+  o += '</td>'; 
+  o += '<td height="30">';
+  o += GetRadioCtrlHtml(list, id, 2);
+  o += GL("calibration");
+  o += '</td>';
+  
+  return o;
+};
+function WIPXGain(tid, ctx, numrange)
+{
+  DW('<tr><td height="30" >');
+  DW(GL(tid) + ':</td><td height=30>' + ctx + '</td><td height=30>' + GL(numrange)+ '</td></tr>');  
+};
+function WIPGain(tid, id, numrange)
+{
+	WIPXGain(tid, WH_(id), numrange)
+}
+
+    function MY_ONLOAD() {
+        FixStatusAWB();
+        isPeakEnable();
+
+        g_lockLink = false;
+    }
+    function MY_SUBMIT_OK() {
+        ChangeContent();
+    }
+    
+    WriteNetPH("camset");
+    
+    WriteGroup("camparaset"); 
+    //DW('<div id="NetPageDiv">');
+    WTablePH(900);
+    
+</script>
+
+
+
+<script>
+// first div
+DW('<tr><td height=30>');
+DW('<div overflow="left">');
+
+//exposure mode
+  DW('<table>');
+  WHAWB("exposuremode", "exposurectrl");
+  DW('</table>');
+
+// white balance
+  DW('<table>');
+  WHAWB("white_balance", "awb");
+  DW('</table>');
+
+  // RGB gain set
+  DW('<table>');
+  WIPGain("red_gain", "rgain", "gain_numrange");
+	WIPGain("green_gain", "ggain", "gain_numrange");
+	WIPGain("blue_gain", "bgain", "gain_numrange");
+	DW('</table>');
+	// Calibration
+  DW('<table>');
+	DW('<tr><td height=30><input type="button" id="autocalib" value="' + GL("Calibrationstart") + '" class="m1" onClick="ClickStartCalibration()"></td>');
+	DW('<td height=30><input type="button" id="autocalib" value="' + GL("Calibrationstop") + '" class="m1" onClick="ClickStopCalibration()"></td></tr>');
+  DW('</table>');
+	
+	// VGA
+  DW('<table>');
+	WIPGain("vga_a_gain", "vgaagain", "vga_numrange");
+	WIPGain("vga_b_gain", "vgabgain", "vga_numrange");
+	WIPGain("vga_c_gain", "vgacgain", "vga_numrange");
+	WIPGain("vga_d_gain", "vgadgain", "vga_numrange");
+  DW('</table>');
+	
+	// CDS
+  DW('<table>');
+	WHAWB("cds_a_gain", "cdsagain");
+	WHAWB("cds_b_gain", "cdsbgain");
+	WHAWB("cds_c_gain", "cdscgain");
+	WHAWB("cds_d_gain", "cdsdgain");
+  DW('</table>');
+	
+  //img
+  DW('<table>');
+  // WIPGain("contrast", "contrast", "img_range");
+	WIPGain("hue", "hue", "img_range");
+  WIPGain("saturation", "saturation", "img_range");
+  WIPGain("luminance", "luminance", "img_range");
+  DW('</table>');
+  DW('</div></td>');
+
+// Second Div
+  DW('<td height=30>');
+  DW('<div overflow="right">');
+  // auto gain
+  DW('<table>');
+  DW('<tr><td  height=30><input type="button" id="autogain" value="' + GL("AutoGainstart") + '" class="m1" onClick="ClickStartAutoGain()"></td>');
+  DW('<td  height=30><input type="button" id="autogain" value="' + GL("AutoGainstop") + '" class="m1" onClick="ClickStopAutoGain()">');
+  DW('</td></tr>');
+  
+  // Auto Clamp  
+  DW('<tr><td  height=30><input type="button" id="autoclamp" value="' + GL("AutoClampStart") + '" class="m1" onClick="ClickStartAutoClamp()"></td>');
+  DW('<td  height=30><input type="button" id="autoclamp" value="' + GL("AutoClampStop") + '" class="m1" onClick="ClickStopAutoClamp()"></td></tr>');
+   DW('</table>');
+
+  // blk  
+  DW('<table>');
+  WIPGain("blk_a", "blka", "vga_numrange");
+  WIPGain("blk_b", "blkb", "vga_numrange");
+  WIPGain("blk_c", "blkc", "vga_numrange");
+  WIPGain("blk_d", "blkd", "vga_numrange"); 
+  DW('</table>');
+
+  // peak set
+  //WIP("peak_enable","peakenable");
+  DW('<table>');
+  DW('<tr class="b1"><td width=150 height="30" >');  
+  WH("peakenable");
+  DW('&nbsp;' + GL('peak_enable'));
+  DW('</td></tr>');
+  
+  WIPGain("nf_coef", "nfcoef", "img_range");
+  WIPGain("peak_gain", "peakgain", "img_range");
+  WIPGain("low_thr", "lowthr", "thr_range");
+  WIPGain("hi_thr", "hithr", "thr_range");
+  DW('</table>');
+
+  //gamma
+  DW('<table>')  
+  DW('<tr class="b1"><td width=150 height="30" >');  
+  WH("gamma");
+  DW('&nbsp;' + GL('gamma'));
+  DW('</td></tr>');
+
+  //raw
+  DW('<tr class="b1"><td width=150 height="30" >');  
+  WH("raw");
+  DW('&nbsp;' + GL('raw'));
+  DW('</td></tr>');
+  DW('</table>');
+
+  DW('<table>');
+  //image test mode
+  WIP("img_mod", "imgmod");
+
+  //lvds delay time
+  WIP("lvds_delay", "lvdsdelay");
+
+  // color adjust
+  WIP("color_adjust", "coloradjust");
+
+  //ad9928
+  WIP("ad9928", "ad9928");
+  DW('</table>');
+  DW('</div></td></tr>');
+
+// Third div
+  DW('<tr align="center"><td height=30>');
+  DW('<div overflow="bottom" text-align="center">');
+  DW('<table>');
+  // soft reset
+  DW('<tr><td height=30><input type="button" id="softreset" value="' + GL("soft_reset") + '" class="m1" onClick="SoftReset()"></td>');
+  // default
+	// DW('<td height=30><input type="button" value="' + GL("_default") + '" class="m1" onClick="ClickDefault()"></td>');
+	DW('<td height=30>');
+	CreateSubmitButton(null, true);
+	DW('</td></tr>');
+  DW('</table>');
+	DW('</div></td></tr>');
+
+   // WIPSubmit(true);
+</script>
+<script>
+    WTablePB();
+    DW('</form>');
+    WriteNetPB();
+    ALC(); //window.status=msg; 加载时间超过300ms(?)，显示超时
+</script>

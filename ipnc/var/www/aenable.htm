@@ -1,0 +1,442 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script>
+            InitLoad();
+         </script>
+        <title>
+            
+        </title>
+<style type="text/css">
+body {
+	margin: 0;		
+	height:100%;
+	min-width:1200px;
+	min-height:580px;
+	background:#D5D5D5;
+
+}   
+table
+{
+	font-size:12px;
+}
+</style>
+
+    </head>
+<body onLoad="MY_ONLOAD()">
+<script>
+    var ISSD = (g_defaultStorage == 1);
+    var v_AftpEnable = "<%aftpenable%>";
+    var v_ACardEn = (ISSD) ? "<%sdaenable%>" : "<%cfaenable%>";
+    var v_ASmtpEnable = "<%asmtpenable%>";
+    var serviceFtpON = (parseInt("<%serviceftpclient%>") == 1);
+    var serviceSmtpON = (parseInt("<%servicesmtpclient%>") == 1);
+    var v_alarmLostNet = "<%lostalarm%>";
+    var vsAGio1T = "<%gioouttype.0%>";
+    var vsAGio2T = "<%gioouttype.1%>";
+    var triList = "<%eventlist.all%>";
+    var b_SDInsert = (parseInt("<%sdinsert%>") == 3);
+    if (!b_SDInsert) v_ACardEn = "0";
+    var DCL_1 = {
+        gio1T: "<%gio0alerttrigger.1%>",
+        gio2T: "<%gio1alerttrigger.1%>",
+        cardT: "<%sdalerttrigger.1%>",
+        ftpT: "<%ftpalerttrigger.1%>",
+        smtpT: "<%smtpalerttrigger.1%>"
+    };
+    var DCL_2 = {
+        gio1T: "<%gio0alerttrigger.2%>",
+        gio2T: "<%gio1alerttrigger.2%>",
+        cardT: "<%sdalerttrigger.2%>",
+        ftpT: "<%ftpalerttrigger.2%>",
+        smtpT: "<%smtpalerttrigger.2%>"
+    };
+    var DCL_3 = {
+        gio1T: "<%gio0alerttrigger.3%>",
+        gio2T: "<%gio1alerttrigger.3%>",
+        cardT: "<%sdalerttrigger.3%>",
+        ftpT: "<%ftpalerttrigger.3%>",
+        smtpT: "<%smtpalerttrigger.3%>"
+    };
+    var DCL_4 = {
+        gio1T: "<%gio0alerttrigger.4%>",
+        gio2T: "<%gio1alerttrigger.4%>",
+        cardT: "<%sdalerttrigger.4%>",
+        ftpT: "<%ftpalerttrigger.4%>",
+        smtpT: "<%smtpalerttrigger.4%>"
+    };
+
+
+    var exttriggernamelist = GL("alloff") + ";" + GL("allon");
+    var recorddurationlist = GL("s10") + ";" + GL("s30") + ";" + GL("min1") + ";" + GL("min5") + ";" + GL("min10") + ";" + GL("non_stop");
+
+
+    CTRLARY = {
+    	alarmenable: new Ctrl_Check("alarmenable", "<%alarmenable%>", "alarmenable", "FixStatus1()"),//add by zdy    	
+        alarmNet: new Ctrl_Check("alarmNet", v_alarmLostNet, "lostalarm=", "FixStatus()"),
+        // alarmFtp: new Ctrl_Check("alarmFtp", v_AftpEnable, "aftpenable=", "FixStatus()"),
+        // alarmSmtp: new Ctrl_Check("alarmSmtp", v_ASmtpEnable, "asmtpenable=", "FixStatus()"),
+        alarmCard: new Ctrl_Check("alarmCard", v_ACardEn, "sdaenable=", "FixStatus3()"),
+        
+        // alarmAudio: new Ctrl_Check("alarmAudio", "<%audioalarm%>", "audioalarm=", "FixStatus()"),//add by zdy
+        extalarm: new Ctrl_Check("extalarm", "<%extalarm%>", "extalarm=", "FixStatus2()"),//add by zdy
+        exttriggerinput: new Ctrl_Select("exttriggerinput", exttriggernamelist, "<%exteralarmin%>", "exteralarmin="),//add by zdy
+        exttriggeroutput: new Ctrl_Select("exttriggeroutput", exttriggernamelist, "<%exteralarmout%>", "exteralarmout="),//add by zdy
+        exteralarm: new Ctrl_Check("exteralarm", "<%exteralarm%>", "exteralarm="),
+        // alarmaudioplay: new Ctrl_Check("alarmaudioplay", "<%alarmaudioplay%>", "alarmaudioplay=", "FixStatus4()"),//add by zdy
+        // alarmaudiofile: new Ctrl_Select("alarmaudiofile", "<%alarmaudiofilename.all%>", "<%alarmaudiofile%>", "alarmaudiofile="),//add by zdy
+        
+        alarmDuration: new Ctrl_Select("alarmDuration", recorddurationlist, "<%alarmduration%>", "alarmduration="),
+        triGio1: new Ctrl_Select("triGio1", triList, 0, "setgio0alerttrigger"),
+        triGio2: new Ctrl_Select("triGio2", triList, 0, "setgio1alerttrigger"),
+        triCard: new Ctrl_Select("triCard", triList, 0, "setsdalerttrigger"),
+        triSmtp: new Ctrl_Select("triSmtp", triList, 0, "setsmtpalerttrigger"),
+        triFtp: new Ctrl_Select("triFtp", triList, 0, "setftpalerttrigger")
+    };    
+    if (IsVS()) {    	
+        SetCIA("alarmNet");
+        // SetCIA("alarmFtp");
+        // SetCIA("alarmSmtp");
+        SetCIA("alarmCard");
+    } else {    	
+        SetCIA("triGio1");
+        SetCIA("triGio2");
+        SetCIA("triCard");
+        SetCIA("triSmtp");
+        SetCIA("triFtp");
+    }
+    if (ISNOSTORE) {
+        SetCIA("alarmCard");
+        SetCIA("triCard");
+    }
+    function MY_ONLOAD() {
+        g_lockLink = false;
+        VS_NO_VIEW_ALL();
+        MY_CH_CHANGE();
+        FixStatus();
+        FixStatus1();
+    }
+
+    //add by zdy
+    function FixStatus1(){
+    	if (!IsVS()){
+            CTRLARY["alarmNet"].Disable(GetCCV("alarmenable") == 0);
+            // CTRLARY["alarmFtp"].Disable(GetCCV("alarmenable") == 0);
+            // CTRLARY["alarmSmtp"].Disable(GetCCV("alarmenable") == 0);
+            CTRLARY["alarmDuration"].Disable(GetCCV("alarmenable") == 0);
+            CTRLARY["extalarm"].Disable(GetCCV("alarmenable") == 0);
+            CTRLARY["exttriggerinput"].Disable(GetCCV("alarmenable") == 0);
+            CTRLARY["exttriggeroutput"].Disable(GetCCV("alarmenable") == 0);
+            CTRLARY["exteralarm"].Disable(GetCCV("alarmenable") == 0);
+   	   //    DisableObject("alarmaudioplay", (GetCCV("alarmenable") == 0));
+    	  // DisableObject("alarmaudiofile", (GetCCV("alarmenable") == 0));
+    	} else
+    	{
+    		DisableObject("triCard", (GetCCV("alarmenable") == 0));    			
+    	  DisableObject("triGio1", (GetCCV("alarmenable") == 0));
+    	  DisableObject("triGio2", (GetCCV("alarmenable") == 0));    	 
+    	  DisableObject("triSmtp", (GetCCV("alarmenable") == 0));
+    	  DisableObject("triFtp", (GetCCV("alarmenable") == 0));
+    	}
+    	FixStatus2();
+    	FixStatus3();
+    	FixStatus4();
+    }
+    
+    //add by zdy
+    function FixStatus2(){
+    	if((GetCCV("alarmenable") == 1)){
+    	   DisableObjs(new Array("exttriggerinput"), (GetCCV("extalarm") == 0));
+    	   DisableObjs(new Array("exttriggeroutput"), (GetCCV("extalarm") == 0));
+           DisableObjs(new Array("exteralarm"), (GetCCV("extalarm") == 0));
+    	}
+    }
+    //add by zdy
+    function FixStatus3(){
+        if (b_SDInsert && (GetCCV("alarmenable") == 1))
+            CTRLARY["alarmCard"].Disable(0);
+        else
+            CTRLARY["alarmCard"].Disable(1);
+
+    }
+    
+    //add by zdy
+    function FixStatus4(){
+    	if((GetCCV("alarmenable") == 1)){
+    		// DisableObject("alarmaudiofile", (GetCCV("alarmaudioplay") == 0));    	
+    	}   	
+    	
+    }
+       
+    function FixStatus(){}
+
+    function MY_CH_CHANGE() {
+        if (!IsVS()) return;
+        var dcl = eval("DCL_" + g_CHID);
+        SetCCV("triGio1", dcl.gio1T);
+        SetCCV("triGio2", dcl.gio2T);
+        SetCCV("triSmtp", dcl.smtpT);
+        SetCCV("triFtp", dcl.ftpT);
+        if (!ISNOSTORE) {
+            SetCCV("triCard", dcl.cardT);
+        }
+        FixStatus();
+    }
+
+function ParaCheck()
+{
+  var flag = false;
+
+  var aenable = GetCCV("alarmenable");
+  if (aenable == "<%alarmenable%>")
+  {
+    CTRLARY["alarmenable"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var alarmNet = GetCCV("alarmNet");
+  if (alarmNet == v_alarmLostNet)
+  {
+    CTRLARY["alarmNet"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var alarmCard = GetCCV("alarmCard");
+  if (alarmCard == v_ACardEn)
+  {
+    CTRLARY["alarmCard"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var extalarm = GetCCV("extalarm");
+  if (extalarm == "<%extalarm%>")
+  {
+    CTRLARY["extalarm"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var exttriggerinput = GetCCV("exttriggerinput");
+  if (exttriggerinput == "<%exteralarmin%>")
+  {
+    CTRLARY["exttriggerinput"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var exttriggeroutput = GetCCV("exttriggeroutput");
+  if (exttriggeroutput == "<%exteralarmout%>")
+  {
+    CTRLARY["exttriggeroutput"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var exteralarm = GetCCV("exteralarm");
+  if (exteralarm == "<%exteralarm%>")
+  {
+    CTRLARY["exteralarm"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var alarmDuration = GetCCV("alarmDuration");
+  if (alarmDuration == "<%alarmduration%>")
+  {
+    CTRLARY["alarmDuration"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  return flag;
+}
+
+function ChangeGioActive()
+{
+    CTRLARY["triGio1"].active = 0;
+    CTRLARY["triGio2"].active = 0;
+    CTRLARY["triCard"].active = 0;
+    CTRLARY["triSmtp"].active = 0;
+    CTRLARY["triFtp"].active = 0;
+}
+
+function MY_BEFORE_SUBMIT()
+{
+
+    if (ParaCheck() == false)
+    {
+      alert(GL("para_not_change"));
+      ChangeActive();
+      return false;
+    }
+    ChangeGioActive();
+
+
+    // alert(parseInt(GetCCV("exttriggeroutput"))+1);
+    // if (GetCCV("alarmenable") == 1)
+    //     SetCCV("exttriggeroutput", (parseInt(GetCCV("exttriggeroutput"))+1));
+    // else
+    //     SetCCV("exttriggeroutput", 0);
+
+
+    if (GetCCV("extalarm") == 1)
+        SendHttp(c_iniUrl + GetSetterCmdKV("exttriggerinput", 1) + GetSetterCmdKV("exttriggeroutput", 1), false);
+    else
+        SendHttp(c_iniUrl + GetSetterCmdKV("exttriggerinput", 0) + GetSetterCmdKV("exttriggeroutput", 0), false);
+  
+    if (GetCCV("alarmenable") == 0)
+    {
+        var o = '';
+        o += c_iniUrl;
+        o += GetSetterCmdKV("exttriggerinput", 0);
+        o += GetSetterCmdKV("exttriggeroutput", 0);
+        o += GetSetterCmdKV("lostalarm", 0);
+        o += GetSetterCmdKV("sdaenable", 0);
+        o += GetSetterCmdKV("extalarm", 0);
+        o += GetSetterCmdKV("motiondec", 0);
+        o += GetSetterCmdKV("motionenable", 0);
+        o += GetSetterCmdKV("exteralarm", 0);
+
+        SendHttp(o, false);
+    }  
+    return true;
+}
+    function MY_SUBMIT_OK() {
+        SaveDCL();
+
+        alert(GL("submit_success"));
+            // ChangeContent(null, false);
+        window.location.reload();
+
+    }
+
+    function SaveDCL() {
+        if (IsVS()) {        	
+            var dcl = eval("DCL_" + g_CHID);
+            dcl.gio1T = GetCCV("triGio1");
+            dcl.gio2T = GetCCV("triGio2");
+            dcl.smtpT = GetCCV("triSmtp");
+            dcl.ftpT = GetCCV("triFtp");
+            if (!ISNOSTORE) {
+                dcl.cardT = GetCCV("triCard");
+            }
+        }
+    }
+    
+    //add by zdy
+    function W_IApp(id, enid)
+    {
+      if(id == "alarmCard")
+		DW("<tr><td height=30 class='b1' colspan=2>");
+	  else
+		DW("<tr  style='display:none'><td height=30 class='b1' colspan=2>");
+	  
+      DW("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + WH_(id) + " " + GL(enid));
+      DW("</td></tr>");
+    };
+    //add by zdy
+    function W_IApp1(ctx)
+    {
+    	DW("<tr  style='display:none'><td height=30 class='b1' style='text-indent:3em' colspan=2>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + ctx + "</td></tr>");
+    };
+    //add by zdy
+    function W_IApp2(ctx)
+    {
+    	DW("<tr  style='display:none'><td height=30 class='b1' colspan=2>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + ctx + "</td></tr>");
+    };
+    
+    DW('<table>');
+    DW("<tr><td>");    
+    WH("alarmenable");
+    DW("&nbsp;" + GL("enable_alarm") + "</td></tr>");
+    
+    DW("<tr><td height=30 colspan=2><span class='b1' >" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + GL("alarm_duration") + ":&nbsp;&nbsp;&nbsp;</span>" + WH_("alarmDuration") + ((IsVS()) ? ("( " + GL("apply_all_ch") + " )") : "") + "</td></tr>");//zdy
+    //DW("<tr><td colspan=2><hr></td></tr>"); //zdy
+    
+    //DW("<tr><td colspan=2>" + GL("alarm_trigger") +"</td></tr>"); //zdy
+    
+    if (!IsVS()) {
+        W_IApp("alarmNet", GL("trigger_net_lost"));
+    }
+    
+    //add by zdy    
+    // W_IApp2(WH_("alarmAudio") + "&nbsp;" + GL("audio_alarm"));
+    W_IApp2(WH_("extalarm") + "&nbsp;" + GL("external_triggers"));
+        
+    DW("<tr style='display:none'><td height=30 class='b1'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + GL("alarminput") + "  " + WH_("exttriggerinput"));
+    DW("</td><td height=30 class='b1'>" + GL("alarmoutput") + "  " + WH_("exttriggeroutput") + "</td></tr>"); 
+
+    DW('<tr  style="display:none"><td height=30 class="b1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + GL("exteralarm") + ' ');
+    WH("exteralarm");
+    DW('</td></tr>');
+
+    DW("<tr><td colspan=2>" + GL("on_alarm") + "</td></tr>"); //zdy    
+    
+    /*if (! (IsMpeg4()) && serviceFtpON) {
+    WIApp(IsVS() ? "": "alarmFtp", "enable_alarm", GL("upload_via") + " " + GetContentLink("nftp", "nftp.htm"));
+    if (IsVS()) WIApp1(GL("trigger_by") + ":&nbsp;" + WH_("triFtp"));
+  }
+  else {
+    SetCIA("alarmFtp");
+  }*/
+    // if (b_SDInsert && (!g_isSupS1)) {
+    //     SetCIA("alarmFtp");
+    //     DW("<tr><td height=30 class='m3' colspan=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+    //     DW(GetHtmlbyId("alarmFtp") + " " + GL("msg_jpg_up_only") + " - " + GL("upload_via") + " " + '<a href="nftp.htm" target="content1" class="a1">' + GL("nftp") + '</a>'); //zdy
+    //     DW("</td></tr>");
+    // } else {
+    //     W_IApp("alarmFtp", GL("upload_via") + " " + '<a href="nftp.htm" target="content1" class="a1">' + GL("nftp") + '</a>'); //zdy
+    // }
+    if (b_SDInsert) {
+        W_IApp(IsVS() ? "" : "alarmCard", GL("save_into") + " " + GL("sd_card"));
+        if (IsVS()) W_IApp1(GL("trigger_by") + ":&nbsp;" + WH_("triCard"));
+    } else {
+        SetCIA("alarmCard");
+        DW("<tr><td height=30 class='m3' colspan=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+        DW(GetHtmlbyId("alarmCard") + " " + GL("msg_insert_card") + " - " + GL("save_into") + " " + GL("sd_card"));
+        DW("</td></tr>");
+    }
+    /*if (! (IsMpeg4()) && serviceSmtpON) {
+    WIApp(IsVS() ? "": "alarmSmtp", "enable_alarm", GL("upload_via") + " " + GetContentLink("nsmtp", "nsmtp.htm"));
+    if (IsVS()) WIApp1(GL("trigger_by") + ":&nbsp;" + WH_("triSmtp"));
+  }
+  else {
+    SetCIA("alarmSmtp");
+  }*/
+    // if (b_SDInsert && (!g_isSupS1)) {
+    //     SetCIA("alarmSmtp");
+    //     DW("<tr><td height=30 class='m3' colspan=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+    //     DW(GetHtmlbyId("alarmSmtp") + " " + GL("msg_jpg_up_only") + " - " + GL("upload_via") + " " + '<a href="nsmtp.htm" target="content1" class="a1">' + GL("nsmtp") + '</a>'); //zdy
+    //     DW("</td></tr>");
+    // } else {
+    //     W_IApp("alarmSmtp", GL("upload_via") + " " + '<a href="nsmtp.htm" target="content1" class="a1">' + GL("nsmtp") + '</a>'); //zdy
+    // }
+    if (IsVS()) {
+        W_IApp("", GetContentLink("gio_out", "sdigital.htm") + " 1&nbsp;&nbsp;" + GL("active_type") + " : " + GL((vsAGio1T == 0) ? "low" : "high"));
+        W_IApp1(GL("trigger_by") + ":&nbsp;" + WH_("triGio1"));
+        W_IApp("", GetContentLink("gio_out", "sdigital.htm") + " 2&nbsp;&nbsp;" + GL("active_type") + " : " + GL((vsAGio2T == 0) ? "low" : "high"));
+        W_IApp1(GL("trigger_by") + ":&nbsp;" + WH_("triGio2"));
+    }
+    
+    // alarm audio 
+    // DW("<tr><td height=30 class='b1'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+    // WH("alarmaudioplay");
+    // DW("&nbsp;" + GL("play_audio") +"</td><td height=30 class='b1'>" + GL("select_alarm_audio") + "  ");
+    // WH("alarmaudiofile");
+    // DW("</td></tr>");
+//    DW("<tr><td colspan=2><hr></td></tr>"); //zdy
+//    DW("<tr><td height=30 colspan=2><span class='b1' >" + GL("alarm_duration") + ":&nbsp;&nbsp;&nbsp;</span>" + WH_("alarmDuration") + ((IsVS()) ? ("( " + GL("apply_all_ch") + " )") : "") + "</td></tr>");//zdy
+    DW('</table>');
+    DW('<table style="width:366px">');
+	WIAppSubmit();
+    DW('</table>');
+    ALC();
+</script>
+</body>
+</html>

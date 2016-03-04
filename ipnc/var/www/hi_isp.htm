@@ -1,0 +1,3813 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=gb2312; no-cache">
+<script language="javascript" src="isp.js"></script>
+<script language="javascript" src="var.js"></script>
+<style>
+body 
+{ 
+  font: normal 11px auto "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif; 
+  color: #4f6b72; 
+  background: #E6EAE9; 
+} 
+
+#mytable 
+{ 
+  width: 1000px; 
+  padding: 0; 
+  margin: 0; 
+}
+
+input
+{
+  width:expression(this.type=="checkbox"? 20 : 60);
+}
+
+tr
+{
+  height: 30px;
+}
+
+td 
+{ 
+  border-right: 1px solid #C1DAD7; 
+  border-bottom: 1px solid #C1DAD7; 
+  background: #fff; 
+  font-size:11px; 
+  padding: 6px 6px 6px 12px; 
+  color: #4f6b72; 
+}
+
+span
+{
+  width: 40;
+}
+</style>
+
+<script language="javascript">
+//InitLoad();
+function hdclick(value)
+{
+  //alert(value);
+  var sendurl; 
+    
+  if(value.charAt(0) == 'c') // checkbox
+  {
+    //alert("You are checking the box." + value + "===" + value.indexOf('_'));
+    
+    var temp1 = value.substring(value.indexOf('_')+1, value.length); // get the register address
+    //var temp2 = temp1.substring(temp1.indexOf('_')+1, temp1.length);
+
+    if(document.getElementById(value).checked == true)
+    { 
+      var addrvalue = 1;
+      temp = temp1 + '_' + addrvalue;
+      //sendurl = "ispoper.esp?name=" + value + "&value=1";
+      //alert(sendurl);
+    }
+    else
+    {
+      var addrvalue = 0;
+      temp = temp1 + '_' + addrvalue;
+      //sendurl = "ispoper.esp?name=" + value + "&value=0";
+      //alert(sendurl);     
+    }
+    SendHttp(c_iniUrl + GetSetterCmdKV("checkhiisp", temp), false);
+  }
+  else if(value.charAt(0) == 'q') // button Query
+  {
+    //alert("You are querying." + value.split('_')[3]);
+    
+    var temp1 = value.substring(value.indexOf('_')+1, value.length); // get the register address
+    var temp = temp1.substring(temp1.indexOf('_')+1, temp1.length);
+    SendHttp(c_iniUrl + GetSetterCmdKV("queryhiisp", temp), false);
+    ChangeContent();
+
+    //sendurl = "ispoper.esp?name=" + temp + "&value=q";
+    //alert(document.getElementById(temp1).value);
+    //alert("g_regonebit1");
+    
+    //alert(ini.htm?regvalue);
+    if (temp1.charAt(0) == 'c') 
+    {
+      var g_regvalue = GetRegValue();//parseInt(g_regonebit1);
+      document.getElementById(temp1).checked = g_regvalue;
+    }
+    else
+    {     
+      var g_regvalue = GetRegValue();
+      document.getElementById(temp1).value = g_regvalue;
+    }   
+    //document.getElementById(value).value = "<%regvalue%>";
+    //ChangeContent();
+    //alert(sendurl); 
+    
+  }
+  else if(value.charAt(0) == 's') // button Set
+  {
+    //alert("You are setting.");
+    var temp1 = value.substring(value.indexOf('_')+1, value.length); //get the register address
+    //alert("Your querying will change " + temp1);
+    var temp2 = temp1.substring(temp1.indexOf('_')+1, temp1.length); // get the register address
+    //var temp3 = temp2.substring(0, temp2.indexOf('_')); 
+    //alert(temp2);
+    addrvalue = document.getElementById(temp1).value; // get the register value
+    
+    if(addrvalue != "")
+    {
+      if(addrvalue.match(/^([0-9a-fA-F]{1,2})$/) == null) // Judging the legality of input values
+      {
+        alert("The input value is illegal!"); //输入不合法
+        return;
+      }
+      if(typeof(temp1.split('_')[2]) != "undefined")
+      {
+        var high = parseInt(temp1.split('_')[2]); //hith
+        var low  = parseInt(temp1.split('_')[3]); //low
+        var max = 1 << (high - low + 1) ; //maximum
+        
+        if(parseInt("0x" + addrvalue) >= max)
+        {
+          alert("The input value is beyond the scope!"); //参数超出范围
+          return;
+        }
+      }
+      //sendurl = "ispoper.esp?name=" + temp + "&value=" + document.getElementById(temp).value;
+      temp = temp2 + '_' + addrvalue;      
+      
+      SendHttp(c_iniUrl + GetSetterCmdKV("sethiisp", temp), false);
+      //alert(sendurl); 
+    }
+    else
+    {
+      alert("The input value is illegal!");
+      return;
+    }
+  }
+  else
+  {
+    alert("I don't know this command.");
+    return;
+  }
+  //ChangeContent(null, true);
+  //window.location.reload();//Refesh web page
+}
+//根据输入地址设置该地址的值
+  function set()
+  {
+    var address, avalue;
+    var addr = document.getElementById("addr").value;
+    if (addr.charAt(1) == 'x')
+      address = addr.substring(addr.indexOf('x')+1, addr.length);
+    else
+      address = addr;
+
+    var val = document.getElementById("val").value;
+    if (val.charAt(1) == 'x')
+      value = val.substring(val.indexOf('x')+1, val.length);
+    else
+      value = val;
+    var addrval = address + '_' + value;
+    SendHttp(c_iniUrl + GetSetterCmdKV("addrval", addrval), false);
+  }
+</script>
+</head>
+
+<body>
+
+<!--
+[if !excel]>　　<![endif]
+-->
+<!--
+下列信息由 Microsoft Excel 的发布为网页向导生成。
+-->
+<!--
+如果同一条目从 Excel 中重新发布，则所有位于 DIV 标记之间的信息均将被替换。
+-->
+<!--
+-------------------------
+-->
+<!--
+“从 EXCEL 发布网页”向导开始
+-->
+<!--
+-------------------------
+-->
+
+<div id="抓拍机ISP参数说明（中文）1.1_14706" align=center x:publishsource="Excel">
+
+<table  border='1' id='mytable'>
+ <tr  >
+  <td height=19  width=44 style='height:14.25pt;width:33pt'>序号</td>
+  <td  width=138 style='border-left:none;width:104pt'>名称</td>
+  <td  width=44 style='border-left:none;width:33pt'>地址</td>
+  <td  width=60 style='border-left:none;width:45pt'>位</td>
+  <td  width=44 style='border-left:none;width:33pt'>读写</td>
+  <td  width=519 style='border-left:none;width:389pt'>说明</td>
+  <td  width=60 style='border-left:none;width:45pt'>默认值</td>
+  <td  width=600 style='border-left:none;width:1341pt'>　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>1</td>
+  <td rowspan=5  style='border-top:none'>soft_rst</td>
+  <td  >0</td>
+  <td  >[4:0]　</td>
+  <td  >rw</td>
+  <td  >软复位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;
+  <input type=text name=text_0 />&nbsp;&nbsp;
+  <input type=button name=qbtn_text_0 value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;
+  <input type=button name=sbtn_text_0 value=Set onclick=hdclick(this.name) />
+  </td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:none'>2</td>
+  <td  >0</td>
+  <td  >[0]</td>
+  <td  >　</td>
+  <td  >DDR2控制器软复位，高有效</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input type=checkbox name=check_0_0 onclick=hdclick(this.name) />
+  <span>ON</span>&nbsp;&nbsp;
+  <input type=button name=qbtn_check_0_0 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>3</td>
+  <td  >0</td>
+  <td  >[1]</td>
+  <td  >　</td>
+  <td  >输入时钟域软复位，高有效</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_0_1 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_0_1 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>4</td>
+  <td  >0</td>
+  <td  >[2]</td>
+  <td  >　</td>
+  <td  >输出时钟域软复位，高有效</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_0_2 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_0_2 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>5</td>
+  <td  >0</td>
+  <td  >[3]</td>
+  <td  >　</td>
+  <td  >sensor软复位，高有效</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_0_3 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_0_3 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>6</td>
+  <td rowspan=4  style='border-top:none'>chl_sel</td>
+  <td  >1</td>
+  <td  >[2:0]　</td>
+  <td  >rw</td>
+  <td  >　</td>
+  <td  >2d</td>         
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_1 />&nbsp;&nbsp;<input type=button name=qbtn_text_1 value=Query
+  onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button name=sbtn_text_1
+  value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>7</td>
+  <td  >1</td>
+  <td  >[0]</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_1_0 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_1_0 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>8</td>
+  <td  >1</td>
+  <td  >[1]</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_1_1 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_1_1 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>9</td>
+  <td  >1</td>
+  <td  >[2]</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_1_2 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_1_2 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>10</td>
+  <td rowspan=2  style='border-top:none'>version</td>
+  <td  >2</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >版本编号，小的更改</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_2_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_2_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_2_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>11</td>
+  <td  >3</td>
+  <td  >[15:8]</td>
+  <td  >　</td>
+  <td  >版本编号，大的更改</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_3_15_8 />&nbsp;&nbsp;<input type=button name=qbtn_text_3_15_8
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_3_15_8 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>12</td>
+  <td  >clkout_phs</td>
+  <td  >4</td>
+  <td  >[0]</td>
+  <td  >rw</td>
+  <td  >输出时钟采样沿选择，0：上升沿，1：下降沿</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_4_0 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_4_0 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>13</td>
+  <td rowspan=6  style='border-top:none'>fpga_st</td>
+  <td  >5</td>
+  <td  >[4:0]</td>
+  <td  >r</td>
+  <td  >FPGA自诊断状态，只读</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_5_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_5_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_5_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>14</td>
+  <td  >5</td>
+  <td  >[0]</td>
+  <td  >　</td>
+  <td  >复位状态，正常为0，复位为1</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_5_0 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_5_0 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>15</td>
+  <td  >5</td>
+  <td  >[1]</td>
+  <td  >　</td>
+  <td  >传感器状态，有数据为0，无数据为1</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_5_1 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_5_1 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>16</td>
+  <td  >5</td>
+  <td  >[2]</td>
+  <td  >　</td>
+  <td  >fpga内部状态，正常为0，异常为1</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_5_2 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_5_2 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>17</td>
+  <td  >5</td>
+  <td  >[3]</td>
+  <td  >　</td>
+  <td  >ddr状态，正常为0，异常为1</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_5_3 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_5_3 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>18</td>
+  <td  >5</td>
+  <td  >[4]</td>
+  <td  >　</td>
+  <td  >加密芯片状态，正常为0，异常为1</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_5_4 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_5_4 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>19</td>
+  <td  >　</td>
+  <td  >6</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>20</td>
+  <td  >　</td>
+  <td  >7</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>21</td>
+  <td  >　</td>
+  <td  >8</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>22</td>
+  <td  >　</td>
+  <td  >9</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>23</td>
+  <td  >test_en</td>
+  <td  >a</td>
+  <td  >[0]</td>
+  <td  >rw</td>
+  <td  >片内生成测试图像使能</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_a_0 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_a_0 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>24</td>
+  <td  >test_sel</td>
+  <td  >b</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >测试图像选择</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_b_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_b_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_b_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>25</td>
+  <td  >　</td>
+  <td  >c</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>26</td>
+  <td  >　</td>
+  <td  >d</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>27</td>
+  <td  >　</td>
+  <td  >e</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>28</td>
+  <td  >　</td>
+  <td  >f</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>29</td>
+  <td rowspan=7  style='border-top:none'>itc_ctl</td>
+  <td  >10</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >输入行场时序控制</td>
+  <td  >d5</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_10 />&nbsp;&nbsp;<input type=button name=qbtn_text_10
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_10 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>30</td>
+  <td  >10</td>
+  <td  >[0]</td>
+  <td  >　</td>
+  <td  >行同步极性翻转，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_10_0 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_10_0 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>31</td>
+  <td  >10</td>
+  <td  >[1]</td>
+  <td  >　</td>
+  <td  >行有效极性翻转，高有效</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_10_1 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_10_1 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>32</td>
+  <td  >10</td>
+  <td  >[2]</td>
+  <td  >　</td>
+  <td  >场同步极性翻转，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_10_2 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_10_2 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>33</td>
+  <td  >10</td>
+  <td  >[3]</td>
+  <td  >　</td>
+  <td  >场有效极性翻转，高有效</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_10_3 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_10_3 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr height=171 style='height:128.25pt'>
+  <td height=171  align=right style='height:128.25pt;border-top:
+  none'>34</td>
+  <td  >10</td>
+  <td  >[6:4]</td>
+  <td  >　</td>
+  <td  width=519 style='border-top:none;border-left:none;
+  width:389pt'>输入时序状态：<br>
+    000:只输入场同步和行有效<br>
+    001:只输入场同步和行同步<br>
+    010:只输入场有效和行有效<br>
+    011:只输入场有效和行同步<br>
+    100:只输入场同步和数据有效<br>
+    101:只输入场有效和数据有效<br>
+    110:只输入场同步<br>
+    111:只输入场有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_10_6_4 />&nbsp;&nbsp;<input type=button name=qbtn_text_10_6_4
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_10_6_4 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>35</td>
+  <td  >10</td>
+  <td  >[7]</td>
+  <td  >　</td>
+  <td  width=519 style='border-top:none;border-left:none;
+  width:389pt'>1:使用内部生产行场时序，0：使用外部行场时序</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_10_7 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_10_7 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>36</td>
+  <td rowspan=2  style='border-top:none'>itc_ttl_h</td>
+  <td  >11</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >一行总点数低八位，该参数值为实际总点数减1</td>
+  <td  >95</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_11_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_11_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_11_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>37</td>
+  <td  >12</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >一行总点数高五位</td>
+  <td  >7</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_12_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_12_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_12_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>38</td>
+  <td rowspan=2  style='border-top:none'>itc_ttl_v</td>
+  <td  >13</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >一场总行数低八位，该参数值为实际总行数减1</td>
+  <td  >f4</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_13_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_13_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_13_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>39</td>
+  <td  >14</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >一场总行数高四位</td>
+  <td  >4</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_14_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_14_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_14_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>40</td>
+  <td rowspan=2  style='border-top:none'>itc_stt_hs</td>
+  <td  >15</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >行同步起始位置低八位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_15_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_15_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_15_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>41</td>
+  <td  >16</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >行同步起始位置高五位</td>
+  <td  >7</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_16_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_16_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_16_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>42</td>
+  <td rowspan=2  style='border-top:none'>itc_end_hs</td>
+  <td  >17</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >行同步截止位置低八位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_17_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_17_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_17_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>43</td>
+  <td  >18</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >行同步截止位置高五位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_18_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_18_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_18_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>44</td>
+  <td rowspan=2  style='border-top:none'>itc_stt_hr</td>
+  <td  >19</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >行有效起始位置低八位</td>
+  <td  >7a</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_19_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_19_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_19_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>45</td>
+  <td  >1a</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >行有效起始位置高五位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_1a_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_1a_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_1a_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>46</td>
+  <td rowspan=2  style='border-top:none'>itc_end_hr</td>
+  <td  >1b</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >行有效截止位置低八位</td>
+  <td  >ba</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_1b_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_1b_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_1b_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>47</td>
+  <td  >1c</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >行有效截止位置高五位</td>
+  <td  >6</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_1c_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_1c_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_1c_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>48</td>
+  <td rowspan=2  style='border-top:none'>itc_stt_vs</td>
+  <td  >1d</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >场同步起始位置低八位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_1d_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_1d_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_1d_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>49</td>
+  <td  >1e</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >场同步起始位置高四位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_1e_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_1e_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_1e_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>50</td>
+  <td rowspan=2  style='border-top:none'>itc_end_vs</td>
+  <td  >1f</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >场同步截止位置低八位</td>
+  <td  >4</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_1f_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_1f_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_1f_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>51</td>
+  <td  >20</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >场同步截止位置高四位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_20_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_20_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_20_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>52</td>
+  <td rowspan=2  style='border-top:none'>itc_stt_vr</td>
+  <td  >21</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >场有效起始位置低八位</td>
+  <td  >3c</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_21_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_21_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_21_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>53</td>
+  <td  >22</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >场有效起始位置高四位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_22_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_22_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_22_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>54</td>
+  <td rowspan=2  style='border-top:none'>itc_end_vr</td>
+  <td  >23</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >场有效截止位置低八位</td>
+  <td  >eb</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_23_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_23_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_23_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>55</td>
+  <td  >24</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >场有效截止位置高四位</td>
+  <td  >4</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_24_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_24_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_24_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>56</td>
+  <td rowspan=2  style='border-top:none'>width_in</td>
+  <td  >25</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >一行有效点数低八位，该参数值为实际有效点数减1</td>
+  <td  >3f</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_25_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_25_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_25_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>57</td>
+  <td  >26</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >一行有效点数高五位</td>
+  <td  >6</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_26_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_26_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_26_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>58</td>
+  <td rowspan=2  style='border-top:none'>height_in</td>
+  <td  >27</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >一场有效行数低八位，该参数值为实际有效行数减1</td>
+  <td  >af</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_27_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_27_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_27_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>59</td>
+  <td  >28</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >一场有效行数高四位</td>
+  <td  >4</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_28_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_28_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_28_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>60</td>
+  <td  >　</td>
+  <td  >29</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>61</td>
+  <td rowspan=3  style='border-top:none'>bayerp_gain_ctl</td>
+  <td  >2a</td>
+  <td  >[1:0]　</td>
+  <td  >rw</td>
+  <td  >输入增益控制</td>
+  <td  >3</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_2a />&nbsp;&nbsp;<input type=button name=qbtn_text_2a
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_2a value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>62</td>
+  <td  >2a</td>
+  <td  >[0]</td>
+  <td  >　</td>
+  <td  >gain_en，增益使能，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_2a_0 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_2a_0 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>63</td>
+  <td  >2a</td>
+  <td  >[1]</td>
+  <td  >　</td>
+  <td  >offset_en，偏置使能，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_2a_1 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_2a_1 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>64</td>
+  <td  >bayerp_gainr<span
+  style='mso-spacerun:yes'>&nbsp;</span></td>
+  <td  >2b</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >红色增益，根据滤光片系数调整</td>
+  <td  >d0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_2b_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_2b_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_2b_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>65</td>
+  <td  >bayerp_gaing<span
+  style='mso-spacerun:yes'>&nbsp;</span></td>
+  <td  >2c</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >绿色增益，根据滤光片系数调整</td>
+  <td  >80</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_2c_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_2c_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_2c_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>66</td>
+  <td  >bayerp_gainb<span
+  style='mso-spacerun:yes'>&nbsp;</span></td>
+  <td  >2d</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >蓝色增益，根据滤光片系数调整</td>
+  <td  >ab</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_2d_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_2d_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_2d_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>67</td>
+  <td rowspan=2  style='border-top:none'>bayerp_offset</td>
+  <td  >2e</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >输入信号偏置值，为有符号数，正数为调亮，负数为调暗，低八位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_2e_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_2e_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_2e_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>68</td>
+  <td  >2f</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >输入信号偏置值，为有符号数，正数为调亮，负数为调暗，高四位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_2f_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_2f_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_2f_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>69</td>
+  <td  >　</td>
+  <td  >30</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>70</td>
+  <td  >　</td>
+  <td  >31</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>71</td>
+  <td  >　</td>
+  <td  >32</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>72</td>
+  <td  >　</td>
+  <td  >33</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>73</td>
+  <td  >　</td>
+  <td  >34</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>74</td>
+  <td  >　</td>
+  <td  >35</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>75</td>
+  <td  >　</td>
+  <td  >36</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>76</td>
+  <td  >　</td>
+  <td  >37</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>77</td>
+  <td rowspan=5  style='border-top:none'>ada_ctl</td>
+  <td  >38</td>
+  <td  >[5:0]　</td>
+  <td  >rw</td>
+  <td  >自适应动态范围增强控制器</td>
+  <td  >31</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_38 />&nbsp;&nbsp;<input type=button name=qbtn_text_38
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_38 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>78</td>
+  <td  >38</td>
+  <td  >[0]</td>
+  <td  >　</td>
+  <td  >自适应动态范围增强使能</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_38_0 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_38_0 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>79</td>
+  <td  >38</td>
+  <td  >[1]</td>
+  <td  >　</td>
+  <td  >窗口模式选择，0：只测窗口内，1：重点窗口内</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_38_1 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_38_1 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>80</td>
+  <td  >38</td>
+  <td  >[4]</td>
+  <td  >　</td>
+  <td  >宽动态gamma使能，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_38_4 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_38_4 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>81</td>
+  <td  >38</td>
+  <td  >[5]</td>
+  <td  >　</td>
+  <td  >颜色矫正使能，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_38_5 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_38_5 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>82</td>
+  <td rowspan=2  style='border-top:none'>ada_stt_h</td>
+  <td  >39</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >窗口水平起始位置低八位</td>
+  <td  >90</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_39_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_39_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_39_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>83</td>
+  <td  >3a</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >窗口水平起始位置高五位</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_3a_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_3a_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_3a_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>84</td>
+  <td rowspan=2  style='border-top:none'>ada_end_h</td>
+  <td  >3b</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >窗口水平结束位置低八位</td>
+  <td  >f0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_3b_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_3b_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_3b_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>85</td>
+  <td  >3c</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >窗口水平结束位置高五位</td>
+  <td  >a</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_3c_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_3c_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_3c_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>86</td>
+  <td rowspan=2  style='border-top:none'>ada_stt_v</td>
+  <td  >3d</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >窗口垂直起始位置低八位</td>
+  <td  >2c</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_3d_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_3d_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_3d_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>87</td>
+  <td  >3e</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >窗口垂直起始位置高五位</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_3e_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_3e_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_3e_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>88</td>
+  <td rowspan=2  style='border-top:none'>ada_end_v</td>
+  <td  >3f</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >窗口垂直结束位置低八位</td>
+  <td  >34</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_3f_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_3f_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_3f_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>89</td>
+  <td  >40</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >窗口垂直结束位置高五位</td>
+  <td  >8</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_40_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_40_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_40_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>90</td>
+  <td rowspan=2  style='border-top:none'>ada_hist_max</td>
+  <td  >41</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td rowspan=2  width=519 style='border-top:none;width:389pt'>统计最大值，当0x38[1]为0时，等于height_ot*<br>
+    width_ot*9/16/512,为1时，等于height_ot*<br>
+    width_ot*43/64/512</td>
+  <td  >7a</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_41_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_41_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_41_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>91</td>
+  <td  >42</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >10</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_42_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_42_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_42_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>92</td>
+  <td rowspan=2  style='border-top:none'>ada_ttl_max</td>
+  <td  >43</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td rowspan=2  width=519 style='border-top:none;width:389pt'>全图统计最大值，=ada_hist_max/n,n是ada增强<br>
+    倍数，越大ada效果越强，</td>
+  <td  >5a</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_43_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_43_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_43_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>93</td>
+  <td  >44</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >2</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_44_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_44_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_44_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>94</td>
+  <td  >　</td>
+  <td  >45</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>95</td>
+  <td  >　</td>
+  <td  >46</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>96</td>
+  <td  >　</td>
+  <td  >47</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>97</td>
+  <td rowspan=6  style='border-top:none'>nr2d_ctl</td>
+  <td  >48</td>
+  <td  >[4:0]　</td>
+  <td  >rw</td>
+  <td  >2d降噪控制器</td>
+  <td  >13</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_48 />&nbsp;&nbsp;<input type=button name=qbtn_text_48
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_48 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>98</td>
+  <td  >48</td>
+  <td  >[0]</td>
+  <td  >　</td>
+  <td  >基于边缘方向滤波使能，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_48_0 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_48_0 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>99</td>
+  <td  >48</td>
+  <td  >[1]</td>
+  <td  >　</td>
+  <td  >基于边缘强度滤波使能，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_48_1 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_48_1 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>100</td>
+  <td  >48</td>
+  <td  >[2]</td>
+  <td  >　</td>
+  <td  >2d降噪自适应使能，高有效</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_48_2 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_48_2 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>101</td>
+  <td  >48</td>
+  <td  >[3]</td>
+  <td  >　</td>
+  <td  >2d降噪自适应强度选择，1：强，0：弱</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_48_3 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_48_3 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>102</td>
+  <td  >48</td>
+  <td  >[4]</td>
+  <td  >　</td>
+  <td  >削峰滤波使能，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_48_4 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_48_4 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>103</td>
+  <td  >nr2d_th</td>
+  <td  >49</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >边缘方向滤波强度，越大滤波越强，最小为4</td>
+  <td  >40</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_49 />&nbsp;&nbsp;<input type=button name=qbtn_text_49
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_49 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>104</td>
+  <td  >nr2d_th_1</td>
+  <td  >4a</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >边缘方向滤波强度倒数，等于1024/cpu_nr2d_th</td>
+  <td  >10</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_4a />&nbsp;&nbsp;<input type=button name=qbtn_text_4a
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_4a value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>105</td>
+  <td  >nr2d_k</td>
+  <td  >4b</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >边缘强度滤波强度，越大滤波越强，最小为4</td>
+  <td  >20</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_4b />&nbsp;&nbsp;<input type=button name=qbtn_text_4b
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_4b value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>106</td>
+  <td  >nr2d_k_1</td>
+  <td  >4c</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >边缘强度滤波强度倒数，等于1024/cpu_nr2d_k</td>
+  <td  >20</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_4c />&nbsp;&nbsp;<input type=button name=qbtn_text_4c
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_4c value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>107</td>
+  <td  >nr2d_min</td>
+  <td  >4d</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >滤波最小值，范围为0x10~0x15</td>
+  <td  >15</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_4d />&nbsp;&nbsp;<input type=button name=qbtn_text_4d
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_4d value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>108</td>
+  <td  >dpeak_th</td>
+  <td  >4e</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >削峰滤波门限，值越大滤波越弱</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_4e />&nbsp;&nbsp;<input type=button name=qbtn_text_4e
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_4e value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>109</td>
+  <td  >　</td>
+  <td  >4f</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>110</td>
+  <td  >peak_ctl</td>
+  <td  >50</td>
+  <td  >[3:0]　</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >3</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_50 />&nbsp;&nbsp;<input type=button name=qbtn_text_50
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_50 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>111</td>
+  <td  >peak_en</td>
+  <td  >50</td>
+  <td  >[0]</td>
+  <td  >　</td>
+  <td  >清晰度增强使能，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_50_0 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_50_0 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>112</td>
+  <td  >peak_av</td>
+  <td  >50</td>
+  <td  >[1]</td>
+  <td  >　</td>
+  <td  >清晰度滤波使能，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_50_1 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_50_1 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>113</td>
+  <td  >peak_adp_en</td>
+  <td  >50</td>
+  <td  >[2]</td>
+  <td  >　</td>
+  <td  >自适应清晰度使能，高有效</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_50_2 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_50_2 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>114</td>
+  <td  >peak_adp_sel</td>
+  <td  >50</td>
+  <td  >[3]</td>
+  <td  >　</td>
+  <td  >自适应强度选择，1：强，0：弱</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_50_3 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_50_3 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>115</td>
+  <td  >peak_k</td>
+  <td  >51</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >清晰度增强噪声敏感系数，越小对噪声越敏感,最小为4</td>
+  <td  >20</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_51 />&nbsp;&nbsp;<input type=button name=qbtn_text_51
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_51 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>116</td>
+  <td  >peak_k_1</td>
+  <td  >52</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >清晰度增强噪声敏感系数倒数，等于1024/cpu_peak_k</td>
+  <td  >20</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_52 />&nbsp;&nbsp;<input type=button name=qbtn_text_52
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_52 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>117</td>
+  <td  >peak_core</td>
+  <td  >53</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >核化降噪门限</td>
+  <td  >4</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_53 />&nbsp;&nbsp;<input type=button name=qbtn_text_53
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_53 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>118</td>
+  <td  >peak_th1</td>
+  <td  >54</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >清晰度增强门限1</td>
+  <td  >80</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_54 />&nbsp;&nbsp;<input type=button name=qbtn_text_54
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_54 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>119</td>
+  <td  >peak_th2</td>
+  <td  >56</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >清晰度增强门限2</td>
+  <td  >200</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_56 />&nbsp;&nbsp;<input type=button name=qbtn_text_56
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_56 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>120</td>
+  <td  >peak_gain</td>
+  <td  >58</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >清晰度增强强度，值越大增强越大</td>
+  <td  >80</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_58 />&nbsp;&nbsp;<input type=button name=qbtn_text_58
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_58 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>121</td>
+  <td rowspan=4  style='border-top:none'>bayer_sl</td>
+  <td  >60</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >bayer格式选择</td>
+  <td  >f1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_60 />&nbsp;&nbsp;<input type=button name=qbtn_text_60
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_60 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>122</td>
+  <td  >60</td>
+  <td  >[1:0]</td>
+  <td  >　</td>
+  <td  >cfa插值时颜色格式选择0：bg/gr,1:gb/rg,2:gr/bg,3:rg/gb</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_60_1_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_60_1_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_60_1_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>123</td>
+  <td  >60</td>
+  <td  >[5:4]</td>
+  <td  >　</td>
+  <td  >滤光片增益颜色格式选择</td>
+  <td  >3</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_60_5_4 />&nbsp;&nbsp;<input type=button name=qbtn_text_60_5_4
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_60_5_4 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>124</td>
+  <td  >60</td>
+  <td  >[7:6]</td>
+  <td  >　</td>
+  <td  >ada颜色格式选择</td>
+  <td  >3</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_60_7_6 />&nbsp;&nbsp;<input type=button name=qbtn_text_60_7_6
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_60_7_6 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>125</td>
+  <td  >cfa_drct_th</td>
+  <td  >61</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >边缘方向判断阈值</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_61 />&nbsp;&nbsp;<input type=button name=qbtn_text_61
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_61 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>126</td>
+  <td rowspan=8 >whtbl_ctl<span
+  style='mso-spacerun:yes'>&nbsp;&nbsp;</span></td>
+  <td  >68</td>
+  <td  >[7:0]　</td>
+  <td  >rw</td>
+  <td  >白平衡控制器</td>
+  <td  >63</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_68 />&nbsp;&nbsp;<input type=button name=qbtn_text_68
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_68 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>127</td>
+  <td  >68</td>
+  <td  >[0]</td>
+  <td  >　</td>
+  <td  >cal_en，白平衡校正使能，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_68_0 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_68_0 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>128</td>
+  <td  >68</td>
+  <td  >[1]</td>
+  <td  >　</td>
+  <td  >chk_en，白平衡检测使能，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_68_1 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_68_1 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>129</td>
+  <td  >68</td>
+  <td  >[2]</td>
+  <td  >　</td>
+  <td  >chk_md，白平衡检测模式选择</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_68_2 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_68_2 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>130</td>
+  <td  >68</td>
+  <td  >[3]</td>
+  <td  >　</td>
+  <td  >hd_en，手动检测使能，高有效</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_68_3 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_68_3 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>131</td>
+  <td  >68</td>
+  <td  >[4]</td>
+  <td  >　</td>
+  <td  >awb_prtc_en，画面颜色变化保护开关，低有效</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_68_4 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_68_4 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>132</td>
+  <td  >68</td>
+  <td  >[6:5]</td>
+  <td  >　</td>
+  <td  >awb_rct_sel，00:自然色1,01：暖色调，10：冷色调：11自然色2</td>
+  <td  >3</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_68_6_5 />&nbsp;&nbsp;<input type=button name=qbtn_text_68_6_5
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_68_6_5 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>133</td>
+  <td  >68</td>
+  <td  >[7]</td>
+  <td  >　</td>
+  <td  >awb_vrf_en,白平衡校验模式开关，高有效</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_68_7 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_68_7 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>134</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >ccm_en</td>
+  <td  >　</td>
+  <td  ></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>135</td>
+  <td  >awb_dif_th</td>
+  <td  >6a</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >白平衡校正值差值门限</td>
+  <td  >a0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_6a_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_6a_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_6a_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>136</td>
+  <td  >awb_fb_th</td>
+  <td  >6b</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >白平衡校正值门限</td>
+  <td  >66</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_6b_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_6b_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_6b_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>137</td>
+  <td rowspan=2  style='border-top:none'>whtbl_rk</td>
+  <td  >6c</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >手动调整红色增益，低八位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_6c_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_6c_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_6c_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>138</td>
+  <td  >6d</td>
+  <td  >[1:0]</td>
+  <td  >rw</td>
+  <td  >手动调整红色增益，高两位</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_6d_1_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_6d_1_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_6d_1_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>139</td>
+  <td rowspan=2  style='border-top:none'>whtbl_gk</td>
+  <td  >6e</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >手动调整绿色增益，低八位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_6e_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_6e_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_6e_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>140</td>
+  <td  >6f</td>
+  <td  >[1:0]</td>
+  <td  >rw</td>
+  <td  >手动调整绿色增益，高两位</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_6f_1_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_6f_1_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_6f_1_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>141</td>
+  <td rowspan=2  style='border-top:none'>whtbl_bk</td>
+  <td  >70</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >手动调整蓝色增益，低八位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_70_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_70_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_70_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>142</td>
+  <td  >71</td>
+  <td  >[1:0]</td>
+  <td  >rw</td>
+  <td  >手动调整蓝色增益，高两位</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_71_1_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_71_1_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_71_1_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>143</td>
+  <td  >　</td>
+  <td  >72</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>144</td>
+  <td  >ccm_kr</td>
+  <td  >73</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >CCM红色增益</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_73_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_73_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_73_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>145</td>
+  <td  >ccm_kb</td>
+  <td  >74</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >CCM蓝色增益</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_74_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_74_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_74_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>146</td>
+  <td  >ccm_kg</td>
+  <td  >75</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >CCM绿色增益</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_75_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_75_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_75_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>147</td>
+  <td  >awb_exch_th</td>
+  <td  >76</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >白平衡颜色突变反应时间</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_76_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_76_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_76_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>148</td>
+  <td rowspan=4  style='border-top:none'>ae_ctl</td>
+  <td  >80</td>
+  <td  >[4:0]　</td>
+  <td  >rw</td>
+  <td  >　</td>
+  <td  >3</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_80 />&nbsp;&nbsp;<input type=button name=qbtn_text_80
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_80 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>149</td>
+  <td  >80</td>
+  <td  >[0]</td>
+  <td  >　</td>
+  <td  >exp_en,自动快门使能</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_80_0 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_80_0 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>150</td>
+  <td  >80</td>
+  <td  >[1]</td>
+  <td  >　</td>
+  <td  >agc_en,自动增益使能</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_80_1 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_80_1 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr height=152 style='height:114.0pt'>
+  <td height=152  align=right style='height:114.0pt;border-top:
+  none'>151</td>
+  <td  >80</td>
+  <td  >[4:2]</td>
+  <td  >　</td>
+  <td  width=519 style='border-top:none;border-left:none;
+  width:389pt'>ae_win_md窗口模式选择：<br>
+    000：整幅图像<br>
+    001：只测中心区域<br>
+    010：中心重点测光<br>
+    011：根据参数ae_wd_sl手动选择区域<br>
+    100：运动区域重点测光<br>
+    101：细节区域重点测光<br>
+    110：运动与细节区域自适应测光</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_80_4_2 />&nbsp;&nbsp;<input type=button name=qbtn_text_80_4_2
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_80_4_2 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>152</td>
+  <td rowspan=2  style='border-top:none'>ae_pxl_1</td>
+  <td  >82</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td rowspan=2  style='border-top:none'>图像总像素倒数=2^31/(height_ot*width_ot)</td>
+  <td  >18</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_82_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_82_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_82_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>153</td>
+  <td  >83</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_83_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_83_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_83_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>154</td>
+  <td rowspan=2  style='border-top:none'>ae_wd_sl</td>
+  <td  >84</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td rowspan=2  width=519 style='border-top:none;width:389pt'>手动窗口选择，bit[0]对应左上窗口，Bit[15]对<br>
+    应右下窗口，高使能</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_84_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_84_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_84_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>155</td>
+  <td  >85</td>
+  <td  >[15:8]</td>
+  <td  >rw</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_85_15_8 />&nbsp;&nbsp;<input type=button name=qbtn_text_85_15_8
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_85_15_8 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>156</td>
+  <td  >ae_yobj</td>
+  <td  >86</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >目标亮度</td>
+  <td  >80</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_86_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_86_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_86_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr height=38 style='height:28.5pt'>
+  <td height=38  align=right style='height:28.5pt;border-top:
+  none'>157</td>
+  <td  >ae_av_rg</td>
+  <td  >87</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  width=519 style='border-top:none;border-left:none;
+  width:389pt'>目标亮度范围，当图像亮度位于(ae_yobj-ae_av_rg,<br>
+    ae_yobj+ae_av_rg)内时，自动曝光算法认为达到目的</td>
+  <td  >4</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_87_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_87_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_87_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>158</td>
+  <td rowspan=2  style='border-top:none'>ae_exp</td>
+  <td  >88</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >手动设置曝光时间，低八位</td>
+  <td  >40</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_88_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_88_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_88_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>159</td>
+  <td  >89</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >手动设置曝光时间，高八位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_89_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_89_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_89_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>160</td>
+  <td rowspan=2  style='border-top:none'>ae_agc</td>
+  <td  >8a</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >手动设置AGC值，低八位</td>
+  <td  >80</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_8a_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_8a_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_8a_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>161</td>
+  <td  >8b</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >手动设置AGC值，高四位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_8b_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_8b_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_8b_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>162</td>
+  <td rowspan=2  style='border-top:none'>ae_exp_max</td>
+  <td  >8c</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >自动曝光最大值，低八位</td>
+  <td  >60</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_8c_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_8c_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_8c_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>163</td>
+  <td  >8d</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >自动曝光最大值，高八位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_8d_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_8d_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_8d_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>164</td>
+  <td rowspan=2  style='border-top:none'>ae_exp_mid</td>
+  <td  >8e</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >自动曝光中间值，低八位</td>
+  <td  >20</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_8e_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_8e_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_8e_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>165</td>
+  <td  >8f</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >自动曝光中间值，高八位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_8f_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_8f_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_8f_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>166</td>
+  <td rowspan=2  style='border-top:none'>ae_exp_min</td>
+  <td  >90</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >自动曝光最小值，低八位</td>
+  <td  >c</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_90_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_90_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_90_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>167</td>
+  <td  >91</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >自动曝光最小值，高八位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_91_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_91_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_91_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>168</td>
+  <td rowspan=2  style='border-top:none'>ae_agc_max</td>
+  <td  >92</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >AGC最大值，低八位</td>
+  <td  >80</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_92_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_92_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_92_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>169</td>
+  <td  >93</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >AGC最大值，高四位</td>
+  <td  >2</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_93_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_93_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_93_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>170</td>
+  <td rowspan=2  style='border-top:none'>ae_agc_mid</td>
+  <td  >94</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >AGC中间值，低八位</td>
+  <td  >80</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_94_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_94_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_94_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>171</td>
+  <td  >95</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >AGC中间值，高四位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_95_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_95_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_95_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>172</td>
+  <td rowspan=2  style='border-top:none'>ae_agc_min</td>
+  <td  >96</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >AGC最小值，低八位</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_96_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_96_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_96_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>173</td>
+  <td  >97</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >AGC最小值，高四位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_97_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_97_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_97_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>174</td>
+  <td rowspan=5  style='border-top:none'>ae_dn_ctl</td>
+  <td  >98</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >日夜切换控制器</td>
+  <td  >a0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_98_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_98_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_98_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>175</td>
+  <td  >98</td>
+  <td  >[0]</td>
+  <td  >　</td>
+  <td  >0:强制日模式，1：强制夜模式</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_98_0 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_98_0 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>176</td>
+  <td  >98</td>
+  <td  >[1]</td>
+  <td  >　</td>
+  <td  >0：自动模式，1：手动模式</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_98_1 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_98_1 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>177</td>
+  <td  >98</td>
+  <td  >[3:2]</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >　</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>178</td>
+  <td  >98</td>
+  <td  >[7:4]</td>
+  <td  >　</td>
+  <td  >自动模式时，日夜切换的AGC门限</td>
+  <td  >a</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_98_7_4 />&nbsp;&nbsp;<input type=button name=qbtn_text_98_7_4
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_98_7_4 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>179</td>
+  <td  >ae_dn_yavth</td>
+  <td  >99</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >日夜切换时，亮度均值门限</td>
+  <td  >50</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_99_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_99_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_99_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>180</td>
+  <td  >ae_dn_tmth</td>
+  <td  >9a</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >日夜切换时，等待时间</td>
+  <td  >80</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_9a_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_9a_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_9a_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>181</td>
+  <td  >ae_wren</td>
+  <td  >a0</td>
+  <td  >[7:0]　</td>
+  <td  >r</td>
+  <td  >　</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_a0 />&nbsp;&nbsp;<input type=button name=qbtn_text_a0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_a0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>182</td>
+  <td rowspan=2  style='border-top:none'>ae_expo</td>
+  <td  >a1</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >当前快门值,低8位</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_a1_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_a1_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_a1_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>183</td>
+  <td  >a2</td>
+  <td  >[3:0]</td>
+  <td  >r</td>
+  <td  >当前快门值,高四位</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_a2_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_a2_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_a2_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>184</td>
+  <td rowspan=2  style='border-top:none'>ae_agco</td>
+  <td  >a3</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >当前增益值,低8位</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_a3_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_a3_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_a3_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>185</td>
+  <td  >a4</td>
+  <td  >[3:0]</td>
+  <td  >r</td>
+  <td  >当前增益值,高四位</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_a4_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_a4_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_a4_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>186</td>
+  <td  >y_av</td>
+  <td  >a5</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >当前图像平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_a5_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_a5_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_a5_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>187</td>
+  <td  >ae_av00</td>
+  <td  >a6</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口0平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_a6_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_a6_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_a6_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>188</td>
+  <td  >ae_av01</td>
+  <td  >a7</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口1平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_a7_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_a7_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_a7_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>189</td>
+  <td  >ae_av02</td>
+  <td  >a8</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口2平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_a8_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_a8_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_a8_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>190</td>
+  <td  >ae_av03</td>
+  <td  >a9</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口3平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_a9_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_a9_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_a9_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>191</td>
+  <td  >ae_av10</td>
+  <td  >aa</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口4平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_aa_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_aa_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_aa_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>192</td>
+  <td  >ae_av11</td>
+  <td  >ab</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口5平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_ab_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_ab_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_ab_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>193</td>
+  <td  >ae_av12</td>
+  <td  >ac</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口6平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_ac_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_ac_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_ac_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>194</td>
+  <td  >ae_av13</td>
+  <td  >ad</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口7平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_ad_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_ad_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_ad_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>195</td>
+  <td  >ae_av20</td>
+  <td  >ae</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口8平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_ae_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_ae_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_ae_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>196</td>
+  <td  >ae_av21</td>
+  <td  >af</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口9平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_af_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_af_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_af_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>197</td>
+  <td  >ae_av22</td>
+  <td  >b0</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口10平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_b0_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_b0_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_b0_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>198</td>
+  <td  >ae_av23</td>
+  <td  >b1</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口11平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_b1_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_b1_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_b1_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>199</td>
+  <td  >ae_av30</td>
+  <td  >b2</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口12平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_b2_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_b2_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_b2_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>200</td>
+  <td  >ae_av31</td>
+  <td  >b3</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口13平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_b3_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_b3_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_b3_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>201</td>
+  <td  >ae_av32</td>
+  <td  >b4</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口14平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_b4_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_b4_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_b4_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>202</td>
+  <td  >ae_av33</td>
+  <td  >b5</td>
+  <td  >[7:0]</td>
+  <td  >r</td>
+  <td  >窗口15平均亮度</td>
+  <td  >　</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_b5_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_b5_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_b5_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>203</td>
+  <td rowspan=9  style='border-top:none'>yuvb_ctl</td>
+  <td  >b8</td>
+  <td  >[7:0]　</td>
+  <td  >　</td>
+  <td  >后处理控制器</td>
+  <td  >bf</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_b8 />&nbsp;&nbsp;<input type=button name=qbtn_text_b8
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_b8 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>204</td>
+  <td  >b8</td>
+  <td  >[0]</td>
+  <td  >　</td>
+  <td  >保留</td>
+  <td  >1</td>
+  <td  >　</td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>205</td>
+  <td  >b8</td>
+  <td  >[1]</td>
+  <td  >　</td>
+  <td  >对比度调整开关，1：开，0：关</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_b8_1 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_b8_1 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>206</td>
+  <td  >b8</td>
+  <td  >[2]</td>
+  <td  >　</td>
+  <td  >亮度调整开关，1：开，0：关</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_b8_2 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_b8_2 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>207</td>
+  <td  >b8</td>
+  <td  >[3]</td>
+  <td  >　</td>
+  <td  >gamma_en，后gamma矫正使能，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_b8_3 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_b8_3 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>208</td>
+  <td  >b8</td>
+  <td  >[4]</td>
+  <td  >　</td>
+  <td  >色度调整开关，1：开，0：关</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_b8_4 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_b8_4 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>209</td>
+  <td  >b8</td>
+  <td  >[5]</td>
+  <td  >　</td>
+  <td  >饱和度调整开关，1：开，0：关</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_b8_5 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_b8_5 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>210</td>
+  <td  >b8</td>
+  <td  >[6]</td>
+  <td  >　</td>
+  <td  >饱和度矫正使能，高有效</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_b8_6 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_b8_6 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>211</td>
+  <td  >b8</td>
+  <td  >[7]</td>
+  <td  >　</td>
+  <td  >444转422时，uv选择</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_b8_7 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_b8_7 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>212</td>
+  <td  >yuvb_ctrst_gain</td>
+  <td  >be</td>
+  <td  >[7:0]</td>
+  <td  >　</td>
+  <td  >对比度调整强度</td>
+  <td  >84</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_be_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_be_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_be_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>213</td>
+  <td  >yuvb_luma_gain</td>
+  <td  >bf</td>
+  <td  >[7:0]</td>
+  <td  >　</td>
+  <td  >亮度调整强度</td>
+  <td  >80</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_bf_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_bf_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_bf_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>214</td>
+  <td  >yuvb_hue_gain</td>
+  <td  >c0</td>
+  <td  >[7:0]</td>
+  <td  >　</td>
+  <td  >色度调整强度</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_c0_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_c0_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_c0_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>215</td>
+  <td  >yuvb_strt_gain</td>
+  <td  >c1</td>
+  <td  >[7:0]</td>
+  <td  >　</td>
+  <td  >饱和度调整强度</td>
+  <td  >48</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_c1_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_c1_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_c1_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>216</td>
+  <td rowspan=6  style='border-top:none'>otc_ctl</td>
+  <td  >d1</td>
+  <td  >[4:0]　</td>
+  <td  >rw</td>
+  <td  >输出时序控制器</td>
+  <td  >10</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_d1 />&nbsp;&nbsp;<input type=button name=qbtn_text_d1
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_d1 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>217</td>
+  <td  >d1</td>
+  <td  >[0]</td>
+  <td  >　</td>
+  <td  >行同步极性控制，0：正极性，1：负极性</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_d1_0 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_d1_0 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>218</td>
+  <td  >d1</td>
+  <td  >[1]</td>
+  <td  >　</td>
+  <td  >场同步极性控制，0：正极性，1：负极性</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_d1_1 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_d1_1 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>219</td>
+  <td  >d1</td>
+  <td  >[2]</td>
+  <td  >　</td>
+  <td  >数据有效信号极性控制，0：正极性，1：负极性</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_d1_2 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_d1_2 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>220</td>
+  <td  >d1</td>
+  <td  >[3]</td>
+  <td  >　</td>
+  <td  >输出格式选择，0：bt601,1：bt1120</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_d1_3 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_d1_3 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>221</td>
+  <td  >d1</td>
+  <td  >[4]</td>
+  <td  >　</td>
+  <td  >输出场同步同步于输入场同步使能，高有效</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=checkbox name=check_d1_4 onclick=hdclick(this.name) />
+<span>ON</span>
+&nbsp;&nbsp;<input
+  type=button name=qbtn_check_d1_4 value=Query onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>222</td>
+  <td rowspan=2  style='border-top:none'>otc_ttl_h</td>
+  <td  >d2</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >输出一行总点数低八位，该参数值为实际总点数减1</td>
+  <td  >4f</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_d2_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_d2_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_d2_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>223</td>
+  <td  >d3</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >输出一行总点数高五位</td>
+  <td  >a</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_d3_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_d3_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_d3_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>224</td>
+  <td rowspan=2  style='border-top:none'>otc_ttl_v</td>
+  <td  >d4</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >输出一场总行数低八位，该参数值为实际总行数减1</td>
+  <td  >64</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_d4_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_d4_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_d4_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>225</td>
+  <td  >d5</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >输出一场总行数高四位</td>
+  <td  >4</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_d5_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_d5_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_d5_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>226</td>
+  <td rowspan=2  style='border-top:none'>otc_stt_hs</td>
+  <td  >d6</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >输出行同步起始位置低八位</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_d6_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_d6_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_d6_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>227</td>
+  <td  >d7</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >输出行同步起始位置高五位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_d7_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_d7_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_d7_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>228</td>
+  <td rowspan=2  style='border-top:none'>otc_end_hs</td>
+  <td  >d8</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >输出行同步截止位置低八位</td>
+  <td  >41</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_d8_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_d8_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_d8_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>229</td>
+  <td  >d9</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >输出行同步截止位置高五位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_d9_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_d9_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_d9_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>230</td>
+  <td rowspan=2  style='border-top:none'>otc_stt_hr</td>
+  <td  >da</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >输出行有效起始位置低八位</td>
+  <td  >c2</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_da_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_da_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_da_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>231</td>
+  <td  >db</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >输出行有效起始位置高五位</td>
+  <td  >2</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_db_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_db_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_db_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>232</td>
+  <td rowspan=2  style='border-top:none'>otc_end_hr</td>
+  <td  >dc</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >输出行有效截止位置低八位</td>
+  <td  >42</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_dc_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_dc_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_dc_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>233</td>
+  <td  >dd</td>
+  <td  >[4:0]</td>
+  <td  >rw</td>
+  <td  >输出行有效截止位置高五位</td>
+  <td  >a</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_dd_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_dd_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_dd_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>234</td>
+  <td rowspan=2  style='border-top:none'>otc_stt_vs</td>
+  <td  >de</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >输出场同步起始位置低八位</td>
+  <td  >1</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_de_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_de_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_de_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>235</td>
+  <td  >df</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >输出场同步起始位置高四位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_df_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_df_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_df_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>236</td>
+  <td rowspan=2  style='border-top:none'>otc_end_vs</td>
+  <td  >e0</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >输出场同步截止位置低八位</td>
+  <td  >5</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_e0_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_e0_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_e0_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>237</td>
+  <td  >e1</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >输出场同步截止位置高四位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_e1_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_e1_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_e1_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>238</td>
+  <td rowspan=2  style='border-top:none'>otc_stt_vr</td>
+  <td  >e2</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >输出场有效起始位置低八位</td>
+  <td  >26</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_e2_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_e2_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_e2_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>239</td>
+  <td  >e3</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >输出场有效起始位置高四位</td>
+  <td  >0</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_e3_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_e3_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_e3_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>240</td>
+  <td rowspan=2  style='border-top:none'>otc_end_vr</td>
+  <td  >e4</td>
+  <td  >[7:0]</td>
+  <td  >rw</td>
+  <td  >输出场有效截止位置低八位</td>
+  <td  >5e</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_e4_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_e4_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_e4_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>241</td>
+  <td  >e5</td>
+  <td  >[3:0]</td>
+  <td  >rw</td>
+  <td  >输出场有效截止位置高四位</td>
+  <td  >4</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_e5_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_e5_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_e5_3_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>242</td>
+  <td rowspan=2  style='border-top:none'>width_ot</td>
+  <td  >e6</td>
+  <td  >[7:0]</td>
+  <td  >　</td>
+  <td  >输出图像宽度，低八位</td>
+  <td  >80</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_e6_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_e6_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_e6_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>243</td>
+  <td  >e7</td>
+  <td  >[4:0]</td>
+  <td  >　</td>
+  <td  >输出图像宽度，高四位</td>
+  <td  >c</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_e7_4_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_e7_4_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_e7_4_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>244</td>
+  <td rowspan=2  style='border-top:none'>height_ot</td>
+  <td  >e8</td>
+  <td  >[7:0]</td>
+  <td  >　</td>
+  <td  >输出图像宽度，低八位</td>
+  <td  >60</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_e8_7_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_e8_7_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_e8_7_0 value=Set onclick=hdclick(this.name) /></td>
+  
+ </tr>
+ <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>245</td>
+  <td  >e9</td>
+  <td  >[3:0]</td>
+  <td  >　</td>
+  <td  >输出图像宽度，高四位</td>
+  <td  >9</td>
+  <td  >&nbsp;&nbsp;<input
+  type=text name=text_e9_3_0 />&nbsp;&nbsp;<input type=button name=qbtn_text_e9_3_0
+  value=Query onclick=hdclick(this.name) />&nbsp;&nbsp;<input type=button
+  name=sbtn_text_e9_3_0 value=Set onclick=hdclick(this.name) /></td>  
+ </tr>
+
+  <tr >
+  <td height=19  align=right style='height:14.25pt;border-top:
+  none'>246</td>
+  <td  colspan=4>根据输入地址设置该地址的值</td>
+  <td  >
+    <span>Address:</span>
+    <input type="text" id="addr"></input>
+  </td>
+  <td  >
+    <span>Value:</span>
+    <input type="text" id="val"></input>
+  </td>
+  <td  >
+    <input type="button" id="set" value="Set" onclick="set()"></input>
+  </td>  
+ </tr>
+</table>
+
+</div>
+
+
+<!----------------------------->
+<!--“从 EXCEL 发布网页”向导结束
+-->
+<!---------------------------
+-->
+</body>
+
+</html>

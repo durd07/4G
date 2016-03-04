@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<link type="text/css" href="css/ptz.css" rel="stylesheet">
+ <link rel="stylesheet" href="jquery/themes/base/jquery.ui.all.css" />
+<script src="jquery/jquery-1.9.1.min.js"></script>
+<script src="jquery/jquery-ui.js"></script>
+<script language="javascript" src="var.js"></script>
+<script language="javascript" src="common.js"></script>
+<script> 
+InitLoad();
+var speedyt =5;
+var speedzf =5;
+var speedap =5;
+ </script>
+
+<title>ptzctl</title>
+<style>
+body {
+		color: white;		
+	}
+    
+	tr td {
+      font-size: 12px;
+	  
+    }
+</style>
+</head>
+
+<script>
+ $(function() {
+        $( "#yt_speed" ).slider({
+          range: "min",
+          min: 1,
+          max: 10,
+          value: 5,
+          slide: function( event, ui ) {
+            $( "#yt_speed_val" ).val( ui.value );
+			speedyt = ui.value;
+          }
+        });
+        $( "#yt_speed_val" ).val( $( "#yt_speed" ).slider( "value" ) );
+      });
+ $(function() {
+        $( "#zf_speed" ).slider({
+          range: "min",
+          min: 1,
+          max: 10,
+          value: 5,
+          slide: function( event, ui ) {
+            $( "#zf_speed_val" ).val( ui.value );
+			speedzf = ui.value;
+          }
+        });
+        $( "#zf_speed_val" ).val( $( "#zf_speed" ).slider( "value" ) );
+      });
+$(function() {
+        $( "#ap_speed" ).slider({
+          range: "min",
+          min: 1,
+          max: 10,
+          value: 5,
+          slide: function( event, ui ) {
+            $( "#ap_speed_val" ).val( ui.value );
+			speedap = ui.value;
+          }
+        });
+        $( "#ap_speed_val" ).val( $( "#ap_speed" ).slider( "value" ) );
+      });
+</script>
+<script>
+
+CTRLARY = {
+		 f_step: new Ctrl_Text("f_step", 3, 3, "<%f_step%>", "f_step=", null, false, "Changefstep()"),//远 步数 
+		 n_step: new Ctrl_Text("n_step", 3, 3, "<%n_step%>", "n_step=", null, false, "Changenstep()")//近 步数 
+
+};
+</script>
+<body onload="MY_ONLOAD()">
+<script>
+function FocusNear() {	
+	SendHttp(c_iniUrl + GetSetterCmdKV("focus_near", 1) , false);
+  }
+
+  function FocusFar() {
+	
+	SendHttp(c_iniUrl + GetSetterCmdKV("focus_far", 1) , false);
+  }
+
+function FocusNearStop() {
+	 SendHttp(c_iniUrl + GetSetterCmdKV("focusnear_stop", 1), false);
+  }
+function FocusFarStop() {
+		 SendHttp(c_iniUrl + GetSetterCmdKV("focusfar_stop", 1), false);
+	  }
+function ZoomTele() {       
+         SendHttp(c_iniUrl + GetSetterCmdKV("zoom_tele", 1) , false);
+      }
+	  
+function ZoomWide() {        
+	SendHttp(c_iniUrl + GetSetterCmdKV("zoom_wide", 1) , false);
+}
+
+function ZoomTeleStop() {
+	   SendHttp(c_iniUrl + GetSetterCmdKV("zoomtele_stop", 1), false);
+}
+function ZoomWideStop() {
+	   SendHttp(c_iniUrl + GetSetterCmdKV("zoomwide_stop", 1), false);
+}
+
+function Apertureenlarge() {      
+        SendHttp(c_iniUrl + GetSetterCmdKV("aperture_enlarge", speedap) , false);
+      }   
+  
+ function Aperturereduce() {		
+		SendHttp(c_iniUrl+ GetSetterCmdKV("aperture_reduce", speedap) , false);
+	  } 
+function ApertureEnlarge_Stop() {
+		//var speed = document.getElementById("Aperture_speed_val").value;       
+		SendHttp(c_iniUrl + GetSetterCmdKV("apertureenlarge_stop", 1) , false);
+	  } 
+ function ApertureReduce_Stop() {
+	//var speed = document.getElementById("Aperture_speed_val").value;       
+	SendHttp(c_iniUrl + GetSetterCmdKV("aperturereduce_stop", 1) , false);
+  } 	
+	  
+function CheckNstep(min, max)
+{
+  var value = document.getElementById("n_step").value;
+  if (value.length == 0||value==" ")
+  {
+    alert(GL("step_empty"));
+    document.getElementById("n_step").focus();
+    document.getElementById("n_step").value = 1;
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("step_inv"));
+    document.getElementById("n_step").focus();
+    document.getElementById("n_step").value = 1;
+    return false;
+  }
+
+  if ((value < min) || (value > max))
+  {
+    alert(GL("step_num"));
+    document.getElementById("n_step").focus();
+    document.getElementById("n_step").value = 1;
+    return false;
+  }
+  return true;
+}
+function CheckFstep(min, max)
+{
+  var value = document.getElementById("f_step").value;
+  if (value.length == 0||value==" ")
+  {
+    alert(GL("step_empty"));
+    document.getElementById("f_step").focus();
+    document.getElementById("f_step").value = 1;
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("step_inv"));
+    document.getElementById("f_step").focus();
+    document.getElementById("f_step").value = 1;
+    return false;
+  }
+
+  if ((value < min) || (value > max))
+  {
+    alert(GL("step_num"));
+    document.getElementById("f_step").focus();
+    document.getElementById("f_step").value = 1;
+    return false;
+  }
+  return true;
+}
+function focus_n_attunement()
+{   
+  if (CheckNstep(0, 999) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("focus_n_attu", GetCCV("n_step")), false, SendImgCallBack);
+}
+function focus_f_attunement()
+{   
+	if (CheckFstep(0, 999) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("focus_f_attu", GetCCV("f_step")), false, SendImgCallBack);
+}
+
+function MY_ONLOAD()
+{
+	
+}
+
+
+
+</script>
+
+
+	<div style="width:100%; height:100%; position:relative;background:#333;">		
+		<div class = "ptz_control">
+			<table  class="ptz_control1"><!--控制上-->
+				<table style = " position: absolute;left:40px;top:20px;">
+				 <tr>
+					<td id= "Aperture_enlarge" class = "ptz_zoomnear" onmousedown="Apertureenlarge()" onmouseup="ApertureEnlarge_Stop()"> </td>
+						<script> document.getElementById("Aperture_enlarge").title = GL("Aperture_enlarge"); </script>
+					<td style= "position:absolute;left:40px;top: 5px; width:60px; color:#d8d8d8;font-size:13px;text-align:center;">
+					<script>DW(GL("Aperture_contrl"));</script>		
+					</td>
+					<td id= "Aperture_reduce" class = "ptz_zoomfar" onmousedown="Aperturereduce()" onmouseup="ApertureReduce_Stop()">
+						<script> document.getElementById("Aperture_reduce").title = GL("Aperture_reduce"); </script>
+					</td>
+				 </tr>
+				</table>
+				<table style = "position: absolute;top:60px;">
+					<tr>
+						<td style= "color:#d8d8d8;font-size:12px"><script>DW(GL("Ap_speed"));</script>	</td>
+						<!--td id="ap_speed" class = "ptz_ytspeed">
+							<input type="text" id="ap_speed_val" readonly="readonly" class = "ptz_ytspeed_num" maxlength=1 size=1/>
+						</td-->
+                        
+                        <td  class ="ptz_ytspeed" style=" width:130px; vertical-align:middle;"> 
+                     	 	<div id="ap_speed" style="height:7px; width:100%;float:left"></div>
+                      	</td>
+                     	<td><input type="text" id="ap_speed_val" readonly="readonly" class = "ptz_ytspeed_num" maxlength=1 size=1/></td>
+                        
+					</tr>
+				</table>
+			</table>
+			<table style = " position: absolute;left:40px;top:110px;">
+				 <tr>
+				 <td id= "zoomnear" class = "ptz_zoomnear" onmousedown="ZoomTele()" onmouseup="ZoomTeleStop()"> </td>
+				 <script> document.getElementById("zoomnear").title = GL("zoom_tele"); </script>
+				 <td style= "position:absolute;left:40px;top: 5px; width:60px; color:#d8d8d8;font-size:13px;text-align:center;"><script>DW(GL("zoom_contrl"));</script></td>
+				 <td id= "zoomfar" class = "ptz_zoomfar" onmousedown="ZoomWide()" onmouseup="ZoomWideStop()">
+				 <script> document.getElementById("zoomfar").title = GL("zoom_wide"); </script>
+				 </td>
+				 </tr>
+			</table>
+			<table style = "position: absolute;top:150px;">
+				<tr>
+                    <td style= "color:#d8d8d8;font-size:12px"><script>DW(GL("zo_speed"));</script></td>
+                     
+                     
+                     <!--td id="yt_speed" class = "ptz_ytspeed">
+                     	<input type="text" id="yt_speed_val" readonly="readonly" class = "ptz_ytspeed_num" maxlength=1 size=1/>
+                     </td-->
+                     
+                     
+                     <td  class ="ptz_ytspeed" style=" width:130px; vertical-align:middle;"> 
+                        <div id="yt_speed" style="height:7px; width:100%;float:left"></div>
+                    </td>
+                    <td><input type="text" id="yt_speed_val" readonly="readonly" class = "ptz_ytspeed_num" maxlength=1 size=1/></td>
+                     
+                 </tr>
+			</table>
+			
+			<table style = " position: absolute;left:40px;top:200px;">
+				 <tr>
+				 <td id= "focusnear" class = "ptz_focusnear" onmousedown="FocusNear()" onmouseup="FocusNearStop()"></td>
+				 <script> document.getElementById("focusnear").title = GL("focus_near"); </script>
+				 <td style= "position:absolute;left:40px;top:5px; width:60px; color:#d8d8d8;font-size:13px;text-align:center;"><script>DW(GL("focus_contrl"));</script></td>
+				 <td id= "focusfar" class = "ptz_focusfar" onmousedown="FocusFar()" onmouseup="FocusFarStop()"></td>
+				  <script> document.getElementById("focusfar").title = GL("focus_far"); </script>
+				 </tr>			
+			 </table>
+			 
+			<table style="position: absolute;top:250px;">
+			  <tr>
+			  <td style= "color:#d8d8d8;font-size:12px"><script>DW(GL("fo_speed"));</script></td>
+                 <!--td id="zf_speed" class = "ptz_zfspeed">
+                 	<input type="text" id="zf_speed_val" readonly="readonly" class = "ptz_zfspeed_num" maxlength=1 size=1/>	 
+                 </td-->
+                 
+                 
+                 <td   style=" width:130px; vertical-align:middle;"> 
+                    <div id="zf_speed" style="height:7px; width:100%;float:left"></div>
+                </td>
+                <td><input type="text" id="zf_speed_val" readonly="readonly" class = "ptz_zfspeed_num" maxlength=1 size=1/>	 </td>
+                 
+			 </tr>			
+			</table>
+			<div class = "ptz_control2"><!--云台控制下-->
+			<table>			    
+				<tr><td colspan=2>
+				<script>DW(GL("focus_attunement"));</script>
+				</td></tr>	
+				<tr>
+					<td>
+						<script> DW(GL("nstep_num") + ':');WH("n_step");</script>
+					</td>
+					<td>
+						<script> 
+							DW('<input type="button" id="f_n_att" style="width:82px;height:30px" value="' + GL("focusn_att") + '" title = "' + GL("focusn_att1") + '" onclick="focus_n_attunement()">');
+						</script>
+					</td>
+				</tr>
+				<tr><td></td></tr>
+				<tr>
+					<td>
+						<script> DW(GL("fstep_num") + ':');WH("f_step");</script>
+					</td>
+					<td>
+						<script> 
+							DW('<input type="button" id="f_f_att" style="width:82px;height:30px" value="' + GL("focusf_att") + '" title = "' + GL("focusf_att1") + '" onclick="focus_f_attunement()">');
+						</script>
+					</td>
+				</tr>
+			</table>
+			
+			</div>
+		</div>
+   </div>
+    
+</body>

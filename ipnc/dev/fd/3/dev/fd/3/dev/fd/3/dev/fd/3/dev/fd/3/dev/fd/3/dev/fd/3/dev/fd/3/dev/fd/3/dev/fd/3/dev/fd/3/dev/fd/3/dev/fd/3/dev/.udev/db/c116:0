@@ -1,0 +1,5 @@
+N:snd/controlC0
+S:snd/by-path/platform-soc-audio.0
+I:6477428
+E:ID_PATH=platform-soc-audio.0
+G:udev-acl

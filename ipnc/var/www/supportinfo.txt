@@ -1,0 +1,5 @@
+Please post all the queries and support issues regarding IPNC RDK at http://e2e.ti.com/support/dsp/davinci_digital_media_processors/f/100.aspx 
+
+In adiition, http://wiki.davincidsp.com will give detailed info on important topics.
+
+All the suport documents needed are provided with the release at Docs folder.

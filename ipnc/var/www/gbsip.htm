@@ -1,0 +1,402 @@
+<html>
+  <head>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+		<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+
+    <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+        <script>
+            InitLoad();
+        </script>
+    <title>
+      GB28181 Setting
+    </title>
+<style type="text/css">
+body {
+	margin: 0;		
+	height:100%;
+	min-width:1200px;
+	min-height:580px;
+	background:#D5D5D5;
+	font-family:"宋体";
+}
+
+div.headline {
+	padding:5px;
+	background-color:#666;
+	font-weight:bold;
+	margin-top:10px;
+	color:white;
+/*margin-left: 10px;*/
+}
+table
+{
+	font-size:13px;	font-family:"宋体";
+	padding-left:10px;}
+</style>
+
+  </head>
+
+  <body onLoad="MY_ONLOAD()">
+<script>
+// iris, focus, zoom
+  var levellist = "1;2;3;4;5;6";
+    CTRLARY = {
+      // SIP setting
+      flag: new Ctrl_Check("flag", "<%sipflag%>", "sipflag=", "FixSip()"),
+      sipServID: new Ctrl_Text("sipServID", 32, 32, "<%sipservid%>", "sipservid="),
+      sipDomain: new Ctrl_Text("sipDomain", 16, 16, "<%sipdomain%>", "sipdomain="),
+      sipServAddr: new Ctrl_Text("sipServAddr", 20, 20, "<%sipservaddr%>", "sipservaddr="),
+      sipServPort: new Ctrl_Text("sipServPort", 5, 5, "<%sipservport%>", "sipservport="),
+      sipDeviceID: new Ctrl_Text("sipDeviceID", 32, 32, "<%sipdeviceid%>", "sipdeviceid="),
+      sipRegPasswd: new Ctrl_Text("sipRegPasswd", 32, 32, "<%sipregpasswd%>", "sipregpasswd=", null, true),
+      sipDevicePort: new Ctrl_Text("sipDevicePort", 5, 5, "<%sipdeviceport%>", "sipdeviceport="),
+      sipRegExpire: new Ctrl_Text("sipRegExpire", 5, 5, "<%sipregexpire%>", "sipregexpire="),
+      sipHearteatInt: new Ctrl_Text("sipHearteatInt", 5, 5, "<%siphearteatint%>", "siphearteatint="),
+      sipMaxHeartbeatTimeout: new Ctrl_Text("sipMaxHeartbeatTimeout", 5, 5, "<%sipmaxheartbeattimeout%>", "sipmaxheartbeattimeout="),
+      sipZoneCode: new Ctrl_Text("sipZoneCode", 8, 8, "<%sipzonecode%>", "sipzonecode="),
+      sipInModId: new Ctrl_Text("sipInModId", 16, 16, "<%sipinmodid%>", "sipinmodid="),
+      sipChId: new Ctrl_Text("sipChId", 32, 32, "<%sipchid%>", "sipchid="),
+      sipChAlrmLevel: new Ctrl_Select("sipChAlrmLevel", levellist, "<%sipchalrmlevel%>", "sipchalrmlevel="),
+      sipAlrmId: new Ctrl_Text("sipAlrmId", 32, 32, "<%sipalrmid%>", "sipalrmid="),
+      sipAlrmLevel: new Ctrl_Select("sipAlrmLevel", levellist, "<%sipalrmlevel%>", "sipalrmlevel=")
+}
+</script>
+<script>
+function MY_ONLOAD() {
+  g_lockLink = false;
+  FixSip();
+}
+function MY_BEFORE_SUBMIT() {
+
+  if (ChecksipDomain() == false)
+    return false;
+  if (ChecksipServAddr() == false)
+    return false;
+  if (ChecksipServPort() == false)
+    return false;
+  if (ChecksipDeviceID() == false)
+    return false;
+  if (ChecksipRegPasswd() == false)
+    return false;
+  if (ChecksipRegExpire() == false)
+    return false;
+  if (ChecksipHearteatInt() == false)
+    return false;
+  if (ChecksipDevicePort() == false)
+    return false;
+  if (ChecksipZoneCode() == false)
+    return false;
+  if (ChecksipChId() == false)
+    return false;
+  if (ChecksipAlrmId() == false)
+    return false;
+  if (ChecksipMaxHeartbeatTimeout() == false)
+    return false;
+  if (CheckSipServId() == false)
+    return false;
+  if (ChecksipInModId() == false)
+    return false;
+
+  return true;    
+}
+function MY_SUBMIT_OK() {  
+  SendHttp(c_iniUrl + GetSetterCmdKV("killsip"), false);
+
+  alert(GL("submit_success"));
+  // ChangeContent(null, false);  
+  window.location.reload();
+}
+
+function CheckSipServId()
+{
+  var servid = GetCCV("sipServID");
+  if (servid.length == 0)
+  {
+    alert(GL("servid_empty"));
+    return false;
+  }
+  return true;
+}
+
+function ChecksipDomain()
+{
+  var servid = GetCCV("sipDomain");
+  if (servid.length == 0)
+  {
+    alert(GL("servid_empty"));
+    return false;
+  }
+  return true;
+}
+
+function ChecksipServAddr()
+{
+  var servid = GetCCV("sipServAddr");
+  if (servid.length == 0)
+  {
+    alert(GL("servid_empty"));
+    return false;
+  }
+  return true;
+}
+
+function ChecksipServPort()
+{
+  var servid = GetCCV("sipServPort");
+  if (servid.length == 0)
+  {
+    alert(GL("servid_empty"));
+    return false;
+  }
+  return true;
+}
+
+function ChecksipDeviceID()
+{
+  var servid = GetCCV("sipDeviceID");
+  if (servid.length == 0)
+  {
+    alert(GL("servid_empty"));
+    return false;
+  }
+  return true;
+}
+
+function ChecksipRegPasswd()
+{
+  var servid = GetCCV("sipRegPasswd");
+  if (servid.length == 0)
+  {
+    alert(GL("servid_empty"));
+    return false;
+  }
+  return true;
+}
+
+function ChecksipDevicePort()
+{
+  var servid = GetCCV("sipDevicePort");
+  if (servid.length == 0)
+  {
+    alert(GL("servid_empty"));
+    return false;
+  }
+  return true;
+}
+
+function ChecksipRegExpire()
+{
+  var servid = GetCCV("sipRegExpire");
+  if (servid.length == 0)
+  {
+    alert(GL("servid_empty"));
+    return false;
+  }
+  return true;
+}
+
+function ChecksipHearteatInt()
+{
+  var servid = GetCCV("sipHearteatInt");
+  if (servid.length == 0)
+  {
+    alert(GL("servid_empty"));
+    return false;
+  }
+  return true;
+}
+
+function ChecksipMaxHeartbeatTimeout()
+{
+  var servid = GetCCV("sipMaxHeartbeatTimeout");
+  if (servid.length == 0)
+  {
+    alert(GL("servid_empty"));
+    return false;
+  }
+  return true;
+}
+
+function ChecksipZoneCode()
+{
+  var servid = GetCCV("sipZoneCode");
+  if (servid.length == 0)
+  {
+    alert(GL("servid_empty"));
+    return false;
+  }
+  return true;
+}
+
+function ChecksipInModId()
+{
+  var servid = GetCCV("sipInModId");
+  if (servid.length == 0)
+  {
+    alert(GL("servid_empty"));
+    return false;
+  }
+  return true;
+}
+
+function ChecksipChId()
+{
+  var servid = GetCCV("sipChId");
+  if (servid.length == 0)
+  {
+    alert(GL("servid_empty"));
+    return false;
+  }
+  return true;
+}
+
+function ChecksipAlrmId()
+{
+  var servid = GetCCV("sipAlrmId");
+  if (servid.length == 0)
+  {
+    alert(GL("servid_empty"));
+    return false;
+  }
+  return true;
+}
+
+function FixSip()
+{
+  if (GetCCV("flag") == 0)
+  {
+    CTRLARY["sipServID"].Disable(1);
+    CTRLARY["sipDomain"].Disable(1);
+    CTRLARY["sipServAddr"].Disable(1);
+    CTRLARY["sipServPort"].Disable(1);
+    CTRLARY["sipDeviceID"].Disable(1);
+    CTRLARY["sipRegPasswd"].Disable(1);
+    CTRLARY["sipDevicePort"].Disable(1);
+    CTRLARY["sipRegExpire"].Disable(1);
+    CTRLARY["sipHearteatInt"].Disable(1);
+    CTRLARY["sipMaxHeartbeatTimeout"].Disable(1);
+    CTRLARY["sipZoneCode"].Disable(1);
+    CTRLARY["sipInModId"].Disable(1);
+    CTRLARY["sipChId"].Disable(1);
+    CTRLARY["sipChAlrmLevel"].Disable(1);
+    CTRLARY["sipAlrmId"].Disable(1);
+    CTRLARY["sipAlrmLevel"].Disable(1);
+  }
+  else
+  {
+    CTRLARY["sipServID"].Disable(0);
+    CTRLARY["sipDomain"].Disable(0);
+    CTRLARY["sipServAddr"].Disable(0);
+    CTRLARY["sipServPort"].Disable(0);
+    CTRLARY["sipDeviceID"].Disable(0);
+    CTRLARY["sipRegPasswd"].Disable(0);
+    CTRLARY["sipDevicePort"].Disable(0);
+    CTRLARY["sipRegExpire"].Disable(0);
+    CTRLARY["sipHearteatInt"].Disable(0);
+    CTRLARY["sipMaxHeartbeatTimeout"].Disable(0);
+    CTRLARY["sipZoneCode"].Disable(0);
+    CTRLARY["sipInModId"].Disable(0);
+    CTRLARY["sipChId"].Disable(0);
+    CTRLARY["sipChAlrmLevel"].Disable(0);
+    CTRLARY["sipAlrmId"].Disable(0);
+    CTRLARY["sipAlrmLevel"].Disable(0);
+  }
+
+}
+</script>
+<script>
+
+  DW('<div class="layout" id="tabs-1" align="left" >');
+  DW('<table>');
+
+  DW('<tr><td>');
+  WH("flag");
+  DW('</td><td>' + GL("flag") + '</td></tr>');
+
+  DW('<tr><td>' + GL("sipServID") + ': </td><td>');
+  WH("sipServID");
+  DW('</td>');
+  DW('<td width="10px"></td>');
+  DW('<td>' + GL("sipDomain") + ":</td><td>");
+  WH("sipDomain");
+  DW('</td><tr>');
+
+  DW('<tr><td>' + GL("sipServAddr") + ': </td><td>');
+  WH("sipServAddr");
+  DW('</td>');
+  DW('<td></td>');
+  DW('<td>' + GL("sipServPort") + ":</td><td>");
+  WH("sipServPort");
+  DW('</td><tr>');
+
+  DW('<tr><td>' + GL("sipDeviceID") + ': </td><td>');
+  WH("sipDeviceID");
+  DW('</td>');
+  DW('<td></td>');
+  DW('<td>' + GL("sipRegPasswd") + ":</td><td>");
+  WH("sipRegPasswd");
+  DW('</td><tr>');
+
+  DW('<tr><td>' + GL("sipDevicePort") + ': </td><td>');
+  WH("sipDevicePort");
+  DW('</td>');
+  DW('<td></td>');
+  DW('<td>' + GL("sipRegExpire") + ":</td><td>");
+  WH("sipRegExpire");
+  DW('</td><tr>');
+
+  DW('<tr><td>' + GL("sipHearteatInt") + ': </td><td>');
+  WH("sipHearteatInt");
+  DW('</td>');
+  DW('<td></td>');
+  DW('<td>' + GL("sipMaxHeartbeatTimeout") + ":</td><td>");
+  WH("sipMaxHeartbeatTimeout");
+  DW('</td><tr>');
+
+  DW('<tr><td>' + GL("sipZoneCode") + ': </td><td>');
+  WH("sipZoneCode");
+  DW('</td>');
+  DW('<td></td>');
+  DW('<td>' + GL("sipInModId") + ":</td><td>");
+  WH("sipInModId");
+  DW('</td><tr>');
+
+  DW('<tr><td colspan=5>');
+  DW('<div class="headline">' + GL("chinfo") + '</div>');
+  DW('</td><tr>');
+
+  DW('<tr><td>' + GL("sipChId") + ': </td><td>');
+  WH("sipChId");
+  DW('</td>');
+  DW('<td></td>');
+  DW('<td>' + GL("sipChAlrmLevel") + ":</td><td>");
+  WH("sipChAlrmLevel");
+  DW('</td><tr>');
+
+  DW('<tr><td colspan=5>');
+  DW('<div class="headline">' + GL("alarminfo") + '</div>');
+  DW('</td><tr>');
+
+  DW('<tr><td>' + GL("sipAlrmId") + ': </td><td>');
+  WH("sipAlrmId");
+  DW('</td>');
+  DW('<td></td>');
+  DW('<td>' + GL("sipAlrmLevel") + ":</td><td>");
+  WH("sipAlrmLevel");
+  DW('</td><tr>');
+
+
+  DW('<tr><td></td><td></td><td colspan=4 align="right" >');
+  CreateSubmitButton();
+  DW('</td></tr></table>');
+  DW('</div>');
+</script>
+<script>
+   ALC();
+</script>
+</body>
+</html>

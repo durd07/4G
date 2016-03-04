@@ -1,0 +1,118 @@
+
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+		<script>
+      		InitLoad();
+   		 </script>
+		<title>
+			
+		</title>
+    <style type="text/css">
+    .body {
+      font-size: 9px;
+    }
+    td {
+    	font-size: 12px;
+    }
+    </style>
+
+	</head>
+<body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+<script>
+
+CTRLARY = {
+  // day night threshold when ir open
+  dnthresh: new Ctrl_Text("dnthresh", 4, 4, "<%dnthresh%>", "dnthresh=")
+};
+
+</script>
+
+<script>
+
+function Checkdnthresh(min, max)
+{
+  var value = document.getElementById("dnthresh").value;
+  if (value.length == 0)
+  {
+    alert(GL("dnthresh_empty"));
+    document.getElementById("dnthresh").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("dnthresh_inv"));
+    document.getElementById("dnthresh").value = "";
+    document.getElementById("dnthresh").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("dnthresh_num"));
+    document.getElementById("dnthresh").value = "";
+    document.getElementById("dnthresh").focus();
+    return false;
+  }
+  return true;
+}
+
+function MY_ONUNLOAD() {
+    return true;
+}
+
+function MY_ONLOAD() {
+  g_lockLink = false;
+}
+
+  function MY_BEFORE_SUBMIT() {
+    // if (ParaCheck() == false)
+    // {
+    //   alert(GL("para_not_change"));
+    //   ChangeActive();
+    //   return false;
+    // }
+
+
+    if (Checkdnthresh(0, 255) == false)
+      return false;
+    return true;
+  }
+
+  function MY_SUBMIT_OK() {
+    alert(GL("submit_success"));
+    // ReFresh();
+    window.location.reload();
+  }
+
+
+</script>
+
+<script>
+  DW('<div id="hidpagediv">');
+  DW('<table ><tr><td style="vertical-align:text-top;">');
+
+  DW('<div>');
+  DW('<table><tr><td>');
+  DW(GL("dnthresh") + ': </td><td>');
+  WH("dnthresh");
+  DW('</td><td>' + GL("dnthresh_range"));
+  DW('</td></tr>');
+  DW('</table>');
+  DW('</div>');
+
+    //submit button
+  DW('<div class="layout" id="tabs-sub">');
+  DW('<table><tr><td colspan=3 align="center">');
+  CreateSubmitButton();
+  DW('</td></tr></table>');
+  DW('</div>');
+  DW('</td></tr></table>');
+  DW('</div>');
+
+</script>
+</body>
+</html>

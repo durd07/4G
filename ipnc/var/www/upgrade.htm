@@ -1,0 +1,189 @@
+
+  <!-- <iframe name="hiddenIFrame" id="hiddenIFrame" 
+    width="200" height="1" marginwidth="0" marginheight="0" 
+    scrolling="no" frameborder="0" src="hiddfilename.htm" style="visibility:hidden">
+  </iframe> -->
+<html>
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+    <title>
+    </title>
+    <style type="text/css">
+ td {font-size:12px}
+ .btn {
+ 	height:24;
+ }
+ #softupgrade {
+ 	width:70;
+ }
+ </style>
+
+</head>
+<body style="overflow:hidden" onload="MY_ONLOAD()">
+
+<script type="text/javascript">
+  function MY_ONLOAD() { 
+  // alert("onload"); 
+    g_lockLink = false;
+    // document.getElementById("softupgrade").disabled = 0;
+    // document.getElementById("mcuupgrade").disabled = 0;
+    // document.getElementById("MCUFILE").disabled = 0;
+    // document.getElementById("SOFTFILE").disabled = 0;
+
+    var o = '';
+    o += c_iniUrl + GetSetterCmdKV("spaceleft", "1");
+    // alert(o);
+    SendHttp(o, false, CallBack);
+    //g_lockLink = false;
+
+}
+    function Soft_Upgrade(){
+        g_lockLink = true;
+          if (loginauth != 0)
+          {
+            alert(GL("auth_not"));
+            return false;
+          }
+
+            if( document.getElementById('SOFTFILE').value == '' ){
+                alert(GL("file_sel"));
+                return false;
+            }
+            var filename1 = document.getElementById('SOFTFILE').value;
+            var filenamelist = filename1.split('\\');
+
+            var len = filenamelist.length;
+            var filename = filenamelist[len-1];
+
+              var suflist = filename.split('.');
+              len = suflist.length;
+              var suf = suflist[len - 1];
+
+              if (suf != "bin")
+              {
+                alert(GL("filesuf"));
+                document.getElementById('SOFTFILE').value = "";
+                return false;
+              }
+
+            document.getElementById('softupgradeinfo').innerHTML = '' ;
+            document.getElementById('softupgradeinfo').innerHTML = '数据上传中，请稍候……' ;
+            document.getElementById("softupgrade").disabled = 1;
+            // document.getElementById("mcuupgrade").disabled = 1;
+            document.getElementById('softform').submit();
+    }
+
+    function CallBack()
+    {
+      reloadCount = 3;
+       if (g_SubmitHttp.readyState == 4) {
+          if (g_SubmitHttp.status == 200) {
+          var txt = g_SubmitHttp.responseText;
+          // alert(txt);
+          if (txt.indexOf("NG") >= 0) {
+              document.getElementById('softupgradeinfo').innerHTML = GL("no_space") ;
+              window.flag = 0;
+              document.getElementById("softupgrade").disabled = 1;
+              document.getElementById("SOFTFILE").disabled = 1;
+
+              // alert(window.flag);
+              // Wait();         
+            }
+            else
+            {
+              window.flag = 1;
+              document.getElementById("softupgrade").disabled = 0;
+              document.getElementById("SOFTFILE").disabled = 0;
+              // Wait();
+            }
+              
+          }
+          else
+          {
+            document.getElementById('softupgradeinfo').innerHTML = GL("no_space") ;
+            document.getElementById("softupgrade").disabled = 1;
+            document.getElementById("SOFTFILE").disabled = 1;
+
+            window.flag = 0;
+            // Wait();
+          }
+        }
+    }
+    function Wait()
+      {
+
+          g_lockLink = true;
+          reloadCount--;
+          if (reloadCount>0)
+          {
+              timerID = setTimeout("Wait()", 1000);
+          }          
+          else
+          {
+            g_lockLink = false;
+            // alert(window.flag);
+            if (window.flag == 0)
+              window.location = "upgrade.htm";
+            else if (window.flag == 1)
+              document.getElementById('softform').submit();
+          }
+      }
+function WriteGroupMcu(titlekey)
+{
+//alert('WriteGroup');
+    var o = '';
+    //o += '<h3>' + GL(titlekey) + '</h3>';
+    o += '<fieldset id="GroupContainer">';
+    o += '<legend>' + GL(titlekey) + '</legend>';
+    //alert(o);
+    DW(o);
+}
+
+</script>  
+<script>
+  WriteNetPH("upgrade"); //add by zdy, 2012-11-20
+  WriteGroupMcu("soft_upgrade");
+
+  DW('<div id="supgrade">');
+</script>
+        <form method="post" id="softform" name="softform" enctype="multipart/form-data" action="/cgi-bin/softuploadcgi.cgi">
+            选择文件：<input type="file" name="SOFTFILE" id="SOFTFILE" class="btn">
+            <input type="button" id="softupgrade" onclick="Soft_Upgrade()" value="升级" class="btn"><br>
+            <center>
+                <div id="softupgradeinfo"></div>
+            </center>
+        </form>
+<script>
+// DW('</div>');
+//     DW('</fieldset>');
+//     DW('<br>');
+
+// WriteGroupMcu("mcu_upgrade");
+
+// DW('<div  id="mcupgrade">');
+</script>
+<!--         <FORM METHOD="POST" id="mcuform" name="mcuform" ENCTYPE="multipart/form-data" ACTION="/mcuuploadcgi.cgi">
+            选择文件：<INPUT TYPE="FILE" NAME="MCUFILE" id="MCUFILE" class="btn">
+            <INPUT TYPE="button" id="mcuupgrade" onclick="Mcu_Upgrade()" VALUE="升级" class="btn"><br>
+            <center>
+                <div id="mcuupgradeinfo"></div>
+            </center>
+        </FORM> -->
+<script>
+DW('</div>');
+    DW('</fieldset>');
+    DW('<br>');
+    WriteNetPB();
+    ALC();
+
+</script>
+</body>
+</html>
+
+   

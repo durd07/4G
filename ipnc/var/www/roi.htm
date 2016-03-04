@@ -1,0 +1,1192 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script>
+            InitLoad();
+         </script>
+        <title>
+            
+        </title>
+    <style type="text/css">
+    body {
+		margin: 0;		
+		height:100%;
+		min-width:1200px;
+		min-height:580px;
+		font-size:15px;
+		color: white;
+		background:#999;
+	 
+    }
+    td {
+      font-size: 16px;
+	  color: white;
+    }
+    #rightDiv {
+      position:absolute;
+      left:530px;
+      top:0px;
+    }
+    .floatDiv {
+      position:absolute;
+      border:1px solid #999;
+      filter:alpha(opacity=0);
+    }
+    </style>
+
+    </head>
+<body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+<script>
+  /*add by dsl, 2013-9-13*/
+  var bgImage = "D:\\BackgroundImage.png";
+  var sleepTimer;
+  var index = -1;
+  //var enable1 = "<%roienable%>";
+  var enable1 = "<%regionofinterestenable1%>_<%regionofinterestenable2%>_<%regionofinterestenable3%>";
+  // alert(enable1);
+  var enable = enable1.split('_');
+  
+  // alert(enable);
+
+  var roi_x = ["<%str1x1%>", "<%str1x2%>", "<%str1x3%>"];
+  var roi_y = ["<%str1y1%>", "<%str1y2%>", "<%str1y3%>"];
+  var roi_w = ["<%str1w1%>", "<%str1w2%>", "<%str1w3%>"];
+  var roi_h = ["<%str1h1%>", "<%str1h2%>", "<%str1h3%>"];
+  /*var x1 = "<%str1x1%>";
+  var y1 = "<%str1y1%>";
+  var w1 = "<%str1w1%>";
+  var h1 = "<%str1h1%>";
+  var x2 = "<%str1x2%>";
+  var y2 = "<%str1y2%>";
+  var w2 = "<%str1w2%>";
+  var h2 = "<%str1h2%>";
+  var x3 = "<%str1x3%>";
+  var y3 = "<%str1y3%>";
+  var w3 = "<%str1w3%>";
+  var h3 = "<%str1h3%>";*/
+  /*end added, dsl, 2013-9-13*/
+// alert(v_roix);
+  CTRLARY = {
+    roienable1: new Ctrl_Check("roienable1", enable[0], "regionofinterestenable1=", "FixRoi1()"),
+    roix1: new Ctrl_Text("roix1", 5, 5, "<%str1x1%>", "str1x1="),
+    roiy1: new Ctrl_Text("roiy1", 5, 5, "<%str1y1%>", "str1y1="),
+    roiw1: new Ctrl_Text("roiw1", 5, 5, "<%str1w1%>", "str1w1="),
+    roih1: new Ctrl_Text("roih1", 5, 5, "<%str1h1%>", "str1h1="),
+    roienable2: new Ctrl_Check("roienable2", enable[1], "regionofinterestenable2=", "FixRoi2()"),
+    roix2: new Ctrl_Text("roix2", 5, 5, "<%str1x2%>", "str1x2="),
+    roiy2: new Ctrl_Text("roiy2", 5, 5, "<%str1y2%>", "str1y2="),
+    roiw2: new Ctrl_Text("roiw2", 5, 5, "<%str1w2%>", "str1w2="),
+    roih2: new Ctrl_Text("roih2", 5, 5, "<%str1h2%>", "str1h2="),
+    roienable3: new Ctrl_Check("roienable3", enable[2], "regionofinterestenable3=", "FixRoi3()"),
+    roix3: new Ctrl_Text("roix3", 5, 5, "<%str1x3%>", "str1x3="),
+    roiy3: new Ctrl_Text("roiy3", 5, 5, "<%str1y3%>", "str1y3="),
+    roiw3: new Ctrl_Text("roiw3", 5, 5, "<%str1w3%>", "str1w3="),
+    roih3: new Ctrl_Text("roih3", 5, 5, "<%str1h3%>", "str1h3=")
+  };
+
+  function FixRoi1()
+  {
+    if (GetCCV("roienable1") == 0)
+      document.getElementById("clear_1").disabled = 1;
+    else
+      document.getElementById("clear_1").disabled = 0;     
+  }
+
+  function FixRoi2()
+  {
+    if (GetCCV("roienable2") == 0)
+      document.getElementById("clear_2").disabled = 1;
+    else
+      document.getElementById("clear_2").disabled = 0;
+  }
+  function FixRoi3()
+  {
+    if (GetCCV("roienable3") == 0)
+      document.getElementById("clear_3").disabled = 1;
+    else
+      document.getElementById("clear_3").disabled = 0;      
+  }
+
+  function DisableRoi()
+  {
+    document.getElementById("roix1").disabled = 1;
+    document.getElementById("roiy1").disabled = 1;
+    document.getElementById("roiw1").disabled = 1;
+    document.getElementById("roih1").disabled = 1;
+    document.getElementById("roix2").disabled = 1;
+    document.getElementById("roiy2").disabled = 1;
+    document.getElementById("roiw2").disabled = 1;
+    document.getElementById("roih2").disabled = 1;
+    document.getElementById("roix3").disabled = 1;
+    document.getElementById("roiy3").disabled = 1;
+    document.getElementById("roiw3").disabled = 1;
+    document.getElementById("roih3").disabled = 1;
+  }
+
+  function MY_ONUNLOAD() {
+   StopActiveX();
+  }
+
+  function MY_ONLOAD() {
+    g_lockLink = false;
+  //  StopActiveX();
+    StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+    FixRoi1();
+    FixRoi2();
+    FixRoi3();
+    DisableRoi();
+    sleepTimer = setTimeout(showInterestedArea, 1500);
+  }
+
+function CheckStrX()
+{
+  return true;
+}
+
+function SubmitPa()
+{
+  var res = true;
+
+  if (MY_BEFORE_SUBMIT() == false)
+    return false;
+    for (var key in CTRLARY) {
+      var obj = CTRLARY[key];
+      if (obj.active) {
+        res = obj.IsPass();
+        if (!res) {
+          return res;
+        }
+      }
+    }
+  var str = '';
+  for (var key in CTRLARY) {
+    str += GetSetterCmd(CTRLARY[key], GetCtrlValue(CTRLARY, key));
+  } 
+  
+  // alert(str);
+  SendHttp(c_iniUrl + str, false);
+  MY_SUBMIT_OK();
+}
+
+function RoiRangeSplit()
+{
+  var roirange = ROIRange();
+  var roirange1 = roirange.split('|');
+  var roirange = roirange1[0];
+  // alert(roirange);
+  var roirange1 = roirange.split('&');
+    // alert(roirange1);
+    document.getElementById("roix").value = roirange1[1];
+    document.getElementById("roiy").value = roirange1[2];
+    document.getElementById("roiw").value = roirange1[3];
+    document.getElementById("roih").value = roirange1[4];
+
+}
+
+function CheckX1(min, max)
+{
+  var value = document.getElementById("roix1").value;
+  if (value.length == 0)
+  {
+    alert(GL("roix1_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("roix1_inv"));
+    document.getElementById("roix1").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("roix1_num"));
+    document.getElementById("roix1").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function CheckY1(min, max)
+{
+  var value = document.getElementById("roiy1").value;
+  if (value.length == 0)
+  {
+    alert(GL("roiy1_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("roiy1_inv"));
+    document.getElementById("roiy1").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("roiy1_num"));
+    document.getElementById("roiy1").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function CheckW1(min, max)
+{
+  var value = document.getElementById("roiw1").value;
+  if (value.length == 0)
+  {
+    alert(GL("roiw1_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("roiw1_inv"));
+    document.getElementById("roiw1").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("roiw1_num"));
+    document.getElementById("roiw1").value = "";
+    return false;
+  }
+
+  return true;
+}
+function CheckH1(min, max)
+{
+  var value = document.getElementById("roih1").value;
+  if (value.length == 0)
+  {
+    alert(GL("roih1_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("roih1_inv"));
+    document.getElementById("roih1").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("roih1_num"));
+    document.getElementById("roih1").value = "";
+    return false;
+  }
+
+  return true;
+}
+function CheckX2(min, max)
+{
+  var value = document.getElementById("roix2").value;
+  if (value.length == 0)
+  {
+    alert(GL("roix2_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("roix2_inv"));
+    document.getElementById("roix2").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("roix2_num"));
+    document.getElementById("roix2").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function CheckY2(min, max)
+{
+  var value = document.getElementById("roiy2").value;
+  if (value.length == 0)
+  {
+    alert(GL("roiy2_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("roiy2_inv"));
+    document.getElementById("roiy2").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("roiy2_num"));
+    document.getElementById("roiy2").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function CheckW2(min, max)
+{
+  var value = document.getElementById("roiw2").value;
+  if (value.length == 0)
+  {
+    alert(GL("roiw2_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("roiw2_inv"));
+    document.getElementById("roiw2").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("roiw2_num"));
+    document.getElementById("roiw2").value = "";
+    return false;
+  }
+
+  return true;
+}
+function CheckH2(min, max)
+{
+  var value = document.getElementById("roih2").value;
+  if (value.length == 0)
+  {
+    alert(GL("roih2_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("roih2_inv"));
+    document.getElementById("roih2").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("roih2_num"));
+    document.getElementById("roih2").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function CheckX3(min, max)
+{
+  var value = document.getElementById("roix3").value;
+  if (value.length == 0)
+  {
+    alert(GL("roix3_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("roix3_inv"));
+    document.getElementById("roix3").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("roix3_num"));
+    document.getElementById("roix3").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function CheckY3(min, max)
+{
+  var value = document.getElementById("roiy3").value;
+  if (value.length == 0)
+  {
+    alert(GL("roiy3_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("roiy3_inv"));
+    document.getElementById("roiy3").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("roiy3_num"));
+    document.getElementById("roiy3").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function CheckW3(min, max)
+{
+  var value = document.getElementById("roiw3").value;
+  if (value.length == 0)
+  {
+    alert(GL("roiw3_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("roiw3_inv"));
+    document.getElementById("roiw3").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("roiw3_num"));
+    document.getElementById("roiw3").value = "";
+    return false;
+  }
+
+  return true;
+}
+function CheckH3(min, max)
+{
+  var value = document.getElementById("roih3").value;
+  if (value.length == 0)
+  {
+    alert(GL("roih3_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("roih3_inv"));
+    document.getElementById("roih3").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("roih3_num"));
+    document.getElementById("roih3").value = "";
+    return false;
+  }
+
+  return true;
+}
+
+function ParaCheck()
+{
+  var flag = false;
+
+  var roienable1 = GetCCV("roienable1");
+  if (roienable1 == enable[0])
+  {
+    CTRLARY["roienable1"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var roienable2 = GetCCV("roienable2");
+  if (roienable2 == enable[1])
+  {
+    CTRLARY["roienable2"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var roienable3 = GetCCV("roienable3");
+  if (roienable3 == enable[2])
+  {
+    CTRLARY["roienable3"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+  return flag;
+}
+
+  function MY_BEFORE_SUBMIT() {
+
+    // if (GetCCV("roienable1") == 1)
+    // {
+    //   if (CheckX1(0, 1920) == false)
+    //     return false;
+
+    //   if (CheckY1(0, 1080) == false)
+    //     return false;
+
+    //   if (CheckW1(0, 1920) == false)
+    //     return false;
+
+    //   if (CheckH1(0, 1080) == false)
+    //     return false;
+    // }
+    // if (GetCCV("roienable2") == 1)
+    // {
+    //   if (CheckX2(0, 1920) == false)
+    //     return false;
+
+    //   if (CheckY2(0, 1080) == false)
+    //     return false;
+
+    //   if (CheckW2(0, 1920) == false)
+    //     return false;
+
+    //   if (CheckH2(0, 1080) == false)
+    //     return false;
+    // }
+    // if (GetCCV("roienable3") == 1)
+    // {
+    //   if (CheckX3(0, 1920) == false)
+    //     return false;
+
+    //   if (CheckY3(0, 1080) == false)
+    //     return false;
+
+    //   if (CheckW3(0, 1920) == false)
+    //     return false;
+
+    //   if (CheckH3(0, 1080) == false)
+    //     return false;
+    // }
+
+    if (ParaCheck() == false)
+    {
+      alert(GL("para_not_change"));
+      ChangeActive();
+      return false;
+    }
+
+    var i = 0;
+    if (GetCCV("roienable1") == 1)
+      i++;
+    if (GetCCV("roienable2") == 1)
+      i++;
+    if (GetCCV("roienable3") == 1)
+      i++;
+
+    // alert(i);
+    // SetCCV("roienable1", i);
+    document.getElementById("roienable1").value = i;
+    // alert(document.getElementById("roienable1").value);
+    CheckRoiRange();
+    return true;
+  }
+
+  function CheckRoiRange()
+  {
+    var roix1 = GetCCV("roix1");
+    var roiy1 = GetCCV("roiy1");
+    var roiw1 = GetCCV("roiw1");
+    var roih1 = GetCCV("roih1");
+    var roix2 = GetCCV("roix2");
+    var roiy2 = GetCCV("roiy2");
+    var roiw2 = GetCCV("roiw2");
+    var roih2 = GetCCV("roih2");
+    var roix3 = GetCCV("roix3");
+    var roiy3 = GetCCV("roiy3");
+    var roiw3 = GetCCV("roiw3");
+    var roih3 = GetCCV("roih3");
+
+    var resnum = "<%videocodecres%>";
+
+    if (resnum == 0)
+    {
+      var roi2x1 = parseInt(720*(parseInt(roix1))/1920);
+      var roi2y1 = parseInt(480*(parseInt(roiy1))/1080);
+      var roi2w1 = parseInt(720*(parseInt(roiw1))/1920);
+      var roi2h1 = parseInt(480*(parseInt(roih1))/1080);
+
+      var roi2x2 = parseInt(720*(parseInt(roix2))/1920);
+      var roi2y2 = parseInt(480*(parseInt(roiy2))/1080);
+      var roi2w2 = parseInt(720*(parseInt(roiw2))/1920);
+      var roi2h2 = parseInt(480*(parseInt(roih2))/1080);
+
+      var roi2x3 = parseInt(720*(parseInt(roix3))/1920);
+      var roi2y3 = parseInt(480*(parseInt(roiy3))/1080);
+      var roi2w3 = parseInt(720*(parseInt(roiw3))/1920);
+      var roi2h3 = parseInt(480*(parseInt(roih3))/1080);
+    }
+    else {
+      var roi2x1 = roix1;
+      var roi2y1 = roiy1;
+      var roi2w1 = roiw1;
+      var roi2h1 = roih1;
+      var roi2x2 = roix2;
+      var roi2y2 = roiy2;
+      var roi2w2 = roiw2;
+      var roi2h2 = roih2;
+      var roi2x3 = roix3;
+      var roi2y3 = roiy3;
+      var roi2w3 = roiw3;
+      var roi2h3 = roih3;
+    }
+    // alert(roi2x1);
+    // alert(roi2y1);
+    var o = '';
+     o += c_iniUrl;
+     o += GetSetterCmdKV("str2x1", roi2x1);
+     o += GetSetterCmdKV("str2y1", roi2y1);
+     o += GetSetterCmdKV("str2w1", roi2w1);
+     o += GetSetterCmdKV("str2h1", roi2h1);
+     o += GetSetterCmdKV("str2x2", roi2x2);
+     o += GetSetterCmdKV("str2y2", roi2y2);
+     o += GetSetterCmdKV("str2w2", roi2w2);
+     o += GetSetterCmdKV("str2h2", roi2h2);
+     o += GetSetterCmdKV("str2x3", roi2x3);
+     o += GetSetterCmdKV("str2y3", roi2y3);
+     o += GetSetterCmdKV("str2w3", roi2w3);
+     o += GetSetterCmdKV("str2h3", roi2h3);
+
+     o += GetSetterCmdKV("str3x1", roix1);
+     o += GetSetterCmdKV("str3y1", roiy1);
+     o += GetSetterCmdKV("str3w1", roiw1);
+     o += GetSetterCmdKV("str3h1", roih1);
+     o += GetSetterCmdKV("str3x2", roix2);
+     o += GetSetterCmdKV("str3y2", roiy2);
+     o += GetSetterCmdKV("str3w2", roiw2);
+     o += GetSetterCmdKV("str3h2", roih2);
+     o += GetSetterCmdKV("str3x3", roix3);
+     o += GetSetterCmdKV("str3y3", roiy3);
+     o += GetSetterCmdKV("str3w3", roiw3);
+     o += GetSetterCmdKV("str3h3", roih3);
+    
+    // alert(o);
+    SendHttp(o, false);
+
+  }
+
+  function MY_SUBMIT_OK() {
+    //ChangeContent(null, true);
+    var i = 0;
+    if (GetCCV("roienable1") == 1)
+      i++;
+    if (GetCCV("roienable2") == 1)
+      i++;
+    if (GetCCV("roienable3") == 1)
+      i++;
+
+    // alert(i);
+    var roienableval = GetCCV("roienable1") + '_' + GetCCV("roienable2") + '_' + GetCCV("roienable3");
+
+    var o = '';
+    o += c_iniUrl;
+    o += GetSetterCmd(CTRLARY["roienable1"], GetCCV("roienable1"));
+    o += GetSetterCmd(CTRLARY["roienable2"], GetCCV("roienable2"));
+    o += GetSetterCmd(CTRLARY["roienable3"], GetCCV("roienable3"));
+    o += GetSetterCmdKV("roienable", roienableval);
+    // alert(o);
+
+    SendHttp(o , false);
+    alert(GL("submit_success"));
+
+    reloadcount = 2;
+    wait();
+   // window.location.reload();
+  }
+
+function wait()
+{
+  reloadcount--;
+  if (reloadcount > 0)
+  {
+    timerID =  setTimeout("wait()", 1000);
+  }
+  else
+  {
+    window.location.reload();
+  }
+
+}
+  function RoiClear1(){
+    if (GetCCV("roienable1") == 1)
+    {
+      document.getElementById("roix1").value = 0;
+      document.getElementById("roiy1").value = 0;
+      document.getElementById("roiw1").value = 0;
+      document.getElementById("roih1").value = 0;
+      clearInterestedArea(1);
+    }    
+  }
+
+  function RoiClear2(){
+    if (GetCCV("roienable2") == 1)
+    {
+      document.getElementById("roix2").value = 0;
+      document.getElementById("roiy2").value = 0;
+      document.getElementById("roiw2").value = 0;
+      document.getElementById("roih2").value = 0;
+      clearInterestedArea(2);
+    }    
+  }
+
+  function RoiClear3(){
+    if (GetCCV("roienable3") == 1)
+    {
+      document.getElementById("roix3").value = 0;
+      document.getElementById("roiy3").value = 0;
+      document.getElementById("roiw3").value = 0;
+      document.getElementById("roih3").value = 0;
+      clearInterestedArea(3);
+    }    
+  }
+
+  /*add by dsl, 2013-9-13*/
+   function showInterestedArea()
+  {
+    convertNum();
+    vlcTakeSnap();
+    setBackground();
+    initInterestedArea();
+
+  }
+
+  function convertNum()
+  {
+    for(var i = 0; i < 3; i++) {
+      roi_x[i] = serverXToLocal(roi_x[i]);
+      roi_y[i] = serverYToLocal(roi_y[i]);
+      roi_w[i] = serverWToLocal(roi_w[i]);
+      roi_h[i] = serverHToLocal(roi_h[i]);
+    }
+  }
+  function vlcTakeSnap()
+  {
+    clearTimeout(sleepTimer);
+    var obj = GE(AxID);
+    if (obj != null)
+    {
+      try
+      {
+        obj.takeSnapshot(bgImage);
+      }
+      catch (e)    
+      {
+        alert("Take Snap Error!");
+      }
+    }
+  }
+
+   function setBackground()
+  {  
+    document.getElementById("Area").style.filter="progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + bgImage + "',sizingMethod='scale')";
+    document.getElementById("Area").onmousedown = mouseDown; 
+    document.getElementById("Area").onmouseup  = mouseUp;
+  }
+
+  function initInterestedArea()
+  {
+    var i = 0;
+    for (i = 0; i < 3; i++) {
+      if(document.getElementById("roienable" + (i+1)).checked == true){
+        //alert(i + "checked;x=" + roi_x[i]+";y="+roi_y[i]+";w="+roi_w[i]+";h="+roi_h[i]);
+      //if (GetCCV("roienable" + (i+1)) == 1)) {
+        //document.getElementById('div' + i).className = "selected";
+        document.getElementById('div' + i).style.left = roi_x[i];
+        document.getElementById('div' + i).style.top = roi_y[i];
+        document.getElementById('div' + i).style.width = roi_w[i];
+        document.getElementById('div' + i).style.height = roi_h[i];
+        document.getElementById('div' + i).style.filter="alpha(opacity=50)";
+      }
+        
+    }
+  }
+
+  function clearInterestedArea(val)
+  {
+    if (val == 1)
+    {
+      if(document.getElementById("roienable1").checked == true)
+      {
+        document.getElementById('div0').style.left = 0;
+        document.getElementById('div0').style.top = 0;
+        document.getElementById('div0').style.width = 0;
+        document.getElementById('div0').style.height = 0;
+        document.getElementById('div0').style.filter="alpha(opacity=0)";
+        roi_x[0] = roi_y[0] = roi_w[0] = roi_h[0] = 0;
+        //selectArea(document.getElementById("div0"));
+        index = 0;
+      }
+    } else if (val == 2)
+    {
+      if(document.getElementById("roienable2").checked == true)
+      {
+        document.getElementById('div1').style.left = 0;
+        document.getElementById('div1').style.top = 0;
+        document.getElementById('div1').style.width = 0;
+        document.getElementById('div1').style.height = 0;
+        document.getElementById('div1').style.filter="alpha(opacity=0)";
+        roi_x[1] = roi_y[1] = roi_w[1] = roi_h[1] = 0;
+        //selectArea(document.getElementById("div1"));
+        index = 1;
+      }
+    } else if (val == 3)
+    {
+      if(document.getElementById("roienable3").checked == true)
+      {
+        document.getElementById('div2').style.left = 0;
+        document.getElementById('div2').style.top = 0;
+        document.getElementById('div2').style.width = 0;
+        document.getElementById('div2').style.height = 0;
+        document.getElementById('div2').style.filter="alpha(opacity=0)";
+        roi_x[2] = roi_y[2] = roi_w[2] = roi_h[2] = 0;
+       // selectArea(document.getElementById("div2"));
+       index = 2;
+      }
+    }
+    
+  }
+
+
+  function mouseDown(ev)
+  {
+    if(index==-1)
+      return;
+    ev = ev || window.event; 
+    var mousePos = mousePosition(ev);
+    roi_x[index] = mousePos.x;
+    roi_y[index] = mousePos.y;
+     document.getElementById("roix" + (1+index)).value = localXToServer(roi_x[index]);
+    document.getElementById("roiy" + (1+index)).value = localYToServer(roi_y[index]);
+    document.onmousemove = mouseMove;
+
+    
+  } 
+  function mouseUp(ev)
+  {
+    if(index==-1)
+      return;
+    ev = ev || window.event; 
+    var mousePos = mousePosition(ev);
+    roi_w[index] = mousePos.x - roi_x[index];
+    roi_h[index] = mousePos.y - roi_y[index];
+    document.getElementById("roiw" + (1+index)).value = localWToServer(roi_w[index]);
+    document.getElementById("roih" + (1+index)).value = localHToServer(roi_h[index]);
+    document.onmousemove = '';
+    //alert("x00=" + x00 +";y00=" + y00 + ";x01=" + x01 + ";y01=" + y01);
+  } 
+
+  function mouseMove(ev){ 
+    if(index==-1)
+      return;
+    ev = ev || window.event; 
+    var mousePos = mousePosition(ev); 
+    //xxx document.getElementById('div1').value = mousePos.x; 
+    //xxx document.getElementById('div2').value = mousePos.y; 
+    
+     /* add by dsl, 2013-12-2 */
+    /* FIXME: this size should be the same to the size of #Area*/
+    if (mousePos.x > 520  || mousePos.y > 303) {
+      document.onmousemove = '';
+      roi_x[index] = 0;
+      roi_y[index] = 0;
+      roi_w[index] = 0;
+      roi_h[index] = 0;
+      document.getElementById("roix" + (1+index)).value = 0;
+      document.getElementById("roiy" + (1+index)).value = 0;
+      document.getElementById("roiw" + (1+index)).value = 0;
+      document.getElementById("roih" + (1+index)).value = 0;
+      alert(GL("mouse_out_of_range"));
+      return;
+    }
+
+    /* end added, dsl, 2013-12-2 */
+
+    if(mousePos.y<roi_y[index] || mousePos.x<roi_x[index]) {
+      document.onmousemove = '';
+      roi_x[index] = 0;
+      roi_y[index] = 0;
+      roi_w[index] = 0;
+      roi_h[index] = 0;
+      document.getElementById("roix" + (1+index)).value = 0;
+      document.getElementById("roiy" + (1+index)).value = 0;
+      document.getElementById("roiw" + (1+index)).value = 0;
+      document.getElementById("roih" + (1+index)).value = 0;
+      alert(GL("mouse_range"));
+      return;
+    }
+    document.getElementById('div' + index).style.top= roi_y[index];
+    document.getElementById('div' + index).style.left= roi_x[index];
+    roi_w[index] = mousePos.x - roi_x[index];
+    roi_h[index] = mousePos.y - roi_y[index];
+    document.getElementById('div' + index).style.height = roi_h[index];
+    document.getElementById('div' + index).style.width = roi_w[index];
+    document.getElementById('div' + index).style.filter="alpha(opacity=50)";
+
+    //document.getElementById("roiw" + (1+index)).value = localWToServer(roi_w[index]);
+    //document.getElementById("roih" +(1+index)).value = localHToServer(roi_h[index]);
+  } 
+
+  function mousePosition(ev){ 
+    if(ev.pageX || ev.pageY){ 
+      return {x:ev.pageX, y:ev.pageY}; 
+    } 
+    return { 
+      x:ev.clientX + document.body.scrollLeft - document.body.clientLeft, 
+      y:ev.clientY + document.body.scrollTop - document.body.clientTop 
+    }; 
+  } 
+
+  function checkStateChanged(id)
+  {
+   /* if(id.checked == true){
+      alert("checked");
+    } else {
+      alert("unchecked");
+    }*/
+    if(id == document.getElementById("roienable1")) {
+      index = 0;
+    } else if(id == document.getElementById("roienable2")) {
+      index = 1;
+    } else {
+      index = 2;
+    }
+    if(id.checked==true) {
+      showArea();
+    } else {
+      hideArea();
+      index = -1;
+    }
+
+
+    /*  following add by zdy, 2013-09-13  */
+    if (id == document.getElementById("roienable1"))
+    {
+      var value = GetCCV("roienable1");
+      if (value == 1)
+        document.getElementById("clear_1").disabled = 0;
+      else
+        document.getElementById("clear_1").disabled = 1;
+    }
+
+    if (id == document.getElementById("roienable2"))
+    {
+      var value = GetCCV("roienable2");
+      if (value == 1)
+        document.getElementById("clear_2").disabled = 0;
+      else
+        document.getElementById("clear_2").disabled = 1;
+    }
+
+    if (id == document.getElementById("roienable3"))
+    {
+      var value = GetCCV("roienable3");
+      if (value == 1)
+        document.getElementById("clear_3").disabled = 0;
+      else
+        document.getElementById("clear_3").disabled = 1;
+    }
+    /*  end added, zdy, 2013-09-13  */
+    /*if(document.getElementById("roienable1").checked!=true && 
+      document.getElementById("roienable2").checked!=true &&
+      document.getElementById("roienable3").checked!=true){
+      index = -1
+    }*/
+  }
+
+  function showArea()
+  {
+    document.getElementById('div' + index).style.top = roi_y[index];
+    document.getElementById('div' + index).style.left = roi_x[index];
+    document.getElementById('div' + index).style.height = roi_h[index];
+    document.getElementById('div' + index).style.width = roi_w[index];
+    document.getElementById('div' + index).style.filter="alpha(opacity=50)";
+  }
+  function hideArea()
+  {
+    document.getElementById('div' + index).style.filter="alpha(opacity=0)";
+  }
+  function selectArea(id)
+  {
+    var mIndex = -1;
+    for(var i = 0; i < 3; i++) {
+      if(id==document.getElementById("div" + i)){
+        if(document.getElementById('roienable' + (i + 1)).checked == true) {        
+          index = i;
+          return;
+        } else {
+          mIndex = i;         
+          break;
+        }
+      }
+    }
+
+    for(var i = 0; i < mIndex; i++) {
+      if(document.getElementById('roienable' + (i + 1)).checked == true) {
+        if(roi_x[i] == roi_x[mIndex] && roi_y[i] == roi_y[mIndex] && roi_w[i] == roi_w[mIndex] 
+                && roi_h[i] == roi_h[mIndex]){
+          index = i;
+          return;
+        }         
+      }
+    }
+
+    index = -1;
+  }
+
+  function localXToServer(localx)
+  {
+    return Math.round(1920*localx/520);
+  }
+  function localYToServer(localy){
+    return Math.round(1080*localy/303);
+  }
+  function localWToServer(localw)
+  {
+    return Math.round(1920*localw/520);
+  }
+  function localHToServer(localh){
+    return Math.round(1080*localh/303);
+  }
+  function serverXToLocal(serverx)
+  {
+    return Math.round(520*serverx/1920);
+  }
+  function serverYToLocal(servery)
+  {
+    return Math.round(303*servery/1080);
+  }
+  function serverWToLocal(serverw)
+  {
+    return Math.round(520*serverw/1920);
+  }
+  function serverHToLocal(serverh)
+  {
+    return Math.round(303*serverh/1080);
+  }
+  /*end added, dsl, 2013-9-13*/
+  </script>
+
+  <script>
+  DW('<div id="motiondiv">');
+  DW('<table cellpadding="0" cellspacing="2"><tr><td style="vertical-align:text-top;">');
+  
+  DW('<div class="videoview1">');
+  WriteImgtuneVideoHidden();
+  DW('</div>');
+  </script>
+
+  <div width="520" height="303">
+  <table id="Area" name="Area" style="left:0px;top:0px;" width="520" height="303" border="0" style="position:absolute;">
+  <tr>
+  <td></td>
+  </tr>
+  </table>
+  </div>
+  </td>
+
+  <div class="floatDiv" id="div0" onclick="selectArea(this)" style=" filter:alpha(opacity=0);height=0;width=0;background:#f00;">1</div>
+  <div class="floatDiv" id="div1" onclick="selectArea(this)" style=" filter:alpha(opacity=0);height=0;width=0;background:#f00;">2</div>
+  <div class="floatDiv" id="div2" onclick="selectArea(this)" style=" filter:alpha(opacity=0);height=0;width=0;background:#f00;">3</div>
+
+
+  <script>
+  DW('<td>');
+
+  DW('<div id="rightDiv" class="layout" id="tabs-roi" >');
+  DW('<table>');
+  // DW("<tr><td colspan=2 align=center>" + GetImageLeftVideo(true) + "</td></tr>");
+
+  DW('<tr><td>');
+
+  DW('<div id="roi1">');
+  DW('<table>');
+
+  DW('<tr><td colspan=2>');
+  WH("roienable1");
+  DW(GL("roienable1") + '&nbsp;&nbsp;');
+  // DW('</td><td>');
+  DW('<input type="button" id="clear_1" value="' + GL("clear_roi1") + '" class="m1" onClick="RoiClear1()" style="width:90px;height:20px">');
+  DW('</td></tr>');
+
+  /*add by dsl, 2013-9-13*/
+  document.getElementById("roienable1").onclick= function() 
+    {
+      checkStateChanged(this);
+    };
+  /*end added, dsl, 2013-9-13*/
+
+
+  DW('<tr><td>X: ');
+  WH("roix1");
+  DW('</td><td>Y: ');
+  WH("roiy1");
+  DW('</td></tr>');
+  DW('<tr><td>W: ');
+  WH("roiw1");
+  DW('</td><td>H: ');
+  WH("roih1");
+  DW('</td></tr>');
+  DW('</table>');
+  DW('</div>');
+
+  DW('<div id="roi2">');
+  DW('<table>');
+
+  DW('<tr><td colspan=2>');
+  WH("roienable2");
+  DW(GL("roienable2") + '&nbsp;&nbsp;');
+  // DW('</td><td>');
+  DW('<input type="button" id="clear_2" value="' + GL("clear_roi2") + '" class="m1" onClick="RoiClear2()" style="width:90px;height:20px">');
+  DW('</td></tr>');
+
+  /*add by dsl, 2013-9-13*/
+  document.getElementById("roienable2").onclick= function() 
+    {
+      checkStateChanged(this);
+    };
+  /*end added, dsl, 2013-9-13*/
+
+  DW('<tr><td>X: ');
+  WH("roix2");
+  DW('</td><td>Y: ');
+  WH("roiy2");
+  DW('</td></tr>');
+  DW('<tr><td>W: ');
+  WH("roiw2");
+  DW('</td><td>H: ');
+  WH("roih2");
+  DW('</td></tr>');
+  DW('</table>');
+  DW('</div>');
+
+  DW('<div id="roi3">');
+  DW('<table>');
+
+  DW('<tr><td colspan=2>');
+  WH("roienable3");
+  DW(GL("roienable3") + '&nbsp;&nbsp;');
+  // DW('</td><td>');
+  DW('<input type="button" id="clear_3" value="' + GL("clear_roi3") + '" class="m1" onClick="RoiClear3()" style="width:90px;height:20px">');
+  DW('</td></tr>');
+
+  /*add by dsl, 2013-9-13*/
+  document.getElementById("roienable3").onclick= function() 
+    {
+      checkStateChanged(this);
+    };
+  /*end added, dsl, 2013-9-13*/
+
+  DW('<tr><td>X: ');
+  WH("roix3");
+  DW('</td><td>Y: ');
+  WH("roiy3");
+  DW('</td></tr>');
+
+  DW('<tr><td>W: ');
+  WH("roiw3");
+  DW('</td><td>H: ');
+  WH("roih3");
+  DW('</td></tr>');
+  DW('</table>');
+  DW('</div>');
+
+  DW('</td></tr>');
+  DW('</table>');
+  DW('<table><tr><td align="right" style="width:210px">');
+  CreateSubmitButton();
+  DW('</td></tr></table>');
+
+  DW('</div>');
+
+  DW('</td></tr></table></div>');
+ 
+  ALC();
+</script>
+</body>
+</html>

@@ -1,0 +1,536 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+		<title>video config</title>
+		<link rel="stylesheet" type="text/css" href="css/osd.css"/>
+		<script src="js/jquery-1.10.2.js"></script>
+		<script src="js/osd.js"></script>
+		<script language="javascript" src="var.js"></script>
+		<script language="javascript" src="common.js"></script>
+		<script language="javascript" src="js/validate.js"></script>
+		<script>
+            InitLoad();
+            var dev_type = device_type;
+		</script>
+	</head>
+
+	<body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+		<iframe name="hiddenIFrame" id="hiddenIFrame"
+		width="0" height="0" marginwidth="0" marginheight="0"
+		scrolling="no" frameborder="0" src="uni_mul.htm" style="visibility:hidden"></iframe>
+		<script>
+            CTRLARY = {
+                osdswitch00 : new Ctrl_Check("osdswitch00", "<%osdswitch00%>", "osdswitch00=", ""),
+                osdcontent00 : new Ctrl_Text("osdcontent00", 32, 15, "时间", "osdcontent00="),
+
+                osdswitch02 : new Ctrl_Check("osdswitch02", "<%osdswitch02%>", "osdswitch02=", ""),
+                osdcontent02 : new Ctrl_Text("osdcontent02", 32, 15, "", "osdcontent02="),
+
+                osdswitch03 : new Ctrl_Check("osdswitch03", "<%osdswitch03%>", "osdswitch03=", ""),
+                osdcontent03 : new Ctrl_Text("osdcontent03", 32, 15, "", "osdcontent03="),
+
+                osdswitch04 : new Ctrl_Check("osdswitch04", "<%osdswitch04%>", "osdswitch04=", ""),
+                osdcontent04 : new Ctrl_Text("osdcontent04", 32, 15, "", "osdcontent04="),
+
+                osdswitch05 : new Ctrl_Check("osdswitch05", "<%osdswitch05%>", "osdswitch05=", ""),
+                osdcontent05 : new Ctrl_Text("osdcontent05", 32, 15, "", "osdcontent05="),
+
+                osdswitch06 : new Ctrl_Check("osdswitch06", "<%osdswitch06%>", "osdswitch06=", ""),
+                osdcontent06 : new Ctrl_Text("osdcontent06", 32, 15, "", "osdcontent06="),
+
+                osdswitch01 : new Ctrl_Check("osdswitch01", "<%osdswitch01%>", "osdswitch01=", ""),
+                osdcontent01 : new Ctrl_Text("osdcontent01", 32, 15, "", "osdcontent01="),
+
+                //=======================================================================================
+                osdswitch10 : new Ctrl_Check("osdswitch10", "<%osdswitch10%>", "osdswitch10=", ""),
+                osdcontent10 : new Ctrl_Text("osdcontent10", 32, 15, "时间", "osdcontent10="),
+
+                osdswitch12 : new Ctrl_Check("osdswitch12", "<%osdswitch12%>", "osdswitch12=", ""),
+                osdcontent12 : new Ctrl_Text("osdcontent12", 32, 15, "", "osdcontent12="),
+
+                osdswitch13 : new Ctrl_Check("osdswitch13", "<%osdswitch13%>", "osdswitch13=", ""),
+                osdcontent13 : new Ctrl_Text("osdcontent13", 32, 15, "", "osdcontent13="),
+
+                osdswitch14 : new Ctrl_Check("osdswitch14", "<%osdswitch14%>", "osdswitch14=", ""),
+                osdcontent14 : new Ctrl_Text("osdcontent14", 32, 15, "", "osdcontent14="),
+
+                osdswitch15 : new Ctrl_Check("osdswitch15", "<%osdswitch15%>", "osdswitch15=", ""),
+                osdcontent15 : new Ctrl_Text("osdcontent15", 32, 15, "", "osdcontent15="),
+
+                osdswitch16 : new Ctrl_Check("osdswitch16", "<%osdswitch16%>", "osdswitch16=", ""),
+                osdcontent16 : new Ctrl_Text("osdcontent16", 32, 15, "", "osdcontent16="),
+
+                osdswitch11 : new Ctrl_Check("osdswitch11", "<%osdswitch11%>", "osdswitch11=", ""),
+                osdcontent11 : new Ctrl_Text("osdcontent11", 32, 15, "", "osdcontent11=")
+            };
+		</script>
+		<script>
+            $(document).ready(function() {
+                $(window).resize(function() {
+                    setTimeout(function() {
+                        adaptionComponent("ocx_object", "vlc", 16 / 9, 0);
+                    }, 10);
+                });
+
+            });
+            function MY_ONLOAD() {
+            	//因为嵌入式里面保存空字符串的时候，为存储为（null）,返回过来后不正确，所以这里网页里面加判断吧，不让嵌入式修改了。
+            	$("input").each(function(index) {
+					if($(this).val()=="(null)")
+					{
+						$(this).val("");
+					}
+				});
+				
+				//检测违法输入
+                $("table input").keypress(function() {
+                    var key_code = event.keyCode;
+					Validator.checkOsdInputIllegal(key_code);	
+                });
+
+                document.getElementById('stream__1').style.display = "";
+                document.getElementById('stream__2').style.display = "none";
+                setTimeout(function() {
+                    adaptionComponent("ocx_object", "vlc", 16 / 9, 0);
+                }, 10);
+                switch_stream1();
+            }
+
+            function MY_ONUNLOAD() {
+                VideoActiveXControl.videoStop();
+                //StopActiveX();
+            }
+
+            function switch_stream1() {
+                document.getElementById('stream__1').style.display = "";
+                document.getElementById('stream__2').style.display = "none";
+                //StopV();
+                if ((dev_type == 3) || (dev_type == 4)) {
+                    //StartV(0, 0, Get9001FirstCodec(), 5, null); //stream 1
+                    VideoActiveXControl.videoPlay(1, 1, 300);
+                } else {
+                    //StartVwithoutTDP(0, 0, Get9001FirstCodec(), 5, null); //stream 1	without 3D
+                    VideoActiveXControl.videoPlay(1, 0, 300);
+                }
+            }
+
+            function switch_stream2() {
+                document.getElementById('stream__1').style.display = "none";
+                document.getElementById('stream__2').style.display = "";
+                //StopV();
+                if ((dev_type == 3) || (dev_type == 4)) {
+                    //StartV(0, 0, Get9001FirstCodec(), 6, null); //stream 2
+                    VideoActiveXControl.videoPlay(2, 1, 300);
+                } else {
+                    //StartVwithoutTDP(0, 0, Get9001FirstCodec(), 6, null); //stream 2
+                    VideoActiveXControl.videoPlay(2, 0, 300);
+                }
+            }
+
+            function switch_stream3() {
+                document.getElementById('stream__1').style.display = "";
+                document.getElementById('stream__2').style.display = "none";
+                // StopV();
+                if ((dev_type == 3) || (dev_type == 4)) {
+                    //StartV(0, 0, Get9001FirstCodec(), 1, null); //stream 3
+                    VideoActiveXControl.videoPlay(3, 1, 300);
+                } else {
+                    //StartVwithoutTDP(0, 0, Get9001FirstCodec(), 1, null); //stream 3
+                    VideoActiveXControl.videoPlay(3, 0, 300);
+                }
+            }
+
+            //监测输入是否为空
+            function JTrim(s) {
+                return s.replace(/(^\s*)|(\s*$)/g, "");
+            }
+
+            function Changeosdswitch02() {
+                var value = document.getElementById("osdcontent02").value;
+                if (GetCCV("osdswitch02") == 1) {
+                    if (JTrim(value) == "") {
+                        //alert("输入内容不能为空");
+                        document.getElementById("osdswitch02").checked = false;
+                        document.getElementById("osdcontent02").focus();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+
+            function Changeosdswitch01() {
+                var value = document.getElementById("osdcontent01").value;
+                if (GetCCV("osdswitch01") == 1) {
+                    if (JTrim(value) == "") {
+                        //alert("输入内容不能为空");
+                        document.getElementById("osdswitch01").checked = false;
+                        document.getElementById("osdcontent01").focus();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+
+            function Changeosdswitch03() {
+                var value = document.getElementById("osdcontent03").value;
+                if (GetCCV("osdswitch03") == 1) {
+                    if (JTrim(value) == "") {
+                        //alert("输入内容不能为空");
+                        document.getElementById("osdswitch03").checked = false;
+                        document.getElementById("osdcontent03").focus();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+
+            function Changeosdswitch04() {
+                var value = document.getElementById("osdcontent04").value;
+                if (GetCCV("osdswitch04") == 1) {
+                    if (JTrim(value) == "") {
+                        //alert("输入内容不能为空");
+                        document.getElementById("osdswitch04").checked = false;
+                        document.getElementById("osdcontent04").focus();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+
+            function Changeosdswitch05() {
+                var value = document.getElementById("osdcontent05").value;
+                if (GetCCV("osdswitch05") == 1) {
+                    if (JTrim(value) == "") {
+                        //alert("输入内容不能为空");
+                        document.getElementById("osdswitch05").checked = false;
+                        document.getElementById("osdcontent05").focus();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+
+            function Changeosdswitch06() {
+                var value = document.getElementById("osdcontent06").value;
+                if (GetCCV("osdswitch06") == 1) {
+                    if (JTrim(value) == "") {
+                        //alert("输入内容不能为空");
+                        document.getElementById("osdswitch06").checked = false;
+                        document.getElementById("osdcontent06").focus();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+
+            function Changeosdswitch12() {
+                var value = document.getElementById("osdcontent12").value;
+                if (GetCCV("osdswitch12") == 1) {
+                    if (JTrim(value) == "") {
+                        //alert("输入内容不能为空");
+                        document.getElementById("osdswitch12").checked = false;
+                        document.getElementById("osdcontent12").focus();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+
+            function Changeosdswitch13() {
+                var value = document.getElementById("osdcontent13").value;
+                if (GetCCV("osdswitch13") == 1) {
+                    if (JTrim(value) == "") {
+                        //alert("输入内容不能为空");
+                        document.getElementById("osdswitch13").checked = false;
+                        document.getElementById("osdcontent13").focus();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+
+            function Changeosdswitch14() {
+                var value = document.getElementById("osdcontent14").value;
+                if (GetCCV("osdswitch14") == 1) {
+                    if (JTrim(value) == "") {
+                        //alert("输入内容不能为空");
+                        document.getElementById("osdswitch14").checked = false;
+                        document.getElementById("osdcontent14").focus();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+
+            function Changeosdswitch11() {
+                var value = document.getElementById("osdcontent11").value;
+                if (GetCCV("osdswitch11") == 1) {
+                    if (JTrim(value) == "") {
+                        //alert("输入内容不能为空");
+                        document.getElementById("osdswitch11").checked = false;
+                        document.getElementById("osdcontent11").focus();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+
+            function Changeosdswitch15() {
+                var value = document.getElementById("osdcontent15").value;
+                if (GetCCV("osdswitch15") == 1) {
+                    if (JTrim(value) == "") {
+                        //alert("输入内容不能为空");
+                        document.getElementById("osdswitch15").checked = false;
+                        document.getElementById("osdcontent15").focus();
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return true;
+                }
+            }
+
+            function Changeosdswitch16() {
+                var value = document.getElementById("osdcontent16").value;
+                if (GetCCV("osdswitch16") == 1) {
+                    if (JTrim(value) == "") {
+                        //alert("输入内容不能为空");
+                        document.getElementById("osdswitch16").checked = false;
+                        document.getElementById("osdcontent16").focus();
+                        return false;
+                    }
+                } else {
+                    return true;
+                }
+            }
+
+            function MY_BEFORE_SUBMIT() {
+                var c02 = Changeosdswitch02();
+                var c01 = Changeosdswitch01();
+                var c03 = Changeosdswitch03();
+                var c04 = Changeosdswitch04();
+                var c05 = Changeosdswitch05();
+                var c06 = Changeosdswitch06();
+                var c12 = Changeosdswitch12();
+                var c11 = Changeosdswitch11();
+                var c13 = Changeosdswitch13();
+                var c14 = Changeosdswitch14();
+                var c15 = Changeosdswitch15();
+                var c16 = Changeosdswitch16();
+
+                if ((c01 && c02 && c03 && c04 && c05 && c06 && c11 && c12 && c13 && c14 && c15 && c16) == false) {
+                    alert("输入内容不能为空");
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+            function MY_SUBMIT_OK() {
+                //SendHttp(c_iniUrl + GetSetterCmdKV("killsip"), false);
+
+                alert(GL("submit_success"));
+                // ChangeContent(null, false);
+                //window.location.reload();
+            }
+		</script>
+		<script language="JavaScript" event="OnDrawRect(x1, y1, x2, y2)" for="vlc">
+            //var r = VLC1.SetRange(index, x1, y1, x2, y2, 0x00FF0000);====add by jackie
+            //if (r == 0) {
+            path = "d:\\bit\\v\\2.txt";
+            var wid = x2 - x1;
+            var hig = y2 - y1;
+            var neirong = x1 + ',' + y1 + ',' + wid + ',' + hig;
+            //creatfolder(path);
+            //alert("SetRange to index" + index + " failed " + x1 +"," + y1 +"," + x2 +"," + y2);
+            if ((wid > 3) && (hig > 3)) {
+                //SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_x", x1), false);
+                //SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_y", y1), false);
+                //SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_wide", wid), false);
+                //SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_high", hig), false);
+                SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_contral", neirong), false);
+            }
+
+		</script>
+		<!--上面tab Div-->
+		<div id="top_div">
+			<div id="empty_div"></div>
+			<div id="tab_container">
+				<span id="stream_1" onclick = "switch_stream1()">
+					<script>
+                        DW(GL("stream1"));
+					</script></span>
+				<span id="stream_2" onclick = "switch_stream2()">
+					<script>
+                        DW(GL("stream2"));
+					</script></span>
+				<span id="stream_3" onclick = "switch_stream3()">
+					<script>
+                        DW(GL("stream3"));
+					</script></span>
+			</div>
+		</div>
+
+		<div id="main_div">
+			<div id="video_ocx_div">
+				<script>
+                    WriteVideo();
+				</script>
+			</div>
+			<div id="osd_config_div">
+				<table id = "stream__1" width="100%" style="padding-top:5px; color:white;">
+					<th style="font-size:18px;">
+					<script>
+                        DW(GL("mps_standard_of_osd"));
+					</script></th>
+					<tr valign="middle"  align="center">
+						<td>
+						<script>
+                            WH("osdcontent00");
+                            WH("osdswitch00");
+						</script></td>
+					</tr>
+					<tr valign="middle"  align="center">
+						<td>
+						<script>
+                            WH("osdcontent02");
+                            WH("osdswitch02");
+						</script></td>
+					</tr>
+					<tr valign="middle"  align="center">
+						<td>
+						<script>
+                            WH("osdcontent03");
+                            WH("osdswitch03");
+						</script></td>
+					</tr>
+					<tr valign="middle"  align="center">
+						<td>
+						<script>
+                            WH("osdcontent04");
+                            WH("osdswitch04");
+						</script></td>
+					</tr>
+					<tr valign="middle"  align="center">
+						<td>
+						<script>
+                            WH("osdcontent05");
+                            WH("osdswitch05");
+						</script></td>
+					</tr>
+					<tr valign="middle"  align="center">
+						<td>
+						<script>
+                            WH("osdcontent06");
+                            WH("osdswitch06");
+						</script></td>
+					</tr>
+					<tr valign="middle"  align="center">
+						<td>
+						<script>
+                            WH("osdcontent01");
+                            WH("osdswitch01");
+						</script></td>
+					</tr>
+				</table>
+
+				<table id = "stream__2" width="100%" style="padding-top:5px; color:white;">
+					<th style="font-size:18px;">
+					<script>
+                        DW(GL("mps_standard_of_osd"));
+					</script></th>
+					<tr valign="middle"  align="center">
+						<td>
+						<script>
+                            WH("osdcontent10");
+                            WH("osdswitch10");
+						</script></td>
+					</tr>
+					<tr valign="middle"  align="center">
+						<td>
+						<script>
+                            WH("osdcontent12");
+                            WH("osdswitch12");
+						</script></td>
+					</tr>
+					<tr valign="middle"  align="center">
+						<td>
+						<script>
+                            WH("osdcontent13");
+                            WH("osdswitch13");
+						</script></td>
+					</tr>
+					<tr valign="middle"  align="center">
+						<td>
+						<script>
+                            WH("osdcontent14");
+                            WH("osdswitch14");
+						</script></td>
+					</tr>
+					<tr valign="middle"  align="center">
+						<td>
+						<script>
+                            WH("osdcontent15");
+                            WH("osdswitch15");
+						</script></td>
+					</tr>
+					<tr valign="middle"  align="center">
+						<td>
+						<script>
+                            WH("osdcontent16");
+                            WH("osdswitch16");
+						</script></td>
+					</tr>
+					<tr valign="middle"  align="center">
+						<td>
+						<script>
+                            WH("osdcontent11");
+                            WH("osdswitch11");
+						</script></td>
+					</tr>
+				</table>
+
+				<div id="save_div">
+					<script>
+                        CreateSubmitButton();
+					</script>
+					<!--input type="button" value="保存"  style="margin-right:20px; margin-top:10px; padding:5px 15px;" /-->
+				</div>
+			</div>
+		</div>
+
+	</body>
+</html>

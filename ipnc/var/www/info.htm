@@ -1,0 +1,289 @@
+<!-- EP info configuration ZDY-->
+<!--
+  This Page authorised by zdy, 2013-03-11
+  This Page shows system information.
+-->
+<html>
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=gb2312">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+    <title>
+    </title>
+    <style type="text/css">
+ td {font-size:12px}
+ .touming {
+  /*background:transparent;
+  border:none;*/
+ }
+ </style>
+
+</head>
+<body style="overflow:hidden" onload="MY_ONLOAD()">
+<script>
+  var fpgaversion = "<%fpgaver%>";
+
+  function WTablePHSys()
+  {
+    DW('<br>');
+    DW("<center><table width='auto' border='1' bordercolor='#000000' style='border-collapse:collapse'>");
+  }
+
+  function WTablePBSys()
+  {
+    DW("</table></center></fieldset></form>");
+  }
+
+  function WIPSys(tid)
+  {
+    DW('<tr style="border:solid 1px #000000" height=30px><td style="border:solid 1px #000000" height="30" colspan=3>&nbsp;' + GL(tid) + '&nbsp;</td>');
+
+    DW('<td style="border:solid 1px #000000" height="30" colspan=3>');
+    DW('<input type="text" class="touming" id="' + tid + '" value="" size=8 maxlength=5 disabled >');
+    DW('</td></tr>');
+  }
+
+  function WIPSysTe(tid)
+  {
+    DW('<td style="border:solid 1px #000000" height="30">&nbsp;' + GL(tid) + '&nbsp;</td>');
+
+    DW('<td style="border:solid 1px #000000" height="30">&nbsp;');
+
+    DW('<input type="text" class="touming" id="' + tid + '" value="" size=5 maxlength=5 disabled >');
+
+    DW('℃&nbsp;</td>')
+  }
+
+  function WIPSysCu(tid)
+  {
+    DW('<td style="border:solid 1px #000000" height="30">&nbsp;' + GL(tid) + '&nbsp;</td>');
+    DW('<td style="border:solid 1px #000000" height="30">&nbsp;');
+    DW('<input type="text" class="touming" id="' + tid + '" value="" size=10 maxlength=5 disabled >');
+    DW('mA&nbsp;</td>')
+  }
+
+  function WIPSysVo(tid)
+  {
+    DW('<td style="border:solid 1px #000000" height="30">&nbsp;' + GL(tid) + '&nbsp;</td>');
+    DW('<td style="border:solid 1px #000000" height="30">&nbsp;');
+    DW('<input type="text" class="touming" id="' + tid + '" value="" size=10 maxlength=5 disabled>');
+    DW('mV&nbsp;</td>');
+  }
+
+  function ReFresh()
+  {
+    window.location.reload();
+  }
+  function MY_ONLOAD()
+  {
+    g_lockLink = false; 
+    document.getElementById("refresh1").disabled = 1;
+  }
+
+    var o = '';
+    o += c_iniUrl;
+    o += GetSetterCmdKV("fpgaver");
+    o += GetSetterCmdKV("temp8147");
+    o += GetSetterCmdKV("current8147");
+    o += GetSetterCmdKV("voltage8147");
+    o += GetSetterCmdKV("fpgatemp");
+    o += GetSetterCmdKV("fpgacurrent");
+    o += GetSetterCmdKV("fpgavoltage");
+    o += GetSetterCmdKV("mcutemp");
+    o += GetSetterCmdKV("mcucurrent");
+    o += GetSetterCmdKV("mcuvoltage");
+    o += GetSetterCmdKV("temp6678");
+    o += GetSetterCmdKV("current6678");
+    o += GetSetterCmdKV("voltage6678");
+    o += GetSetterCmdKV("ccdtemp");
+    o += GetSetterCmdKV("ccdcurrent");
+    o += GetSetterCmdKV("ccdvoltage");
+    o += GetSetterCmdKV("drivertemp");
+
+// alert(o);
+SendHttp(o, false, SendImgCallBack);
+
+function SendImgCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      // alert(txt);
+      var sysinfolist = txt.split('=');
+      // alert(sysinfolist[0]);
+      // alert(sysinfolist[1]);
+      // alert(sysinfolist[2]);
+      // alert(sysinfolist[3]);
+      // alert(sysinfolist[4]);
+
+      // isSingleLens = parseInt(sysinfolist[1]);
+      // alert(isSingleLens);
+      // fpgaversion = sysinfolist[2];
+      // alert(fpgaversion);
+      document.getElementById("fpga_ver").value = fpgaversion;
+
+
+      document.getElementById("temp_8147").value = parseFloat(sysinfolist[2]).toFixed(2);
+      document.getElementById("current_8147").value = parseFloat(sysinfolist[3]).toFixed(2);
+      document.getElementById("voltage_8147").value = parseFloat(sysinfolist[4]).toFixed(2);
+
+      document.getElementById("fpga_temp").value = parseFloat(sysinfolist[5]).toFixed(2);
+      document.getElementById("current_fpga").value = parseFloat(sysinfolist[6]).toFixed(2);
+      document.getElementById("voltage_fpga").value = parseFloat(sysinfolist[7]).toFixed(2);
+
+      document.getElementById("mcu_temp").value = parseFloat(sysinfolist[8]).toFixed(2);
+      document.getElementById("mcu_current").value = parseFloat(sysinfolist[9]).toFixed(2);
+      document.getElementById("mcu_voltage").value = parseFloat(sysinfolist[10]).toFixed(2);
+
+      document.getElementById("temp_6678").value = parseFloat(sysinfolist[11]).toFixed(2);
+      document.getElementById("current_6678").value = parseFloat(sysinfolist[12]).toFixed(2);
+      document.getElementById("voltage_6678").value = parseFloat(sysinfolist[13]).toFixed(2);
+
+      document.getElementById("temp_ccd").value = parseFloat(sysinfolist[14]).toFixed(2);
+      document.getElementById("current_ccd").value = parseFloat(sysinfolist[15]).toFixed(2);
+      document.getElementById("voltage_ccd").value = parseFloat(sysinfolist[16]).toFixed(2);
+
+      document.getElementById("driver_temp").value = parseFloat(sysinfolist[17]).toFixed(2);
+
+      document.getElementById("refresh1").disabled = 0;
+
+    } 
+  } 
+}
+
+  </script>
+<script>
+
+    function HeatOn(){
+      SendHttp(c_iniUrl + GetSetterCmdKV("heateron", "1"), false);
+    }
+    function HeatOff(){
+      SendHttp(c_iniUrl + GetSetterCmdKV("heateroff", "1"), false); 
+    }
+
+    function FanOn(){
+      SendHttp(c_iniUrl + GetSetterCmdKV("fanon", "1"), false); 
+    }
+
+    function FanOff(){
+      SendHttp(c_iniUrl + GetSetterCmdKV("fanoff", "1"), false);
+    }
+
+    function Hdd1On(){
+      SendHttp(c_iniUrl + GetSetterCmdKV("canlicheon1", "1"), false);
+    }
+
+    function Hdd1Off(){
+      SendHttp(c_iniUrl + GetSetterCmdKV("canlicheoff1", "1"), false);
+    }
+
+    function Hdd2On(){
+      SendHttp(c_iniUrl + GetSetterCmdKV("canlicheon2", "1"), false);
+    }
+
+    function Hdd2Off(){
+      SendHttp(c_iniUrl + GetSetterCmdKV("canlicheoff2", "1"), false);
+    }
+
+    function Rstn(){
+      SendHttp(c_iniUrl + GetSetterCmdKV("canlichereset", "1"), false);
+    }
+
+    function PowerDown(){
+      SendHttp(c_iniUrl + GetSetterCmdKV("powerdown", "1"), false);
+    }
+
+</script>
+
+<script>    
+    WriteNetPH("power_manage");
+    
+    WriteGroup("power_manage"); 
+    //DW('<div id="NetPageDiv">');
+    WTablePH();
+    
+</script>
+
+<script>
+//heater on/off
+  DW('<tr><td>');
+  DW('<input type="button" id="heaton" value="' + GL("heater_on") + '" onclick="HeatOn()"></td>');
+
+  DW('<td><input type="button" id="heatoff" value="' + GL("heater_off") + '" onClick="HeatOff()"></td></tr>');
+
+  DW('<tr><td>');
+  DW('<input type="button" id="fanon" value="' + GL("fan_on") + '" onClick="FanOn()"></td>');
+  DW('<td><input type="button" id="fanoff" value="' + GL("fan_off") + '" onClick="FanOff()"></td></tr>');
+
+  DW('<tr><td>');
+  DW('<input type="button" id="hdd1on" value="' + GL("hdd1_on") + '" onClick="Hdd1On()"></td>');
+  DW('<td><input type="button" id="hdd1off" value="' + GL("hdd1_off") + '" onClick="Hdd1Off()"></td></tr>');
+
+  DW('<tr><td>');
+  DW('<input type="button" id="hdd2on" value="' + GL("hdd2_on") + '" onClick="Hdd2On()"></td>');
+  DW('<td><input type="button" id="hdd2off" value="' + GL("hdd2_off") + '" onClick="Hdd2Off()"></td></tr>');
+
+  DW('<tr><td>');
+  DW('<input type="button" id="rstn" value="' + GL("rstn") + '" onClick="Rstn()"></td></tr>');
+  // DW('<td><input type="button" id="powerdown" value="' + GL("powerdown") + '" onClick="PowerDown()"></td></tr>');
+ 
+  DW('</table>');
+
+  DW('<table>');
+  WIPSys("fpga_ver");
+
+  DW('<tr><td style="border:solid 1px #000000" height="30" colspan=2>' + GL("temp") + '(℃)</td>');
+  // DW('<td style="border:solid 1px #000000" height="30">' + GL("") + '</td>');
+  DW('<td style="border:solid 1px #000000" height="30" colspan=2>' + GL("current") + '(mA)</td>');
+  // DW('<td style="border:solid 1px #000000" height="30">' + GL("") + '</td>');
+  DW('<td style="border:solid 1px #000000" height="30" colspan=2>' + GL("voltage") + '(mV)</td>');
+  // DW('<td style="border:solid 1px #000000" height="30">' + GL("") + '</td>');
+  DW('</tr>');
+
+  DW('<tr>');
+  WIPSysTe("temp_8147");
+  WIPSysCu("current_8147");
+  WIPSysVo("voltage_8147"); 
+  DW('</tr>');
+
+  DW('<tr>');
+  WIPSysTe("fpga_temp");
+  WIPSysCu("current_fpga");
+  WIPSysVo("voltage_fpga");
+  DW('</tr>');
+
+  DW('<tr>');
+  WIPSysTe("mcu_temp");
+  WIPSysCu("mcu_current");
+  WIPSysVo("mcu_voltage");
+  DW('</tr>');
+
+  DW('<tr>');
+  WIPSysTe("temp_6678");
+  WIPSysCu("current_6678");
+  WIPSysVo("voltage_6678");
+  DW('</tr>');
+
+  DW('<tr>');
+  WIPSysTe("temp_ccd");
+  WIPSysCu("current_ccd");
+  WIPSysVo("voltage_ccd");
+  DW('</tr>');
+
+  DW('<tr>');
+  WIPSysTe("driver_temp");
+  DW('<td colspan=4 text-align="right">');
+  DW('<input type="button" id="refresh1" value="'  + GL("refresh")+ '" class="m1" onClick="ReFresh()">');
+  DW('</td>');
+  DW('</tr>');
+</script>
+<script>
+    WTablePB();
+    WriteNetPB();
+    ALC(); //window.status=msg; 加载时间超过300ms(?)，显示超时
+</script>
+</HTML>

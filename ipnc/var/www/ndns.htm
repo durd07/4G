@@ -1,0 +1,99 @@
+<!-- network configuration ZDY-->
+<html>
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+    <title>
+      DNS Setting
+    </title>
+     <style type="text/css" >
+    	td {font-size:12px;}
+    </style>
+  </head>
+
+  <body onload="MY_ONLOAD()">
+
+<script>
+    var v_dnsip = "<%dnsip%>";  //dnsip=192.168.001.001 //ZDY
+
+    CTRLARY = {
+        dnsip: new Ctrl_IPAddr("dnsip", v_dnsip, "dnsip=")  //dns
+    };
+
+    function MY_ONLOAD() {
+        g_lockLink = false;        
+    }
+    function MY_SUBMIT_OK() {
+        alert(GL("submit_success"));
+        window.location.reload();
+    }
+    function ParaCheck()
+    {
+      var flag = false;
+
+      var ipaddr = GetCCV("dnsip");
+      var ip1 = parseInt(ipaddr.substring(0, 3), 10);
+        var ip2 = parseInt(ipaddr.substring(3, 6), 10);
+        var ip3 = parseInt(ipaddr.substring(6, 9), 10);
+        var ip4 = parseInt(ipaddr.substring(9, 12), 10);
+        var dnsip = ip1 + '.' + ip2 + '.' + ip3 + '.' + ip4;
+
+      if (dnsip == "<%dnsip%>")
+      {
+        CTRLARY["dnsip"].active = 0;
+      } 
+      else if (flag == false)
+        flag = true;
+
+
+      return flag;
+    }
+    function MY_BEFORE_SUBMIT()
+    {
+        if (DnsChange() == false)
+            return false;
+        if (ParaCheck() == false)
+        {
+          alert(GL("para_not_change"));
+          ChangeActive();
+          return false;
+        }
+
+        return true;
+    }
+
+    function DnsChange()
+    {
+        var ipaddr = GetCCV("dnsip");
+        var ip1 = parseInt(ipaddr.substring(0, 3), 10);
+        var ip2 = parseInt(ipaddr.substring(3, 6), 10);
+        var ip3 = parseInt(ipaddr.substring(6, 9), 10);
+        var ip4 = parseInt(ipaddr.substring(9, 12), 10);
+        if (ip1 == 0)
+        {
+            alert(GL("dnsip_inva"));
+            return false;
+        }
+        return true;
+    }
+
+
+
+</script>
+
+<script>
+    DW('<table>');
+    WIP("primary_dns", "dnsip");
+    WIPSubmit(true);
+</script>
+<script>
+    DW('</table>');
+    ALC(); //window.status=msg; 加载时间超过300ms(?)，显示超时
+</script>
+</body>
+</html>

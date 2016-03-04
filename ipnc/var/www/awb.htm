@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script language="javascript" src="ptzctrl.js"></script>        
+        <script language="javascript" src="My97DatePicker/WdatePicker.js"></script>
+        <script language="javascript" src="jquery/jquery-1.9.1.min.js"></script>
+		<script>
+      		InitLoad();
+   		 </script>
+		<title>
+			
+		</title>
+	</head>
+<body onload="MY_ONLOAD()">
+<script>
+    var daynightlist = GL("auto") + ";" + GL("day") + ";" + GL("night");
+    var awblist = GL("auto") + ";" + GL("manual");
+// alert("<%awb%>");
+
+    CTRLARY = {
+      awb: new Ctrl_Select("awb", awblist, "<%awb%>", "awb=", "FixStatusAWB()"),
+      //manual awb
+      rgain: new Ctrl_Text("rgain", "4", "4", "<%rgain%>", "rgain="), 
+      ggain: new Ctrl_Text("ggain", "4", "4", "<%ggain%>", "ggain="),
+      bgain: new Ctrl_Text("bgain", "4", "4", "<%bgain%>", "bgain=")
+      // daynight: new Ctrl_Select("daynight", daynightlist, "<%daynight%>", "daynight=")
+      // autocalib: new Ctrl_Input("autocalib", "calibrationstart", "ClickStartCalibration()")
+}
+</script>
+<script>
+function CheckRgain(min, max)
+{
+  var value = document.getElementById("rgain").value;
+  if (value.length == 0)
+  {
+    alert(GL("rgain_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("rgain_inva"));
+    document.getElementById("rgain").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("rgain_rager"));
+    document.getElementById("rgain").value = "";
+    return false;
+  }
+  return true;
+}
+
+function CheckBgain(min, max)
+{
+  var value = document.getElementById("bgain").value;
+  if (value.length == 0)
+  {
+    alert(GL("bgain_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("bgain_inva"));
+    document.getElementById("bgain").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("bgain_rager"));
+    document.getElementById("bgain").value = "";
+    return false;
+  }
+  return true;
+}
+function CheckGgain(min, max)
+{
+  var value = document.getElementById("ggain").value;
+  if (value.length == 0)
+  {
+    alert(GL("ggain_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("ggain_inva"));
+    document.getElementById("ggain").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("ggain_rager"));
+    document.getElementById("ggain").value = "";
+    return false;
+  }
+  return true;
+}
+    function FixStatusAWB()
+    {
+      CTRLARY["rgain"].Disable(GetCCV("awb") == 0);
+      CTRLARY["ggain"].Disable(GetCCV("awb") == 0);
+      CTRLARY["bgain"].Disable(GetCCV("awb") == 0);
+      // document.getElementById("autocalib1").disabled = (GetCCV("awb") == 0);
+      // document.getElementById("autocalib2").disabled = (GetCCV("awb") == 0);
+    }
+
+function Update(){
+  var o = '';
+  o += c_iniUrl + GetSetterCmdKV("getawb");
+  o += GetSetterCmdKV("getrgain");
+  o += GetSetterCmdKV("getggain");
+  o += GetSetterCmdKV("getbgain");
+  o += GetSetterCmdKV("getdnctrl");
+  SendHttp(o, false);
+}
+
+	function MY_ONLOAD() {
+    g_lockLink = false;
+    // StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+    FixStatusAWB();
+    // Update();
+  }
+
+  function ParaCheck()
+{
+  var flag = false;
+
+  var awb = GetCCV("awb");
+  if (awb == "<%awb%>")
+  {
+    CTRLARY["awb"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var rgain = GetCCV("rgain");
+  if (rgain == "<%rgain%>")
+  {
+    CTRLARY["rgain"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var ggain = GetCCV("ggain");
+  if (ggain == "<%ggain%>")
+  {
+    CTRLARY["ggain"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var bgain = GetCCV("bgain");
+  if (bgain == "<%bgain%>")
+  {
+    CTRLARY["bgain"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  return flag;
+}
+
+  function MY_BEFORE_SUBMIT() {
+  if (loginauth != 0 &&  loginauth != 1)
+        {
+            alert(GL("auth_not"));
+            return false;
+        }
+    if (GetCCV("awb") == 1){
+      if (CheckRgain(256, 1023) == false)
+        return false;
+      if (CheckGgain(256, 1023) == false)
+        return false;
+      if (CheckBgain(256, 1023) == false)
+        return false;
+    }
+
+    if (ParaCheck() == false)
+    {
+      alert(GL("para_not_change"));
+      return false;
+    }
+    return true;
+  }
+  function MY_SUBMIT_OK() {
+    alert(GL("submit_success"));
+    window.location.reload();
+  }
+  function WIPXGain(tid, ctx, numrange)
+{
+  DW('<tr><td width="150" height="30" >');
+  DW(GL(tid) + ':</td><td height=30>' + ctx + '</td><td height=30>' + GL(numrange)+ '</td></tr>');  
+};
+function WIPGain(tid, id, numrange)
+{
+  WIPXGain(tid, WH_(id), numrange)
+}
+
+</script>
+<script>
+  DW('<div class="layout" id="tabs-1" >');
+  DW('<table>');
+
+  DW('<tr><td width="150" height="30">');
+  DW(GL('white_balance') + ": </td><td>");
+  WH("awb");
+  DW('</td></tr>');
+
+  WIPGain("red_gain", "rgain", "gain_numrange");
+  WIPGain("green_gain", "ggain", "gain_numrange");
+  WIPGain("blue_gain", "bgain", "gain_numrange");
+  // DW('<tr><td colspan=2><input type="button" id="autocalib1" value="' + GL("Calibrationstart") + '" class="m1" onClick="ClickStartCalibration()"></td>');
+  // DW('<td colspan=2><input type="button" id="autocalib2" value="' + GL("Calibrationstop") + '" class="m1" onClick="ClickStopCalibration()"></td></tr>');
+
+  // DW('<tr><td colspan=2>' + GL("d_n") + ': ');
+  // WH("daynight");
+  // DW('</td></tr>');
+
+  DW('</table>');
+  DW('</div>');
+
+  DW('<div>');
+  DW('<table><tr><td colspan=4 align="center">');
+  CreateSubmitButton();
+  DW('</td></tr></table>');
+  DW('</div>');
+
+</script>
+
+</body>
+</html>

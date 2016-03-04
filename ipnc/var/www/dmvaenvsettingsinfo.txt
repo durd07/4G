@@ -1,0 +1,7 @@
+The size of moving objects varies substantially within the camera’s field of view
+Glare from sunlight and other bright light sources may appear in the camera’s field of view
+Camera’s automatic gain control is ON
+Camera is prone to substantial vibration
+The ground plane is visible in the camera’s field of view
+Foliage appears in the scene
+The sky appears in the scene

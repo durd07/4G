@@ -1,0 +1,23 @@
+#! /bin/sh
+
+telnetd=/usr/sbin/telnetd
+
+test -x "$telnetd" || exit 0
+
+case "$1" in
+  start)
+    echo -n "Starting telnet daemon"
+    start-stop-daemon --start --quiet --exec $telnetd
+    echo "."
+    ;;
+  stop)
+    echo -n "Stopping telnet daemon"
+    start-stop-daemon --stop --quiet --pidfile /var/run/telnetd.pid
+    echo "."
+    ;;
+  *)
+    echo "Usage: /etc/init.d/telnetd {start|stop}"
+    exit 1
+esac
+
+exit 0

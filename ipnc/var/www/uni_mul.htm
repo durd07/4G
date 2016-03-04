@@ -1,0 +1,65 @@
+<html>
+    <head>
+		<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+		<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+        <meta http-equiv=Content-Type content="text/html; charset=GB2312">
+	</head>	
+	<body onload="MY_ONLOAD()">
+		<script>
+		function MY_ONLOAD()
+		{
+			if(window.parent.document.getElementById("overlaytext1"))
+			{
+			window.parent.document.getElementById("overlaytext1").value = document.getElementById("overlaytext1name").value;
+			window.parent.document.getElementById("overlaytext2").value = document.getElementById("overlaytext2name").value;
+			// window.parent.document.getElementById("devTitle").value = document.getElementById("titlename").value;
+			}
+			if(window.parent.document.getElementById("osdcontent00"))
+			{
+			//window.parent.document.getElementById("osdcontent00").value = document.getElementById("osdcontent00").value;
+			window.parent.document.getElementById("osdcontent00").disabled = true;
+			window.parent.document.getElementById("osdcontent01").value = document.getElementById("osdcontent01").value;			
+			window.parent.document.getElementById("osdcontent02").value = document.getElementById("osdcontent02").value;
+			window.parent.document.getElementById("osdcontent03").value = document.getElementById("osdcontent03").value;			
+			window.parent.document.getElementById("osdcontent04").value = document.getElementById("osdcontent04").value;
+			window.parent.document.getElementById("osdcontent05").value = document.getElementById("osdcontent05").value;			
+			window.parent.document.getElementById("osdcontent06").value = document.getElementById("osdcontent06").value;
+			//window.parent.document.getElementById("osdcontent07").value = document.getElementById("osdcontent07").value;
+			
+			//window.parent.document.getElementById("osdcontent10").value = document.getElementById("osdcontent10").value;
+			window.parent.document.getElementById("osdcontent10").disabled = true;
+			window.parent.document.getElementById("osdcontent11").value = document.getElementById("osdcontent11").value;			
+			window.parent.document.getElementById("osdcontent12").value = document.getElementById("osdcontent12").value;
+			window.parent.document.getElementById("osdcontent13").value = document.getElementById("osdcontent13").value;			
+			window.parent.document.getElementById("osdcontent14").value = document.getElementById("osdcontent14").value;
+			window.parent.document.getElementById("osdcontent15").value = document.getElementById("osdcontent15").value;			
+			window.parent.document.getElementById("osdcontent16").value = document.getElementById("osdcontent16").value;
+			//window.parent.document.getElementById("osdcontent17").value = document.getElementById("osdcontent17").value;
+			}
+		}
+
+		</script>
+		<!-- <input name="titlename"  type="text" value="<%title%>" /> -->
+		<input name="overlaytext1name"  type="text" value="<%overlaytext1%>" />
+		<input name="overlaytext2name"  type="text" value="<%overlaytext2%>" />
+		
+		<input name="osdcontent00"  type="text" value="<%osdcontent00%>" />
+		<input name="osdcontent01"  type="text" value="<%osdcontent01%>" />
+		<input name="osdcontent02"  type="text" value="<%osdcontent02%>" />
+		<input name="osdcontent03"  type="text" value="<%osdcontent03%>" />		
+		<input name="osdcontent04"  type="text" value="<%osdcontent04%>" />
+		<input name="osdcontent05"  type="text" value="<%osdcontent05%>" />
+		<input name="osdcontent06"  type="text" value="<%osdcontent06%>" />
+		<input name="osdcontent07"  type="text" value="<%osdcontent07%>" />
+		
+		<input name="osdcontent10"  type="text" value="<%osdcontent10%>" />
+		<input name="osdcontent11"  type="text" value="<%osdcontent11%>" />
+		<input name="osdcontent12"  type="text" value="<%osdcontent12%>" />
+		<input name="osdcontent13"  type="text" value="<%osdcontent13%>" />		
+		<input name="osdcontent14"  type="text" value="<%osdcontent14%>" />
+		<input name="osdcontent15"  type="text" value="<%osdcontent15%>" />
+		<input name="osdcontent16"  type="text" value="<%osdcontent16%>" />
+		<input name="osdcontent17"  type="text" value="<%osdcontent17%>" />
+	</body>
+</html>

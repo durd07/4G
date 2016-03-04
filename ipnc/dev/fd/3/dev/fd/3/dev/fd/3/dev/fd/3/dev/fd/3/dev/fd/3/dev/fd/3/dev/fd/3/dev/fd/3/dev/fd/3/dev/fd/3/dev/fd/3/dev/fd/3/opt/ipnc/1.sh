@@ -1,0 +1,33 @@
+
+USB_COUNT=`dmesg | grep ttyUSB -c`
+if [   $USB_COUNT -lt 15 ]
+then
+	#exit 0
+	echo $USB_COUNT
+	sleep 120
+	reboot -f
+fi
+echo USB_COUNT=$USB_COUNT
+	
+#route del default dev eth0 
+pppd call td_lte
+
+i=1;
+while [ $i -le 100 ]
+do
+	PPPD_CONN=`ifconfig | grep "Point-to-Point Protocol" -c `
+
+	echo $PPPD_CONN
+
+	if [  $PPPD_CONN -eq 0 ]
+	then
+		echo "no ppp connection"
+		i=$(($i+ 1 ))
+		sleep 5
+	else
+		#route del default dev eth0 
+		#route add default dev ppp0
+		echo "have ppp0"
+		break
+	fi
+done

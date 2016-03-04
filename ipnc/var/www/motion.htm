@@ -1,0 +1,510 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+		<script language="javascript" src="var.js"></script>
+		<script language="javascript" src="common.js"></script>
+		<script>
+            InitLoad();
+		</script>
+		<title></title>
+		<style type="text/css">
+			body {
+				margin: 0;
+				height: 100%;
+				min-width: 1200px;
+				min-height: 580px;
+				background: #D5D5D5;
+			}
+
+			#snap {
+				background-size: 520px 303px;
+				background-repeat: no-repeat;
+			}
+
+			#main div {
+				position: absolute;
+				width: 130px;
+				height: 101px;
+				border: 2px solid #f00;
+				filter: alpha(opacity=0);
+			}
+			#rightDiv {
+				position: absolute;
+				left: 530px;
+				top: 0px;
+			}
+			table {
+				font-size: 13px;
+			}
+
+		</style>
+
+	</head>
+	<body onLoad="MY_ONLOAD()" onUnload="MY_ONUNLOAD()">
+		<script>
+            var runFlag = true;
+            var v_MotionEnable = "<%motionenable%>";
+            var v_MotionLevel = "<%motionsensitivity%>";
+            var supportmotion = 2;
+            //parseInt("<%supportmotion%>")
+            var s_Motion = (supportmotion >= 1) && (g_isSupS2 || g_isSupS3 || g_isSupS5 || g_isSupS6);
+            var motionblock = "<%motionblock%>";
+            var charAry = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
+
+            var v_sensCustomValue = "<%motioncvalue%>";
+            var v_sensCustomEnable = "<%motioncenable%>";
+            var minCML = 1;
+            //parseInt("<%minmotionthreshold%>");
+            var maxCML = 100;
+            //parseInt("<%maxmotionthreshold%>");
+
+            var sensLevellist = GL("low") + ";" + GL("mid") + ";" + GL("high");
+
+            /* add by dsl, 2013-9-12 */
+            var bgImage = "D:\\BackgroundImage.png";
+            var sleepTimer;
+            var dsl;
+            /* end added, dsl, 2013-9-12 */
+            var malarmlist = GL("no_alarm") + ";" + GL("ir_white_alarm") + ";" + GL("ir_alarm");
+
+            CTRLARY = {
+                motionEn : new Ctrl_Radio("motionEn", v_MotionEnable, "motionenable", "FixStatus()"),
+                sensValEn : new Ctrl_Radio("sensValEn", v_sensCustomEnable, "motioncenable", "FixStatus()"),
+                sensVal : new Ctrl_Text("sensVal", "3", "3", v_sensCustomValue, "motioncvalue"),
+                sensLevel : new Ctrl_Select("sensLevel", sensLevellist, v_MotionLevel, "motionsensitivity"),
+                motionalarm : new Ctrl_Select("motionalarm", malarmlist, "0", "motiondec=")
+            };
+            function MY_ONUNLOAD() {
+                //StopActiveX();
+                VideoActiveXControl.videoStop();
+            }
+
+            function MY_ONLOAD() {
+                g_lockLink = false;
+                // StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+                VideoActiveXControl.videoPlay(1, 0, 300);
+                // ImageOnLoad(true, 1, Get9001FirstCodec(), 5, true); //H264 D1
+                // WRectangle();
+                /* add by dsl, 2013-9-11 */
+                document.getElementById("motblk").value = motionblock;
+                sleepTimer = setTimeout(showMotionArea, 2000);
+                FixStatus();
+                /* end added, dsl, 2013-9-11 */
+
+            }
+
+            function ChangemotionEn() {
+                FixStatus();
+                SendHttp(c_iniUrl + GetSetterCmdKV("motionenable", GetCCV("motionEn")) + GetSetterCmdKV("motiondec", GetCCV("motionEn")), false);
+            }
+
+            function ChangesensValEn() {
+                FixStatus();
+                SendHttp(c_iniUrl + GetSetterCmdKV("motioncenable", GetCCV("sensValEn")), false);
+            }
+
+            function ChangesensVal() {
+                if (GetCCV("motionEn") == 1) {
+                    if (CheckSensVal(1, 100) == false)
+                        return false;
+                }
+                SendHttp(c_iniUrl + GetSetterCmdKV("motioncvalue", GetCCV("sensLevel")), false);
+            }
+
+            function ChangesensLevel() {
+                SendHttp(c_iniUrl + GetSetterCmdKV("motionlevel", GetCCV("sensVal")), false);
+            }
+
+            function CheckSensVal(min, max) {
+                var value = document.getElementById("sensVal").value;
+                if (value.length == 0) {
+                    alert(GL("sens_empty"));
+                    document.getElementById("sensVal").value = "<%motioncvalue%>";
+                    document.getElementById("sensVal").focus();
+                    return false;
+                }
+                if (!(IsNumeric(value))) {
+                    alert(GL("sens_inv"));
+                    document.getElementById("sensVal").value = "<%motioncvalue%>";
+                    document.getElementById("sensVal").focus();
+                    return false;
+                }
+
+                if (!((value >= min && value <= max))) {
+                    alert(GL("sens_num"));
+                    document.getElementById("sensVal").value = "<%motioncvalue%>";
+                    document.getElementById("sensVal").focus();
+                    return false;
+                }
+                return true;
+
+            }
+
+            function ParaCheck() {
+                var flag = false;
+
+                var motionEn = GetCCV("motionEn");
+                if (motionEn == v_MotionEnable) {
+                    CTRLARY["motionEn"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var sensValEn = GetCCV("sensValEn");
+                if (sensValEn == v_sensCustomEnable) {
+                    CTRLARY["sensValEn"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var sensVal = GetCCV("sensVal");
+                if (sensVal == v_sensCustomValue) {
+                    CTRLARY["sensVal"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var sensLevel = GetCCV("sensLevel");
+                if (sensLevel == v_MotionLevel) {
+                    CTRLARY["sensLevel"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var motionalarm = GetCCV("motionalarm");
+                if (motionalarm == "0") {
+                    CTRLARY["motionalarm"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                motionblock = document.getElementById("motblk").value;
+                if (motionblock != "<%motionblock%>" && flag == false)
+                    flag = true;
+
+                return flag;
+            }
+
+            function MY_BEFORE_SUBMIT() {
+
+                if (ParaCheck() == false) {
+                    alert(GL("para_not_change"));
+                    ChangeActive();
+                    return false;
+                }
+
+                if (GetCCV("motionEn") == 1) {
+                    CTRLARY["motionalarm"].active = 1;
+                    if (CheckSensVal(1, 100) == false)
+                        return false;
+                }
+
+                // SendHttp(c_iniUrl + GetSetterCmdKV("motiondec", GetCCV("motionEn")), false);
+                return true;
+            }
+
+            function MY_SUBMIT_OK() {
+
+                alert(GL("submit_success"));
+                reloadcount = 2;
+                wait();
+                // window.location.reload();
+            }
+
+            function wait() {
+                reloadcount--;
+                if (reloadcount > 0) {
+                    timerID = setTimeout("wait()", 1000);
+                } else {
+                    window.location.reload();
+                }
+            }
+
+            function MotionSendOnePack() {
+                if (MY_BEFORE_SUBMIT() == false)
+                    return false;
+
+                var str = '';
+
+                for (var key in CTRLARY) {
+                    var obj = CTRLARY[key];
+                    if (obj.active == 1)
+                        str += GetSetterCmd(CTRLARY[key], GetCtrlValue(CTRLARY, key));
+                }
+                // motionblock = MotionBlocks();
+
+                if (GetCCV("motionEn") == 1) {
+                    motionblock = document.getElementById("motblk").value;
+                    str += GetSetterCmdKV("motionblock", motionblock);
+                }
+
+                // alert(str);
+                SendHttp(c_iniUrl + str, false);
+                MY_SUBMIT_OK();
+            }
+
+            function FixStatus() {
+                if (GetCCV("motionEn") == 0) {
+                    DisableObjs(new Array("sensValEn", "sensVal", "sensLevel", "motionalarm"), true);
+                    document.getElementById("motblk").disabled = 1;
+                    // document.getElementById("snap").disabled = 1;
+                    // WRectangleStop();
+                    clearMotionArea();
+                    // if (v_MotionEnable == 1)
+                    //   document.getElementById("alarmstatus").style.display = "none";
+                } else {
+                    // WRectangleStart();
+                    // alert(motionblock);
+                    var v = (GetCCV("sensValEn") == 0);
+                    DisableObject("sensValEn", false);
+                    DisableObject("sensVal", v);
+                    DisableObject("sensLevel", !v);
+                    document.getElementById("motblk").disabled = 0;
+                    DisableObject("motionalarm", 0);
+                    initMotionArea();
+                    // if (v_MotionEnable == 1)
+                    //   document.getElementById("alarmstatus").style.display = "";
+
+                }
+            }
+
+            /* add by dsl, 2013-9-11 */
+            function findIndexOfChar(c) {
+                var i = 0;
+                for ( i = 0; i < 16; i++) {
+                    if (charAry[i] == c)
+                        return i;
+                }
+
+                return -1;
+            }
+
+            function initMotionArea() {
+                var i = 0;
+                for ( i = 0; i < 3; i++) {
+                    var value = findIndexOfChar(motionblock.charAt(i));
+                    //alert("char=" + motionblock.charAt(i) + ";index=" + value);
+                    if (value == -1) {
+                        //alert("get motion area error!!");
+                    }
+                    for (var j = 0; j < 4; j++) {
+                        if (value & (1 << j)) {
+                            document.getElementById('div' + i + j).className = "selected";
+                            document.getElementById('div' + i + j).style.filter = "alpha(opacity=50)";
+                        }
+                    }
+                }
+            }
+
+            function clearMotionArea() {
+                var i = 0;
+                for ( i = 0; i < 3; i++) {
+                    var value = findIndexOfChar(motionblock.charAt(i));
+                    for (var j = 0; j < 4; j++) {
+                        document.getElementById('div' + i + j).style.filter = "alpha(opacity=0)";
+                    }
+                }
+            }
+
+            function updateMotionValue() {
+                motionblock = '';
+                for (var i = 0; i < 3; i++) {
+                    var k = 0;
+                    for (var j = 0; j < 4; j++) {
+                        if (document.getElementById('div' + i + j).className == "selected") {
+                            k |= (1 << j);
+                        }
+                    }
+                    //alert('k=' + k);
+                    motionblock += charAry[k];
+                }
+                document.getElementById('motblk').value = motionblock;
+            }
+
+            function areaClicked(id) {
+                //alert("areaClicked");
+                if (GetCCV("motionEn") == 1) {
+                    if (id.className == "selected") {
+                        id.className = "unselected";
+                    } else if (id.className == "unselected") {
+                        id.className = "selected";
+                    }
+                    updateMotionValue();
+
+                }
+            }
+
+            function showMotionArea() {
+                vlcTakeSnap();
+                setBackground();
+                if (GetCCV("motionEn") == 1)
+                    initMotionArea();
+                else
+                    clearMotionArea();
+            }
+
+            function vlcTakeSnap() {
+                clearTimeout(sleepTimer);
+                var obj = GE(AxID);
+                if (obj != null) {
+                    try {
+                        obj.takeSnapshot(bgImage);
+                    } catch (e) {
+                        alert("Take Snap Error!");
+                    }
+                }
+            }
+
+            function setBackground() {
+                document.getElementById("Area").style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + bgImage + "',sizingMethod='scale')";
+                //document.getElementById("snap").background = "file:///" + bgImage;
+            }
+
+            function $(o, e) {
+                if (GetCCV("motionEn") == 1) {
+                    dsl = o;
+                    if (dsl.className == "selected") {
+                        dsl.className = "unselected";
+                        dsl.style.filter = "alpha(opacity=0)";
+                    } else if (dsl.className == "unselected") {
+                        dsl.className = "selected";
+                        dsl.style.filter = "alpha(opacity=50)";
+                    }
+                    dsl = "";
+                    updateMotionValue();
+                }
+            }
+
+            /* end added, dsl, 2013-9-11 */
+
+		</script>
+		<script>
+            DW('<div id="motiondiv">');
+            DW('<table cellpadding="0" cellspacing="2"><tr><td style="vertical-align:text-top;">');
+
+            DW('<div class="videoview1">');
+            WriteImgtuneVideoHidden();
+            DW('</div>');
+		</script>
+
+		<div width="520" height="303">
+			<table id="Area" name="Area" style="left:0px;top:0px;" width="520" height="303" border="0" style="position:absolute;">
+				<tr>
+					<td></td>
+				</tr>
+			</table>
+
+			<div id="main">
+
+				<div id="div00" class="unselected" style="filter:alpha(opacity=0);left:0px;top:0px;background:#f00;" onMouseDown="$(this,event)">
+					1
+				</div>
+				<div id="div01" class="unselected" style="filter:alpha(opacity=0);left:130px;top:0px;background:#f00;" onMouseDown="$(this,event)">
+					2
+				</div>
+				<div id="div02" class="unselected" style="filter:alpha(opacity=0);left:260px;top:0px;background:#f00;" onMouseDown="$(this,event)">
+					3
+				</div>
+				<div id="div03" class="unselected" style="filter:alpha(opacity=0);left:390px;top:0px;background:#f00;" onMouseDown="$(this,event)">
+					4
+				</div>
+
+				<div id="div10" class="unselected" style="filter:alpha(opacity=0);left:0;top:101px;background:#f00;" onMouseDown="$(this,event)">
+					5
+				</div>
+				<div id="div11" class="unselected" style="filter:alpha(opacity=0);left:130px;top:101px;background:#f00;" onMouseDown="$(this,event)">
+					6
+				</div>
+				<div id="div12" class="unselected" style="filter:alpha(opacity=0);left:260px;top:101px;background:#f00;" onMouseDown="$(this,event)">
+					7
+				</div>
+				<div id="div13" class="unselected" style="filter:alpha(opacity=0);left:390px;top:101px;background:#f00;" onMouseDown="$(this,event)">
+					8
+				</div>
+
+				<div id="div20" class="unselected" style="filter:alpha(opacity=0);left:0;top:202px;background:#f00;" onMouseDown="$(this,event)">
+					9
+				</div>
+				<div id="div21" class="unselected" style="filter:alpha(opacity=0);left:130px;top:202px;background:#f00;" onMouseDown="$(this,event)">
+					10
+				</div>
+				<div id="div22" class="unselected" style="filter:alpha(opacity=0);left:260px;top:202px;background:#f00;" onMouseDown="$(this,event)">
+					11
+				</div>
+				<div id="div23" class="unselected" style="filter:alpha(opacity=0);left:390px;top:202px;background:#f00;" onMouseDown="$(this,event)">
+					12
+				</div>
+
+			</div>
+
+		</div>
+		</td>
+		<td style="vertical-align:text-top;">
+		<div id="rightDiv" class="layout" id="tabs-motion" >
+			<table>
+				<script>
+                    if (!s_Motion) {
+                        DW("<center><span class=m3 >" + GL("no_motion") + "</span></center>");
+                    } else {
+
+                        //WTablePH();
+                        // DW("<tr><td colspan=2 align=center>" + GetImageLeftVideo(true) + "</td></tr>");
+                        DW("<tr><td height=30 >" + GL("motion_detect") + ":</td><td >" + GetRadioENDIS("motionEn") + "</td>");
+
+                        if (v_MotionEnable == 1) {
+                            DW("<td height=30 align='center'><input width='12px' height='12px' id='alarmstatus' type='image' src='../images/green.png' title='" + GL("nomotion_alarm") + "'></td>");
+
+                            setInterval("GetAlarmStatus()", 1000);
+                            function GetAlarmStatus() {
+                                var o = '';
+                                o += c_iniUrl;
+                                o += GetSetterCmdKV("getalarmstatus");
+                                SendHttp(o, false, SendImgCallBack);
+                            }
+
+                            function SendImgCallBack() {
+                                if (g_SubmitHttp.readyState == 4) {
+                                    if (g_SubmitHttp.status == 200) {
+                                        var txt = g_SubmitHttp.responseText;
+                                        var alarmstatuslist = txt.split('=');
+                                        var alarmstatus = parseInt(alarmstatuslist[1]);
+                                        // alert(alarmstatus);
+                                        if (alarmstatus == 0) {
+                                            var srcimg = "../images/green.png";
+
+                                            document.getElementById("alarmstatus").title = GL("nomotion_alarm");
+                                            document.getElementById("alarmstatus").src = srcimg;
+                                        } else if (alarmstatus == 2 || alarmstatus == 32) {
+                                            var srcimg = "../images/red.png";
+
+                                            document.getElementById("alarmstatus").title = GL("motion_alarm");
+                                            document.getElementById("alarmstatus").src = srcimg;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        DW('</tr>');
+
+                        DW("<tr><td height=50 >" + GL("sens") + ":</td><td >");
+                        DW(WRH_("sensValEn", 0) + "&nbsp;" + WH_("sensLevel") + "<br>");
+                        DW(WRH_("sensValEn", 1) + "&nbsp;" + WH_("sensVal") + "&nbsp;" + GL("sensval_num"));
+                        DW("</td></tr>");
+
+                        DW("<tr style='display:none;'><td>" + GL("motionalarm") + ":</td><td>" + WH_("motionalarm") + "</td></tr>");
+
+                        DW('<tr><td>');
+                        DW('<input type="text" id="motblk" value="' + motionblock + '" style="display:none;">');
+                        DW('</td></tr>');
+
+                        DW("<tr><td colspan=2 align=right><br>");
+                        DW("<input type='button' id='smbtn_' value='" + GL("submit") + "' class='m1' onClick=MotionSendOnePack() style='width:80px;height:30px'>");
+                        DW("</td></tr>");
+
+                        //WTablePB();
+                    }
+                    DW('</table></div>');
+                    DW('</td></tr><table>');
+                    DW('</div>');
+
+                    ALC();
+				</script>
+	</body>
+</html>

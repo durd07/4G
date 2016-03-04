@@ -1,0 +1,698 @@
+<html>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="var.js"></script>
+        <script type="text/javascript" src="common.js"></script>
+        <script language="javascript" src="jquery/jquery-1.9.1.min.js"></script>
+        <script>
+            InitLoad();
+        </script>
+        <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+        <title>
+            Audio/Video Config
+        </title>
+<style type="text/css">
+body {
+	margin: 0;
+	padding:0;
+	height:100%;
+	min-width:1200px;
+	min-height:580px;
+	font-size:12px;
+	text-align:center;	
+	background:#D5D5D5;
+}
+
+#userltable tr td {
+	border: 1px solid #B9B9B9;
+	border-collapse: collapse;
+	padding: 2px;
+}
+#userbtn {
+	float: right;
+}
+
+#userltable {
+	width: 720px;
+	border: 1px solid #B9B9B9;
+	border-collapse: collapse;
+}
+#usertable {
+	width: 720px;
+	height: 380px;
+	border-collapse: collapse;
+	text-align: center;
+}
+#usertable tr td {
+	height: 20px;
+}
+
+#modifydiv {
+	width: 200px;
+	height: 200px;
+	float: left;
+}
+
+#adddiv {
+	width: 450px;
+	height: 200px;
+	float: left;
+}
+#userlistdiv {
+	width: 720px;
+}
+.m2 {
+	background-color: #666;
+	color:white;
+	font-weight:bold;
+	text-align:center;
+}
+table
+{
+	font-size:12px;
+}
+</style>
+    </head>
+    <body onLoad="MY_ONLOAD()">
+<script>
+    function MY_ONLOAD() {
+        g_lockLink = false;
+        document.getElementById("adddiv").style.display="none";
+        document.getElementById("modifydiv").style.display="none";
+        if (loginauth == 1 || loginauth == 2)
+        {
+            document.getElementById("addbtn").disabled = 1;
+            document.getElementById("modifybtn").disabled = 1;
+        }
+        window.flag = 0;
+    }
+
+    function ModifyUser1()
+    {
+		$("#username").attr("disabled","disabled");
+        document.getElementById("adddiv").style.display="none";
+        document.getElementById("modifydiv").style.display="";
+    }
+
+    function AddUser1()
+    {
+        document.getElementById("adddiv").style.display="";
+        document.getElementById("modifydiv").style.display="none";
+    }
+
+    g_socketAuthority = parseInt(GV("<%socketauthority%>", 3));
+    var userStr = new Array("<%user.0%>", "<%authority.0%>", 
+							"<%user.1%>", "<%authority.1%>", 
+							"<%user.2%>", "<%authority.2%>", 
+							"<%user.3%>", "<%authority.3%>", 
+							"<%user.4%>", "<%authority.4%>", 
+							"<%user.5%>", "<%authority.5%>", 
+							"<%user.6%>", "<%authority.6%>", 
+							"<%user.7%>", "<%authority.7%>", 
+							"<%user.8%>", "<%authority.8%>", 
+							"<%user.9%>", "<%authority.9%>", 
+							"<%user.10%>", "<%authority.10%>", //GFL
+							"<%user.11%>", "<%authority.11%>", 
+							"<%user.12%>", "<%authority.12%>", 
+							"<%user.13%>", "<%authority.13%>", 
+							"<%user.14%>", "<%authority.14%>", 
+							"<%user.15%>", "<%authority.15%>"//GFL, total 16 users 
+							);
+    var minUserLen = "<%minnamelen%>";
+    var defaultAdminName = userStr[0];
+    var authAdmin = "<%authorityadmin%>";
+    var authOperator = "<%authorityoperator%>";
+    var authViewer = "<%authorityviewer%>";
+
+    CTRLARY = {
+        delUser: new Ctrl_Text("delUser", "9", "99", "", "deluser="),
+        addUser: new Ctrl_Text("addUser", "9", "99", "", "adduser=")
+    };
+
+    var V_Username = new V_StrLen(minUserLen, "<%maxnamelen%>", GL("user_name").toLowerCase());
+    var V_Pwd = new V_StrLen("<%minpwdlen%>", "<%maxpwdlen%>", GL("password").toLowerCase()); //zdy
+
+    // modified user
+    var c_userName = new Ctrl_Text("username", "12", "<%maxnamelen%>" , "", "");
+    // new pwd
+    var c_userPwd = new Ctrl_Text("userpwd", "12", "<%maxpwdlen%>", "", "", null, true);
+    // confirm new pwd
+    var c_userPwd2 = new Ctrl_Text("userpwd2", "12", "<%maxpwdlen%>", "", "", null, true);
+    // old pwd
+    var c_oldPwd = new Ctrl_Text("oldPwd", "12", "<%maxpwdlen%>", "", "", null, true);
+    // add user
+    var a_userName = new Ctrl_Text("ausername", "12", "<%maxnamelen%>", "", "");
+    // new pwd
+    var a_userPwd = new Ctrl_Text("auserpwd", "12", "<%maxpwdlen%>", "", "", null, true);
+    // confirm new pwd
+    var a_userPwd2 = new Ctrl_Text("auserpwd2", "12", "<%maxpwdlen%>", "", "", null, true);
+    // auth
+    var c_auth = new Ctrl_Radio("auth", 2, "");
+
+</script>
+<script>
+    function isChinese(ch)
+    {
+        var chinese = "[\u0391-\uFFE5]";
+        if (ch.match(chinese))
+            return true;
+        return false;
+    }
+
+    function isInvalid(ch)
+    {
+        var invalidch = "~\'\"\"`!@#$%^&*()[]{}+=-|\\\'/？,，。.<>";
+        if (invalidch.indexOf(ch) != -1)
+            return true;
+        return false;
+    }
+// alert(unamelogin);
+
+// show user list
+    function ShowUserList() {
+        var r;
+        for (var i = 0; i < userStr.length/2; i = i + 2) { //zdy
+            r = "";
+            switch (userStr[i + 1]) {
+            case authAdmin:
+                r = GL("admin");
+                break;
+            case authOperator:
+                r = GL("operator");
+                break;
+            case authViewer:
+                r = GL("viewer");
+                break;
+            }
+            if (r != "") {
+                DW("<option value=" + userStr[i] + ">" + userStr[i] + ":" + r + "</option>");
+            }
+        }
+    }
+
+    //add by zdy
+    function WriteUserList(){
+        var r;      
+        for (var i = 0; i < userStr.length/2; i=i+2) {
+            //alert(i);
+            //alert(userStr[i]);
+            if (userStr[i] != "") {
+                r = "";
+                switch (userStr[i + 1]){
+                    case authAdmin:
+                        r = GL("admin");
+                        break;
+                    case authOperator:
+                        r = GL("operator");
+                        break;
+                    case authViewer:
+                        r = GL("viewer");
+                        break;
+                }
+          DW('<tr onclick="WriteUserInfoToElm(this)" id="' + i + '">');
+          var num = i/2 + 1;
+          DW("<td>" + num + "</td>");
+          var tdid = "username" + i;
+          // alert(tdid);
+          DW("<td id='" + tdid + "'>" + userStr[i]);
+          // DW('<select onclick="WriteUserInfoToElm()" name="userList" id="userList>');
+          // DW("<option value=" + userStr[i] + ">" + userStr[i] + "</option>");
+          DW('</td>');
+          //username.onclick=function("WriteUserInfoToElm()");
+          DW("<td id='userauth1'>" + r + "</td>");                
+          DW("</tr>");
+        }
+      }
+    }
+
+    function disableRadioOptions(name, isDisable) {
+        var objs = GES(name);
+        if (objs != null) {
+            for (var i = 0; i < objs.length; i++) {
+                objs[i].disabled = isDisable;
+            }
+        }
+    }
+
+    function WriteUserInfoToElm() {
+        // var obj = GE("userList");
+        // if (obj != null) {
+        //     var selectIndex = obj.selectedIndex;
+        //     var name = obj.options[selectIndex].text;
+        //     SetValue("username", name.substring(0, name.indexOf(":", 0)));
+        //     SetRadioValue("auth", userStr[selectIndex * 2 + 1]);
+        // }
+        // modified by zdy, 2013-08-27
+          var oObj = event.srcElement;   
+          if(oObj.tagName.toLowerCase() == "td")   
+          {   
+            var oTr = oObj.parentNode;   
+            for(var i=1; i < document.all.userltable.rows.length; i++)   
+            {   
+              document.all.userltable.rows[i].style.backgroundColor = "";   
+              document.all.userltable.rows[i].tag = false;              
+            }   
+            oTr.style.backgroundColor = "#F8F8F8";   
+            oTr.tag = true;
+            // alert(oTr.id);
+            var trid = oTr.id;
+            var tdid = "username" + trid;
+            // alert(tdid);
+            var uname = document.getElementById(tdid).innerHTML;
+            // var uauth = document.getElementById("userauth1").innerHTML;
+            document.getElementById("username").value = uname;            
+          }   
+
+    }
+
+    function DelUser() {
+        document.getElementById("adddiv").style.display="none";
+        document.getElementById("modifydiv").style.display="none";
+        var tempUserName = c_userName.GV();
+        if (tempUserName == "") {
+            alert(GL("no_user_del"));
+        } else if (tempUserName == defaultAdminName) {
+            alert(GL("cannot_del_admin"));
+        } else {
+
+            SetCIA("delUser", true);
+            SetCIA("addUser");
+            // SetCCV("delUser", tempUserName);
+            
+            //modified by zdy
+            if(confirm(GL("confirm_delete"))){
+                SendHttp(c_iniUrl + GetSetterCmd(CTRLARY["delUser"], tempUserName), false, DelUserCallBack);
+                alert(GL("del_success"));
+                window.location.reload();
+            }
+            // ChangeContent(null, true);
+        }
+    }
+
+    function DelUserCallBack() {
+        if (g_SubmitHttp.readyState == 4) {
+            WS("");
+            if (g_SubmitHttp.status == 200) {
+                var txt = g_SubmitHttp.responseText;
+                // alert(txt);
+                if (txt.indexOf("OK deluser") >= 0) {
+                    WS("user deleted");
+                } else if (txt.indexOf("UA deluser") >= 0) {
+                    alert(GL("auth_not"));
+                } else {
+                    alert(GL("user_del"));
+                }
+            }
+        }
+    }
+    var USER_NOT_EXIST = 0xF0E;
+    var USER_LIST_FULL = 0xF0F;
+
+    function checkUserExist(cname) {
+        var retv = USER_LIST_FULL;
+        for (var i = 0;
+        (i * 2) < userStr.length; i++) {
+            if (cname == userStr[i * 2]) {
+                retv = i;
+                break;
+            } else if ("" == userStr[i * 2]) {
+                retv = USER_NOT_EXIST;
+            }
+        }
+        return retv;
+    }
+
+    function AddUser() {
+        var tempUserName = a_userName.GV();
+        var pwd1 = a_userPwd.GV();
+        var pwd2 = a_userPwd2.GV();
+        // alert(tempUserName);
+        if (tempUserName.length == 0)
+        {
+            alert(GL("user_empty"));
+            var obj = GE(a_userName.id);
+            if (obj != null) {
+                obj.focus();
+            }
+            return false;
+        }
+
+        if (tempUserName.length < 4 || tempUserName.length > 32)
+        {
+            alert(GL("user_num"));
+            var obj = GE(a_userName.id);
+            if (obj != null) {
+                obj.focus();
+            }
+            return false;
+        }
+        for (var i = 0; i < tempUserName.length; i++) {
+            var ch = tempUserName.charAt(i);
+
+            if (isChinese(ch) || isInvalid(ch) || ch == ' ')
+            {
+              alert(GL("uname_inv"));
+                var obj = GE(a_userName.id);
+                if (obj != null) {
+                    obj.focus();
+                    obj.value = "";
+                }
+
+              return false;
+            }
+          }
+        if (pwd1.length == 0)
+        {
+            alert(GL("pwd_empty"));
+            var obj = GE(a_userPwd.id);
+            if (obj != null) {
+                obj.focus();
+            }
+            return false;
+        }
+
+        if (pwd1.length < 4 || pwd1.length > 16)
+        {
+            alert(GL("pwd_num"));
+            var obj = GE(a_userPwd.id);
+            if (obj != null) {
+                obj.focus();
+            }
+            return false;
+        }
+        for (var i = 0; i < pwd1.length; i++) {
+            var ch = pwd1.charAt(i);
+
+            if (isChinese(ch) || isInvalid(ch) || ch == ' ')
+            {
+                alert(GL("pwd_inv"));
+                var obj = GE(a_userPwd.id);
+                if (obj != null) {
+                    obj.focus();
+                    obj.value = "";
+                }
+                a_userPwd2.SV("");
+                return false;
+            }
+        }
+
+        if (pwd2.length == 0)
+        {
+            alert(GL("pwd_empty"));
+            var obj = GE(a_userPwd2.id);
+            if (obj != null) {
+                obj.focus();
+            }
+            return false;
+        }
+
+
+
+        if (pwd1 != pwd2) {
+            alert(GL("pwd_not_match"));
+            // a_userPwd2.SV("");
+            var obj = GE(a_userPwd2.id);
+            if (obj != null) {
+                obj.focus();
+                obj.value = "";
+            }
+
+            return false;
+        }
+
+        var authValue = document.getElementById("auth").value;
+        // alert(authValue);
+
+        if (authValue < 0) {
+            alert(GL("sel_user_auth"));
+            return false;
+        }
+
+        var retv = checkUserExist(tempUserName);
+// alert(retv);
+        if (retv == USER_LIST_FULL) {
+            alert(GL("user_full"));
+            return false;
+        }
+        else if (retv != USER_NOT_EXIST)
+        {
+            alert(GL("user_exist"));
+            return false;
+        }
+        else if (retv == USER_NOT_EXIST)
+        {
+            var o = a_userName.GV() + ':' + a_userPwd.GV() + ':' + c_auth.GV();
+            sendCmdAddUser(o); 
+            alert(GL("add_success"));
+            window.location.reload();
+          
+        }
+    }
+
+    function checkPasswdCallBack() {
+        if (g_SubmitHttp.readyState == 4) {
+            WS("");
+            if (g_SubmitHttp.status == 200) {
+                var txt = g_SubmitHttp.responseText;
+                if (txt.indexOf("OK checkpassword") >= 0) {
+                    window.flag = 1;
+                    WS("Password check OK");
+                    if (confirm(GL("user_modi") + '"' + c_userName.GV() + '" ?')) {                       
+                        var o = c_userName.GV() + ':' + c_userPwd.GV() + ':' + c_auth.GV();
+                        sendCmdAddUser(o);
+                        alert(GL("modify_success"));
+                        window.location.reload();
+
+                    } else {
+                        return;
+                    }
+                } else if (txt.indexOf("UA checkpassword") >= 0) {
+                    window.flag = 0;
+                    alert(GL("auth_not"));
+                } else {
+                    window.flag = 0;
+                    alert(GL("old_pwd"));
+                    var obj = GE(c_oldPwd.id);
+                    if (obj != null) {
+                        obj.focus();
+                        // obj.select();
+                        obj.value = "";
+                    }
+                }
+            }
+        }
+    }
+
+    function sendCmdAddUser(o) {
+        SetCIA("delUser");
+        SetCIA("addUser", true);
+        // SetCCV("addUser", a_userName.GV() + ":" + a_userPwd.GV() + ":" + c_auth.GV());
+        // alert(a_userName.GV() + ":" + a_userPwd.GV() + ":" + c_auth.GV());
+        SendHttp(c_iniUrl + GetSetterCmd(CTRLARY["addUser"], o), false, AddUserCallBack);
+        // ChangeContent(null, true);
+        // window.location.reload();
+    }
+
+    function AddUserCallBack() {
+        if (g_SubmitHttp.readyState == 4) {
+            WS("");
+            if (g_SubmitHttp.status == 200) {
+                var txt = g_SubmitHttp.responseText;
+                // alert(txt);
+                if (txt.indexOf("UA adduser") >= 0) {
+                    alert(GL("auth_not"));
+                }
+            }
+        }
+    }
+
+function ModifyUser()
+{
+    var uname = document.getElementById("username").value;
+    var oldpwd = document.getElementById("oldPwd").value;
+    var newpwd1 = document.getElementById("userpwd").value;
+    var newpwd2 = document.getElementById("userpwd2").value;
+
+	
+    // if (uname == defaultAdminName) {
+    //     alert(GL("cannot_modify_admin"));
+
+    //     document.getElementById("username").focus();
+    //     return false;
+    // } 
+
+    if (uname.length == 0)
+    {
+        alert(GL("sel_uname"));
+        document.getElementById("username").focus();
+        return false;
+    }
+
+    if (oldpwd.length == 0)
+    {
+        alert(GL("oldpwd_empty"));
+        document.getElementById("oldpwd").focus();
+        return false;
+    }
+
+    if (newpwd1.length == 0)
+    {
+        alert(GL("newpwd_empty"));
+        document.getElementById("userpwd").focus();
+        return false;
+    }
+
+    if (newpwd2.length == 0)
+    {
+        alert(GL("newpwd_empty"));
+        document.getElementById("userpwd2").focus();
+        return false;
+    }
+	
+	if (newpwd1.length < 4 || newpwd1.length > 16)
+	{
+		alert(GL("pwd_num"));
+		document.getElementById("userpwd").focus();
+		return false;
+	}
+
+	for (var i = 0; i < newpwd1.length; i++) {
+		var ch = newpwd1.charAt(i);
+
+		if (isChinese(ch) || isInvalid(ch) || ch == ' ')
+		{
+		  alert(GL("pwd_inv"));
+		  document.getElementById("userpwd").focus();
+		  document.getElementById("userpwd").value = "";
+		  return false;
+		}
+	}
+          
+
+    if (newpwd1 != newpwd2)
+    {
+        alert(GL("newpwd_equ"));
+        document.getElementById("userpwd2").focus();
+        document.getElementById("userpwd2").value = "";
+        return false;
+    }
+
+    var smsg = "";
+    var retv = checkUserExist(uname);
+    // alert(retv);
+    if (retv == USER_NOT_EXIST) {
+        alert(GL("user_not_exist"));
+        document.getElementById("username").value = "";
+        document.getElementById("username").focus();
+        return false;
+    }
+
+    smsg += retv + ":" + uname + ":" + oldpwd + ":" + "1";
+    // if (uname == "admin")
+    // {
+    //     alert(GL("admin_modify"));
+    //     document.getElementById("username").value = "";
+    //     document.getElementById("username").focus();
+    //     return false;
+    // }    
+// alert(smsg);
+// alert(retv);
+    var auth = userStr[retv*2+1];
+// alert(auth);
+    c_auth.SV(auth);
+    // var o = c_iniUrl + GetSetterCmdKV("checkpassword", smsg);
+    // alert(o);
+    SendHttp(c_iniUrl + GetSetterCmdKV("checkpassword", smsg), false, checkPasswdCallBack);
+    // alert(window.flag);
+
+    // if (window.flag == 0)
+    //     return false;
+
+    // alert(GL("modify_success"));
+    // window.location.reload();
+}
+
+function WIPXX(tid, ctx, msg)
+{
+  DW('<tr class="b1"><td width=100 height="30" >');
+  DW(GL(tid) + ':</td><td >' + ctx + '</td><td width=300>' + GL(msg) + '</td></tr>');
+};
+
+function WIPA(tid, ctx, msg)
+{
+  DW('<tr class="b1"><td width=100 height="30" >');
+  DW(GL(tid) + ':</td><td colspan=2>' + ctx + '</td></tr>');
+};
+
+</script>
+<script>
+
+    DW('<div id="userdiv"  align="left" >');
+    DW('<table id="usertable">');
+    // modify, add, delete
+    DW('<tr><td>');
+    DW('<div id="userbtn">');
+    DW('<table>');
+    DW('<tr><td>');
+    DW('<input type="button" value="' + GL("modify") + '" class="m1" onClick="ModifyUser1()" style="width:70px;height:30px">');
+    DW('</td><td>');
+    DW('<input type="button" value="' + GL("add") + '" class="m1" onClick="AddUser1()" style="width:70px;height:30px">');
+    DW('</td><td>');
+    DW('<input type=button value="' + GL("_delete") + '" onClick="DelUser()" class="m1" style="width:70px;height:30px">');
+    DW('</td></tr>');
+    DW('</table>');
+    DW('</div>');
+    DW('</td></tr>');
+
+    // userlist
+    DW('<tr><td  style="vertical-align:text-top;">');
+    DW('<div id="userlistdiv">');
+
+    DW('<table id="userltable">');
+    DW('<tr class="m2"><td width="150px">');
+    DW(GL("no"));
+    DW('</td><td width="200px">');
+    DW(GL("username"));
+    DW('</td><td width="250px">');
+    DW(GL("auth"));
+    DW('</td></tr>');
+
+    // DW('<tr><td valign=middle class=m1 >' + GL("user_list") + ':<br><select onclick="WriteUserInfoToElm()" size="8" class="m1" style="width:160px" name="userList" id="userList" >');
+    WriteUserList();
+    // DW('</select></td></tr>');
+    DW('</table>');
+
+    DW('</div>');
+    // modify
+    DW('<div id="modifydiv">');
+    DW('<table>');
+    WIPX("username", c_userName.html);
+    WIPX("old_password", c_oldPwd.html);
+    WIPX("newpwd", c_userPwd.html);
+    WIPX("confirm", c_userPwd2.html);
+    DW('<tr><td colspan=2 align=right>');
+    DW('<input type="button" id="modifybtn" value="' + GL("conserve") + '" class="m1" onClick="ModifyUser()" style="width:70px;height:30px">');
+    DW('</td></tr>');
+
+    DW('</table>');
+    DW('</div>');
+
+    // add
+    DW('<div id="adddiv">');
+    DW('<table>');
+    WIPXX("username", a_userName.html, "user_msg");
+    WIPXX("password", a_userPwd.html, "pwd_msg");
+    WIPXX("confirm", a_userPwd2.html, "pwd2_msg");
+    WIPA("authority", c_auth.GetHtml(0) + " " + GL("admin") + " " + c_auth.GetHtml(1) + " " + GL("operator") + " " + c_auth.GetHtml(2) + " " + GL("viewer"));
+    DW('<tr><td  colspan=3 align=right>');
+    DW('<input type="button" id="addbtn" value="' + GL("conserve") + '" class="m1" onClick="AddUser()" style="width:70px;height:30px">');
+    DW('</td></tr>');
+    DW('</table>');
+    DW('</div>');
+    DW('</td><tr>');
+    DW('</table>');
+    DW('</div>');
+    ALC();
+</script>
+    </body>
+</html>

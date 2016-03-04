@@ -1,0 +1,6 @@
+# Aliases extracted from modules themselves.
+alias sdio:c*v0097d4076* wl12xx_sdio
+alias spi:wl1271 wl12xx_spi
+alias platform:wl12xx wl12xx
+alias spi:wl1251 wl1251_spi
+alias sdio:c*v104Cd9066* wl1251_sdio

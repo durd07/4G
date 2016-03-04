@@ -1,0 +1,386 @@
+<html>
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+    <title>
+      FTP Setting
+    </title>
+    <style type="text/css">
+    td {
+      font-size: 12px;
+    }
+    </style>
+
+  </head>
+
+  <body onload="MY_ONLOAD()">
+      <iframe name="hiddenIFrame" id="hiddenIFrame" 
+    width="200" height="1" marginwidth="0" marginheight="0" 
+    scrolling="no" frameborder="0" src="setsmtp.htm" style="visibility:hidden">
+    </iframe>
+
+<script>
+    var v_smtpip = "<%smtpip%>";
+    var v_emailUser = "<%emailuser%>";
+    var v_maxFQDNLen = 15;//"<%maxfqdnlen%>";//Modified by GFL
+    
+
+    CTRLARY = {
+        smtpip: new Ctrl_Text("smtpip", "25", v_maxFQDNLen, v_smtpip, "smtpip=", gco_empty),
+        smtpport: new Ctrl_Text("smtpport", "5", "5", "<%smtpport%>", "smtpport=", gco_ipPort),
+        smtpAuth: new Ctrl_Check("smtpAuth", "<%smtpauth%>", "smtpauth=", "FixStatus()"),
+        smtpUser: new Ctrl_Text("smtpUser", "20", "<%maxsmtpuser%>", "", "smtpuser=", gco_empty),
+        smtpPwd: new Ctrl_Text("smtpPwd", "20", "<%maxsmtppwd%>", "<%smtppwd%>", "smtppwd=", gco_empty, true),
+        smtpSender: new Ctrl_Text("smtpSender", "25", "<%maxsmtpsender%>", "<%smtpsender%>", "smtpsender="),
+		    smtpMail: new Ctrl_Text("smtpMail", "25", "<%maxemailuserlen%>", v_emailUser, "emailuser=", gco_email)
+    };
+    </script> 
+<script> 
+
+function ParaCheck()
+{
+  var flag = false;
+
+  var smtpip = GetCCV("smtpip");
+  if (smtpip == "<%smtpip%>")
+  {
+    CTRLARY["smtpip"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var smtpport = GetCCV("smtpport");
+  if (smtpport == "<%smtpport%>")
+  {
+    CTRLARY["smtpport"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var smtpAuth = GetCCV("smtpAuth");
+  if (smtpAuth == "<%smtpauth%>")
+  {
+    CTRLARY["smtpAuth"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  if (GetCCV("smtpAuth") == 1)
+  {
+    var smtpUser = GetCCV("smtpUser");
+    var user = window.frames["hiddenIFrame"].document.getElementById("smtpuser").value;
+    if (smtpUser == user)
+    {
+      CTRLARY["smtpUser"].active = 0;
+    } 
+    else if (flag == false)
+      flag = true;
+
+    var smtpPwd = GetCCV("smtpPwd");
+    if (smtpPwd == "<%smtppwd%>")
+    {
+      CTRLARY["smtpPwd"].active = 0;
+    } 
+    else if (flag == false)
+      flag = true;
+  }
+
+  var smtpSender = GetCCV("smtpSender");
+  if (smtpSender == "<%smtpsender%>")
+  {
+    CTRLARY["smtpSender"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var smtpMail = GetCCV("smtpMail");
+  if (smtpMail == "<%emailuser%>")
+  {
+    CTRLARY["smtpMail"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  return flag;
+}
+function ChecksmtpIp() {
+  var value = document.getElementById("smtpip").value;
+      var res = false;    
+      var ipary = value.split(".");     
+      var num = ipary.length;
+      if (value.length == 0)
+      {
+        alert(GL("smtpip_empty"));
+        document.getElementById("smtpip").focus();
+        return false;
+      }
+      if(num != 4)
+      {
+        alert(GL("smtpip_err"));
+        document.getElementById("smtpip").value = "";
+        document.getElementById("smtpip").focus();
+        return false;
+      }
+      else
+      {
+        var i = 0;
+        if (ipary[0] <= 0 || !(IsNumeric(ipary[0])))
+        {
+          alert(GL("smtpip_err"));
+          document.getElementById("smtpip").value = "";
+          document.getElementById("smtpip").focus();
+          return false; 
+        } 
+
+        for (i = 1; i<num;i++)
+        {
+          if(ipary[i] < 0 || ipary[i] >255 || !(IsNumeric(ipary[i])) || ipary[i] == '')
+          {            
+            alert(GL("smtpip_err"));
+            document.getElementById("smtpip").value = "";
+            document.getElementById("smtpip").focus();
+            return false; 
+          }
+        }
+      }
+      return true;
+}
+
+function ChecksmtpPort(min, max)
+{
+    var port = document.getElementById("smtpPort").value;
+    if(port.length == 0)
+    {
+        alert(GL("smtpport_empty"));
+        document.getElementById("smtpPort").focus();
+        return false;
+    }
+
+    if (!IsNumeric(port))
+    {
+        alert(GL("smtpport_inv"));
+        document.getElementById("smtpPort").value = "";
+        document.getElementById("smtpPort").focus();
+        return false;
+    }
+
+    if (!((port >= min && port <= max) || port == 25))
+    {
+        alert(GL("smtpport_num"));
+        document.getElementById("smtpPort").value = "";
+        document.getElementById("smtpPort").focus();
+        return false;
+    }
+    return true;
+}
+
+function ChecksmtpUser()
+{
+    var user = document.getElementById("smtpUser").value;
+    if (user.length == 0)
+    {
+        alert(GL("smtpuser_empty"));
+        document.getElementById("smtpUser").focus();
+        return false;
+    }
+
+    // if (user.length > 31 || user.length < 4)
+    // {
+    //   alert(GL("smtpuser_range"));
+    //   document.getElementById("smtpUser").value = '';
+    //   document.getElementById("smtpUser").focus(); 
+    //   return false;
+    // }
+
+    // for (var i = 0; i < user.length; i++) {
+    //   var ch = user.charAt(i);
+
+    //   if (isChinese(ch) || isInvalid(ch) || ch == ' ')
+    //   {
+    //     alert(GL("smtpuser_inv"));
+    //     document.getElementById("smtpUser").value = '';
+    //     document.getElementById("smtpUser").focus(); 
+    //     return false;
+    //   }
+    // }
+
+    return true;
+}
+
+function ChecksmtpPwd()
+{
+    var user = document.getElementById("smtpPwd").value;
+    if (user.length == 0)
+    {
+        alert(GL("smtppwd_empty"));
+        document.getElementById("smtpPwd").focus();
+        return false;
+    }
+
+    // if (user.length > 15 || user.length < 4)
+    // {
+    //   alert(GL("smtppwd_range"));
+    //   document.getElementById("smtpPwd").value = '';
+    //   document.getElementById("smtpPwd").focus(); 
+    //   return false;
+    // }
+    
+    // for (var i = 0; i < user.length; i++) {
+    //   var ch = user.charAt(i);
+
+    //   if (isChinese(ch) || isInvalid(ch) || ch == ' ')
+    //   {
+    //     alert(GL("smtppwd_inv"));
+    //     document.getElementById("smtpPwd").value = '';
+    //     document.getElementById("smtpPwd").focus(); 
+    //     return false;
+    //   }
+    // }
+    return true;
+}
+function ChecksmtpSender()
+{
+    var user = document.getElementById("smtpSender").value;
+    var userlist = user.split('@');
+
+    if (user.length == 0)
+    {
+        alert(GL("smtpsend_empty"));
+        document.getElementById("smtpSender").focus(); 
+        return false;
+    }
+    for (var i = 0; i < user.length; i++) {
+      var ch = user.charAt(i);
+
+      if (isChinese(ch) || isMailInvalid(ch) || ch == ' ')
+      {
+        alert(GL("smtppwd_inv"));
+        document.getElementById("smtpSender").value = '';
+        document.getElementById("smtpSender").focus(); 
+        return false;
+      }
+    }
+    if (userlist.length != 2 || userlist[0].length == 0 || userlist[1].length == 0)
+    {
+        alert(GL("smtpsend_inv"));
+        document.getElementById("smtpSender").value = "";
+        document.getElementById("smtpSender").focus(); 
+        return false;
+    }
+
+    return true;
+}
+function Checksmtpmail()
+{
+    var user = document.getElementById("smtpMail").value;
+    var userlist = user.split('@');
+
+    if (user.length == 0)
+    {
+        alert(GL("smtpmail_empty"));
+        document.getElementById("smtpMail").focus(); 
+        return false;
+    }
+
+    for (var i = 0; i < user.length; i++) {
+      var ch = user.charAt(i);
+
+      if (isChinese(ch) || isMailInvalid(ch) || ch == ' ')
+      {
+        alert(GL("smtpmail_inv"));
+        document.getElementById("smtpMail").value = '';
+        document.getElementById("smtpMail").focus(); 
+        return false;
+      }
+    }
+    if (userlist.length != 2 || userlist[0].length == 0 || userlist[1].length == 0)
+    {
+        alert(GL("smtpmail_inv"));
+        document.getElementById("smtpMail").value = "";
+        document.getElementById("smtpMail").focus(); 
+        return false;
+    }
+
+
+    return true;
+}
+
+  function MY_BEFORE_SUBMIT() {
+    if(ChecksmtpIp() == false)
+      return false;
+    if (ChecksmtpPort(2000, 65535) == false)
+    return false;
+
+    if (GetCCV("smtpAuth") == 1)
+    {
+      if (ChecksmtpUser() == false)
+          return false;
+      if (ChecksmtpPwd() == false)
+          return false;    
+    }
+    
+    if (Checksmtpmail() == false)
+        return false;
+    if (ChecksmtpSender() == false)
+        return false;
+    if (ParaCheck() == false)
+    {
+      alert(GL("para_not_change"));
+      ChangeActive();
+      return false;
+    }
+
+    return true;
+}
+  function MY_SUBMIT_OK() {
+    alert(GL("submit_success"));
+    // ChangeContent(null, false);
+    window.location.reload();
+  }
+
+    function MY_ONLOAD() {
+        FixStatus();
+        g_lockLink = false;
+    }
+    function FixStatus() {
+        if (g_isSupportSmtpAuth) {
+            var authDis = (GetCCV("smtpAuth") == 0);
+            DisableObject("smtpUser", authDis);
+            DisableObject("smtpPwd", authDis);
+        } else {
+            SetCIA("smtpAuth", false);
+            SetCIA("smtpUser", false);
+            SetCIA("smtpPwd", false);
+        }
+    }
+</script>
+<script> 
+    DW('<table>');
+    if (g_isSupportSmtpAuth) {
+        WIP1(WH_("smtpAuth") + " " + GL("smtp_server_req_auth"));
+        WIP("smtp_user", "smtpUser");
+        WIP("smtp_pwd", "smtpPwd");
+    }
+    WIP("smtp_sender", "smtpSender");
+    //WIP("smtp_server", "smtpip"); //zdy
+    //WIP("port", "smtpport"); //zdy
+    // add by zdy
+    DW("<tr><td>" + GL("smtp_server") + ":</td><td>");
+    WH("smtpip");
+    DW("&nbsp;" + GL("port") + ":&nbsp;");
+    WH("smtpport");
+    DW("</td></tr>");
+    WIP("email_addr", "smtpMail");
+    WIPSubmit();
+</script>
+<script>
+    DW('</table>');
+    ALC();
+</script>
+</body>
+</html>

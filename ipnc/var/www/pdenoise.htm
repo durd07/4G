@@ -1,0 +1,570 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+		<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <link rel="shortcut icon" href="skin/favicon.ico" type="image/x-icon" />
+    <script language="javascript" src="var.js"></script>
+    <script language="javascript" src="common.js"></script>
+    <script language="javascript" src="jquery/jquery-1.9.1.min.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <title>
+    </title>
+    <style type="text/css">
+      .box {
+        width: 500px;
+        border: 1px solid #666666;
+        margin: 0px;
+        font-size: 14px;
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+      }
+      .menu ul,li {
+        list-style: none;
+      }
+      ul.menu li {
+        float: left;
+        margin-bottom: 1px;
+        line-height: 16px;
+        height: 14px;
+        margin: 5px 0 0 -1px;
+        border-left: 1px solid #666666;
+        text-align: center;
+        padding: 0 12px;
+        cursor: pointer;
+      }
+      ul.menu li.current {
+        border: 1px solid #666666;
+        border-bottom: none;
+        background: #fff;
+        height: 25px;
+        line-height: 26px;
+        margin: 0;
+      }
+      .content {
+        padding: 10px;
+      }
+      a {
+        text-decoration: none;
+      }
+      a:link {
+        text-decoration: none;
+        color: black;
+      }
+      a:active {
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: none;
+        color: black;
+      }
+      a:visited {
+        text-decoration: none;
+        color: black;
+      }
+    </style>
+  </head>
+
+  <body onload="MY_ONLOAD()">
+  <script>
+    var h264list = "HP;MP;BP";
+	var emoudlelist = GL("auto") + ";" + GL("manual");
+var shutteruplist = '';
+for (var i = 0; i <= 255; i++ ) {
+  shutteruplist += i;
+  if (i != 255)
+    shutteruplist += ';';
+};
+var shutterlowlist = '';
+for (var i = 0; i <= 255; i++ ) {
+  shutterlowlist += i;
+  if (i != 255)
+    shutterlowlist += ';';
+};
+var gainuplist = '';
+for (var i = 0; i <= 255; i++ ) {
+  gainuplist += i;
+  if (i != 255)
+    gainuplist += ';';
+};
+var gainlowlist ='';
+for (var i = 0; i <= 255; i++ ) {
+  gainlowlist += i;
+  if (i != 255)
+    gainlowlist += ';';
+};
+
+var gainsetlist ='';
+for (var i = 0; i <= 255; i++ ) {
+  gainsetlist += i;
+  if (i != 255)
+    gainsetlist += ';';
+};
+
+var shuttersetlist ='';
+for (var i = 0; i <= 255; i++ ) {
+  shuttersetlist += i;
+  if (i != 255)
+    shuttersetlist += ';';
+};
+    CTRLARY = {
+	  exposure_moudle: new Ctrl_Select("exposure_moudle",emoudlelist,"<%exposure_moudle%>","exposure_moudle=","Change_exposure_moudle()"),//曝光模式
+	  shutter_up: new Ctrl_Select("shutter_up",shutteruplist,"<%shutter_up%>","shutter_up=","Change_shutter_up()"),//快门上限
+	  shutter_low: new Ctrl_Select("shutter_low",shutterlowlist,"<%shutter_low%>","shutter_low=","Change_shutter_low()"),//快门下限
+	  gain_up: new Ctrl_Select("gain_up",gainuplist,"<%gain_up%>","gain_up=","Change_gain_up()"),//增益上限
+	  gain_low: new Ctrl_Select("gain_low",gainlowlist,"<%gain_low%>","gain_low","Change_gain_low()"),//增益下限
+	  gain_set: new Ctrl_Select("gain_set",gainsetlist,"<%gain_set%>","gain_set","Change_gain_set()"),//增益手动设置
+	  shutter_set: new Ctrl_Select("shutter_set",shuttersetlist,"<%shutter_set%>","shutter_set=","Change_shutter_set()"),//快门
+	  
+	  c_maxdgain: new Ctrl_Text("c_maxdgain", 3, 5, "<%c_maxdgain%>", "c_maxdgain=", null, false, "Changemaxdgain()"),//数字增益上限
+	  c_mindgain: new Ctrl_Text("c_mindgain", 3, 5, "<%c_mindgain%>", "c_mindgain=", null, false, "Changemindgain()"),//数字增益下限
+	  c_maxtbrightness: new Ctrl_Text("c_maxtbrightness", 3, 3, "<%c_maxtbrightness%>", "c_maxtbrightness=", null, false, "Changemaxbrightness()"),//目标亮度上限
+	  c_mintbrightness: new Ctrl_Text("c_mintbrightness", 3, 3, "<%c_mintbrightness%>", "c_mintbrightness=", null, false, "Changemintbrightness()"),//目标亮度下限
+	  c_tbrightness: new Ctrl_Text("c_tbrightness", 3, 3, "<%c_tbrightness%>", "c_tbrightness=", null, false, "Changetbrightness()"),//目标亮度
+	  
+		
+	
+      contrast: new Ctrl_Text("contrast", "3", "3", "<%contrast%>", "contrast="),
+      brightness: new Ctrl_Text("brightness", "3", "3", "<%brightness%>", "brightness="),
+      sharpness: new Ctrl_Text("sharpness", "3", "3", "<%sharpness%>", "sharpness="),
+      saturation: new Ctrl_Text("saturation", "3", "3", "<%saturation%>", "saturation="),
+
+
+      // IP ratio1
+      ipratio1: new Ctrl_Text("ipratio1", "4", "4", "<%ipratio1%>", "ipratio1="),
+      // IP ratio2
+      ipratio2: new Ctrl_Text("ipratio2", "4", "4", "<%ipratio2%>", "ipratio2="),
+      // IP ratio3
+      // ipratio3: new Ctrl_Text("ipratio3", "4", "4", "<%ipratio3%>", "ipratio3="),
+      // qp value 1
+      qpinit1: new Ctrl_Text("qpinit1", "4", "4", "<%qpinit1%>", "qpinit1="),
+      qpmin1: new Ctrl_Text("qpmin1", "4", "4", "<%qpmin1%>", "qpmin1="),
+      qpmax1: new Ctrl_Text("qpmax1", "4", "4", "<%qpmax1%>", "qpmax1="),
+      // qp value 2
+      qpinit2: new Ctrl_Text("qpinit2", "4", "4", "<%qpinit2%>", "qpinit2="),
+      qpmin2: new Ctrl_Text("qpmin2", "4", "4", "<%qpmin2%>", "qpmin2="),
+      qpmax2: new Ctrl_Text("qpmax2", "4", "4", "<%qpmax2%>", "qpmax2="),
+      // qp value 3
+      // qpinit3: new Ctrl_Text("qpinit3", "4", "4", "<%qpinit3%>", "qpinit3="),
+      // qpmin3: new Ctrl_Text("qpmin3", "4", "4", "<%qpmin3%>", "qpmin3="),
+      // qpmax3: new Ctrl_Text("qpmax3", "4", "4", "<%qpmax3%>", "qpmax3="),
+
+      //noise fileter
+      tnfltctrl: new Ctrl_Radio("tnfltctrl", "<%tnfltctrl%>", "tnfltctrl="),
+      // vnf strength
+      maxexposuretime: new Ctrl_Select("maxexposuretime", "<%maxexposuretimename%>","<%maxexposuretime%>", "maxexposuretime="),
+      // meconfig 1
+      meconfig1: new Ctrl_Select("meconfig1", "<%meconfigname%>","<%meconfig1%>", "meconfig1="),
+      // meconfig 2
+      meconfig2: new Ctrl_Select("meconfig2", "<%meconfigname%>","<%meconfig2%>", "meconfig2="),
+
+      // vnf mode
+      nfltctrl: new Ctrl_Select("nfltctrl", "<%nfltctrlname%>","<%nfltctrl%>", "nfltctrl="),
+      // meconfig 3, h264 HP, MP, BP
+      meconfig3: new Ctrl_Select("meconfig3", h264list,"<%meconfig3%>", "meconfig3=")
+    }
+  </script>
+
+  <script>
+    function ready() {
+      $("ul.menu li:first-child").addClass("current");
+      $("div.content").find("div.layout:not(:first-child)").hide();
+      $("div.content div.layout").attr("id",
+      function() {
+        return idNumber("No") + $("div.content div.layout").index(this)
+      });
+    }
+
+    function show(controlMenu, num, prefix) {
+      var content = prefix + num;
+      $('#' + content).siblings().hide();
+      $('#' + content).show();
+      controlMenu.eq(num).addClass("current").siblings().removeClass("current");
+    };
+
+    function idNumber(prefix) {
+      var idNum = prefix;
+      return idNum;
+    };
+function fixexp()
+{
+	CTRLARY["exposure_moudle"].Disable(1);
+	CTRLARY["shutter_up"].Disable(1);
+	CTRLARY["shutter_low"].Disable(1);
+	CTRLARY["gain_up"].Disable(1);
+	CTRLARY["gain_low"].Disable(1);
+	CTRLARY["gain_set"].Disable(1);
+	CTRLARY["shutter_set"].Disable(1);
+	
+}
+function Change_exposure_moudle()
+{
+  //Fixexpose();
+  var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set")
+					+','+GetCCV("c_maxdgain")+','+GetCCV("c_mindgain")+','+GetCCV("c_maxtbrightness")+','+GetCCV("c_mintbrightness")+','+GetCCV("c_tbrightness");
+  SendHttp(c_iniUrl + GetSetterCmdKV("exposure_moudle_change", exp_struct), false, SendImgCallBack); 
+}
+
+function Change_shutter_up()
+{ 
+  var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set")
+					+','+GetCCV("c_maxdgain")+','+GetCCV("c_mindgain")+','+GetCCV("c_maxtbrightness")+','+GetCCV("c_mintbrightness")+','+GetCCV("c_tbrightness");
+ SendHttp(c_iniUrl + GetSetterCmdKV("shutter_up_change",exp_struct ), false, SendImgCallBack); 
+}
+
+function Change_shutter_low()
+{ 
+   var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set")
+					+','+GetCCV("c_maxdgain")+','+GetCCV("c_mindgain")+','+GetCCV("c_maxtbrightness")+','+GetCCV("c_mintbrightness")+','+GetCCV("c_tbrightness");
+  SendHttp(c_iniUrl + GetSetterCmdKV("shutter_low_change", exp_struct), false, SendImgCallBack); 
+}
+
+function Change_gain_up()
+{ 
+   var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set")
+					+','+GetCCV("c_maxdgain")+','+GetCCV("c_mindgain")+','+GetCCV("c_maxtbrightness")+','+GetCCV("c_mintbrightness")+','+GetCCV("c_tbrightness");
+  SendHttp(c_iniUrl + GetSetterCmdKV("gain_up_change", exp_struct), false, SendImgCallBack); 
+}
+
+function Change_gain_low()
+{ 
+    var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set")
+					+','+GetCCV("c_maxdgain")+','+GetCCV("c_mindgain")+','+GetCCV("c_maxtbrightness")+','+GetCCV("c_mintbrightness")+','+GetCCV("c_tbrightness");
+  SendHttp(c_iniUrl + GetSetterCmdKV("gain_low_change", exp_struct), false, SendImgCallBack); 
+}
+
+function Change_gain_set()
+{ 
+   var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set")
+					+','+GetCCV("c_maxdgain")+','+GetCCV("c_mindgain")+','+GetCCV("c_maxtbrightness")+','+GetCCV("c_mintbrightness")+','+GetCCV("c_tbrightness");
+  SendHttp(c_iniUrl + GetSetterCmdKV("gain_manu_set", exp_struct), false, SendImgCallBack); 
+}
+
+function Change_shutter_set()
+{ 
+   var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set")
+					+','+GetCCV("c_maxdgain")+','+GetCCV("c_mindgain")+','+GetCCV("c_maxtbrightness")+','+GetCCV("c_mintbrightness")+','+GetCCV("c_tbrightness");
+  SendHttp(c_iniUrl + GetSetterCmdKV("shutter_manu_set", exp_struct), false, SendImgCallBack); 
+}
+function Changemaxdgain()
+{ 
+   var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set")
+					+','+GetCCV("c_maxdgain")+','+GetCCV("c_mindgain")+','+GetCCV("c_maxtbrightness")+','+GetCCV("c_mintbrightness")+','+GetCCV("c_tbrightness");
+  SendHttp(c_iniUrl + GetSetterCmdKV("maxdgain_set", exp_struct), false, SendImgCallBack); 
+}
+function Changemindgain()
+{ 
+   var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set")
+					+','+GetCCV("c_maxdgain")+','+GetCCV("c_mindgain")+','+GetCCV("c_maxtbrightness")+','+GetCCV("c_mintbrightness")+','+GetCCV("c_tbrightness");
+  SendHttp(c_iniUrl + GetSetterCmdKV("mindgain_set", exp_struct), false, SendImgCallBack); 
+}
+function Changemaxbrightness()
+{ 
+   var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set")
+					+','+GetCCV("c_maxdgain")+','+GetCCV("c_mindgain")+','+GetCCV("c_maxtbrightness")+','+GetCCV("c_mintbrightness")+','+GetCCV("c_tbrightness");
+  SendHttp(c_iniUrl + GetSetterCmdKV("maxtbrightness_set", exp_struct), false, SendImgCallBack); 
+}
+function Changemintbrightness()
+{ 
+   var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set")
+					+','+GetCCV("c_maxdgain")+','+GetCCV("c_mindgain")+','+GetCCV("c_maxtbrightness")+','+GetCCV("c_mintbrightness")+','+GetCCV("c_tbrightness");
+  SendHttp(c_iniUrl + GetSetterCmdKV("min_tbrightness_set", exp_struct), false, SendImgCallBack); 
+}
+function Changetbrightness()
+{ 
+   var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set")
+					+','+GetCCV("c_maxdgain")+','+GetCCV("c_mindgain")+','+GetCCV("c_maxtbrightness")+','+GetCCV("c_mintbrightness")+','+GetCCV("c_tbrightness");
+  SendHttp(c_iniUrl + GetSetterCmdKV("t_brightness_set", exp_struct), false, SendImgCallBack); 
+}
+
+	
+    function ParaCheck() {
+      var flag = false;
+
+      var tnfltctrl1 = GetCCV("tnfltctrl");
+      if (tnfltctrl1 == "<%tnfltctrl%>") {
+        CTRLARY["tnfltctrl"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var nfltctrl1 = GetCCV("nfltctrl");
+      if (nfltctrl1 == "<%nfltctrl%>") {
+        CTRLARY["nfltctrl"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var maxexposuretime1 = GetCCV("maxexposuretime");
+      if (maxexposuretime1 == "<%maxexposuretime%>") {
+        CTRLARY["maxexposuretime"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var ipratio11 = GetCCV("ipratio1");
+      if (ipratio11 == "<%ipratio1%>") {
+        CTRLARY["ipratio1"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var ipratio21 = GetCCV("ipratio2");
+      if (ipratio21 == "<%ipratio2%>") {
+        CTRLARY["ipratio2"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var qpinit11 = GetCCV("qpinit1");
+      if (qpinit11 == "<%qpinit1%>") {
+        CTRLARY["qpinit1"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var qpmin11 = GetCCV("qpmin1");
+      if (qpmin11 == "<%qpmin1%>") {
+        CTRLARY["qpmin1"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var qpmax11 = GetCCV("qpmax1");
+      if (qpmax11 == "<%qpmax1%>") {
+        CTRLARY["qpmax1"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var qpinit21 = GetCCV("qpinit2");
+      if (qpinit21 == "<%qpinit2%>") {
+        CTRLARY["qpinit2"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var qpmin21 = GetCCV("qpmin2");
+      if (qpmin21 == "<%qpmin2%>") {
+        CTRLARY["qpmin2"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var qpmax21 = GetCCV("qpmax2");
+      if (qpmax21 == "<%qpmax2%>") {
+        CTRLARY["qpmax2"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var meconfig11 = GetCCV("meconfig1");
+      if (meconfig11 == "<%meconfig1%>") {
+        CTRLARY["meconfig1"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var meconfig21 = GetCCV("meconfig2");
+      if (meconfig21 == "<%meconfig2%>") {
+        CTRLARY["meconfig2"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var meconfig31 = GetCCV("meconfig3");
+      if (meconfig31 == "<%meconfig3%>") {
+        CTRLARY["meconfig3"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var contrast1 = GetCCV("contrast");
+      if (contrast1 == "<%contrast%>") {
+        CTRLARY["contrast"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var brightness1 = GetCCV("brightness");
+      if (brightness1 == "<%brightness%>") {
+        CTRLARY["brightness"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var sharpness1 = GetCCV("sharpness");
+      if (sharpness1 == "<%sharpness%>") {
+        CTRLARY["sharpness"].active = 0;
+      } else if (flag == false) flag = true;
+
+      var saturation1 = GetCCV("saturation");
+      if (saturation1 == "<%saturation%>") {
+        CTRLARY["saturation"].active = 0;
+      } else if (flag == false) flag = true;
+
+      return flag;
+    }
+
+	function fixsome()
+	{
+	  CTRLARY["contrast"].Disable(1);
+	  CTRLARY["brightness"].Disable(1);
+	  CTRLARY["saturation"].Disable(1);
+	  CTRLARY["sharpness"].Disable(1);
+	  CTRLARY["meconfig3"].Disable(1);
+	  CTRLARY["meconfig1"].Disable(1);
+	  CTRLARY["meconfig2"].Disable(1);
+	}
+    function MY_ONLOAD() {
+      g_lockLink = false;
+	  fixexp();	
+	  fixsome();
+    }
+    function MY_BEFORE_SUBMIT() {
+
+      if (ParaCheck() == false) {
+        alert(GL("para_not_change"));
+        ChangeActive();
+        return false;
+      }
+
+      return true;
+    }
+
+    function MY_SUBMIT_OK() {
+      alert(GL("submit_success"));
+      window.location.reload();
+    }
+  </script>
+
+    <div class="box">
+      <table>
+        <tr>
+          <td>对比度&nbsp;</td>
+          <td><script>WH("contrast");</script>[0-255]</td>
+        </tr>
+        <tr>
+          <td>亮度&nbsp;</td>
+          <td><script>WH("brightness");</script>[0-255]</td>
+        </tr>
+        <tr>
+          <td>饱和度&nbsp;</td>
+          <td><script>WH("saturation");</script>[0-255]</td>
+        </tr>
+        <tr>
+          <td>锐度&nbsp;</td>
+          <td><script>WH("sharpness");</script>[0-255]</td>
+        </tr>
+      </table>
+    </div>
+    <br>
+	   <div class="box">
+      <table>
+        <tr>
+          <td>快门模式&nbsp;</td>
+          <td><script>WH("exposure_moudle");</script>[0-255]</td>
+        </tr>
+		<tr>
+          <td>快门上限&nbsp;</td>
+          <td><script>WH("shutter_up");</script>[0-255]</td>
+        </tr>
+        <tr>
+          <td>快门下限&nbsp;</td>
+          <td><script>WH("shutter_low");</script>[0-255]</td>
+        </tr>
+        <tr>
+          <td>增益上限&nbsp;</td>
+          <td><script>WH("gain_up");</script>[0-255]</td>
+        </tr>
+		<tr>
+          <td>增益下限&nbsp;</td>
+          <td><script>WH("gain_low");</script>[0-255]</td>
+        </tr>
+		<tr>
+          <td>手动快门值&nbsp;</td>
+          <td><script>WH("shutter_set");</script>[0-255]</td>
+        </tr>
+		<tr>
+          <td>手动增益值&nbsp;</td>
+          <td><script>WH("gain_set");</script>[0-255]</td>
+        </tr>
+		<tr>
+          <td>数字增益上限&nbsp;</td>
+          <td><script>WH("c_maxdgain");</script>[0-255]</td>
+        </tr>
+		<tr>
+          <td>数字增益下限&nbsp;</td>
+          <td><script>WH("c_mindgain");</script>[0-255]</td>
+        </tr>
+		<tr>
+          <td>目标亮度上限&nbsp;</td>
+          <td><script>WH("c_maxtbrightness");</script>[0-255]</td>
+        </tr>
+		<tr>
+          <td>目标亮度下限&nbsp;</td>
+          <td><script>WH("c_mintbrightness");</script>[0-255]</td>
+        </tr>
+		<tr>
+          <td>目标亮度&nbsp;</td>
+          <td><script>WH("c_tbrightness");</script>[0-255]</td>
+        </tr>
+		
+      </table>
+    </div>
+	<br>
+    <div class="box">
+      <table>
+        <tr>
+          <td>降噪开关&nbsp;</td>
+          <td><script>WH("tnfltctrl");</script></td>
+        </tr>
+        <tr>
+          <td>降噪模式&nbsp;</td>
+          <td><script>WH("nfltctrl");</script></td>
+        </tr>
+        <tr>
+          <td>降噪强度&nbsp;</td>
+          <td><script>WH("maxexposuretime");</script></td>
+        </tr>
+      </table>
+    </div>
+    <br>
+    <div class="box">
+      <table>
+        <tr>
+          <td>H264 Profile&nbsp;</td>
+          <td><script>WH("meconfig3");</script></td>
+        </tr>
+      </table>
+      <br>
+      <table>
+        <tr>
+          <td>码流1：</td>
+        </tr>
+        <tr>
+          <td>GOP长度&nbsp;</td>
+          <td><script>WH("ipratio1");</script>[1-60]</td>
+        </tr>
+        <tr>
+          <td>初始QP&nbsp;</td>
+          <td><script>WH("qpinit1");</script></td>
+        </tr>
+        <tr>
+          <td>最小QP&nbsp;</td>
+          <td><script>WH("qpmin1");</script></td>
+        </tr>
+        <tr>
+          <td>最大QP&nbsp;</td>
+          <td><script>WH("qpmax1");</script></td>
+        </tr>
+        <tr>
+          <td>编码模式&nbsp;</td>
+          <td><script>WH("meconfig1");</script></td>
+        </tr>
+      </table>
+      <br>
+      <table>
+        <tr>
+          <td>码流2：</td>
+        </tr>
+        <tr>
+          <td>GOP长度&nbsp;</td>
+          <td><script>WH("ipratio2");</script>[1-60]</td>
+        </tr>
+        <tr>
+          <td>初始QP&nbsp;</td>
+          <td><script>WH("qpinit2");</script></td>
+        </tr>
+        <tr>
+          <td>最小QP&nbsp;</td>
+          <td><script>WH("qpmin2");</script></td>
+        </tr>
+        <tr>
+          <td>最大QP&nbsp;</td>
+          <td><script>WH("qpmax2");</script></td>
+        </tr>
+        <tr>
+          <td>编码模式&nbsp;</td>
+          <td><script>WH("meconfig2");</script></td>
+        </tr>
+      </table>
+    </div>
+    <br>
+    <div>
+      <script>CreateSubmitButton();</script>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,136 @@
+<script>
+  var runFlag = true;
+  var v_MotionEnable = "<%motionenable%>";
+  var v_MotionLevel = "<%motionsensitivity%>";
+  var s_Motion = 1;//(parseInt("<%supportmotion%>") >= 1) && (g_isSupS2 || g_isSupS3 || g_isSupS5 || g_isSupS6); //zdy
+  var v_sensCustomValue = "<%motioncvalue%>";
+  var v_sensCustomEnable = "<%motioncenable%>";
+  var minCML = parseInt("<%minmotionthreshold%>");
+  var maxCML = parseInt("<%maxmotionthreshold%>");
+  var DCL_1 = {
+    sensVal: "<%motioncvalue.1%>",
+    sensValEn: "<%motioncenable.1%>",
+    motionEn: "<%motionenable.1%>",
+    motionLevel: "<%motionsensitivity.1%>"
+  };
+  var DCL_2 = {
+    sensVal: "<%motioncvalue.2%>",
+    sensValEn: "<%motioncenable.2%>",
+    motionEn: "<%motionenable.2%>",
+    motionLevel: "<%motionsensitivity.2%>"
+  };
+  var DCL_3 = {
+    sensVal: "<%motioncvalue.3%>",
+    sensValEn: "<%motioncenable.3%>",
+    motionEn: "<%motionenable.3%>",
+    motionLevel: "<%motionsensitivity.3%>"
+  };
+  var DCL_4 = {
+    sensVal: "<%motioncvalue.4%>",
+    sensValEn: "<%motioncenable.4%>",
+    motionEn: "<%motionenable.4%>",
+    motionLevel: "<%motionsensitivity.4%>"
+  };
+  UpdateGSizeLite();
+  var V_SensVal = new V_NumRange(minCML, maxCML, GL("custom_sens"));
+  CTRLARY = {
+    motionEn: new Ctrl_Radio("motionEn", v_MotionEnable, "motionenable", "FixStatus()"),
+    sensValEn: new Ctrl_Radio("sensValEn", v_sensCustomEnable, "motioncenable", "FixStatus()"),
+    sensVal: new Ctrl_Text("sensVal", "3", "3", v_sensCustomValue, "motioncvalue", new CheckerObj(V_SensVal)),
+    sensLevel: new Ctrl_Select("sensLevel", "<%motionname.all%>", v_MotionLevel, "motionlevel")
+  };
+  function MY_ONUNLOAD() {
+    StopActiveX();
+  }
+  function MY_ONLOAD() {
+    FixStatus();
+    ImageOnLoad(true, 1, Get9001FirstCodec(), 3, true);
+    g_lockLink = false;
+  }
+  function MY_CH_CHANGE() {
+    StartActiveXEx(0, 0, Get9001FirstCodec(), g_CHID, 1, 3);
+    eval("var dcl = DCL_" + g_CHID);
+    SetCCV("motionEn", dcl.motionEn);
+    SetCCV("sensLevel", dcl.motionLevel);
+    SetCCV("sensVal", dcl.sensVal);
+    SetCCV("sensValEn", dcl.sensValEn);
+    FixStatus();
+  }
+  function MY_BEFORE_SUBMIT() {
+    var obj = (IsVS()) ? GE(AxID + "1") : GE(AxID);
+    if (obj != null) {
+      var res = 0;
+      try {
+        res = obj.SaveSetting((IsVS() ? g_CHID: 0));
+      } catch(e) {};
+      if (res != 0) {
+        alert(GL("err_save_motion"));
+      }
+    }
+  }
+  function MY_SUBMIT_OK() {
+
+    alert(GL("submit_success"));
+
+    if (IsVS()) {
+      var dcl = eval("DCL_" + g_CHID);
+      dcl.motionEn = GetCCV("motionEn");
+      dcl.motionLevel = GetCCV("sensLevel");
+      dcl.sensVal = GetCCV("sensVal");
+      dcl.sensValEn = GetCCV("sensValEn");
+    }
+    if (s_Motion) {
+      ChangeContent();
+    }
+  }
+  function MotionSendOnePack() {
+    var res = true;
+    for (var key in CTRLARY) {
+      var obj = CTRLARY[key];
+      if (obj.active) {
+        res = obj.IsPass();
+        if (!res) {
+          return res;
+        }
+      }
+    }
+    MY_BEFORE_SUBMIT();
+    var ppp = "";
+    for (var key in CTRLARY) {
+      ppp += GetCCV(key);
+      ppp += ",";
+    }
+    SendHttp(c_iniUrl + GetSetterCmdKV("motionenable", ppp), false);
+    MY_SUBMIT_OK();
+  }
+  function FixStatus() {
+    if (GetCCV("motionEn") == 0) {
+      DisableObjs(new Array("sensValEn", "sensVal", "sensLevel"), true);
+    }
+    else {
+      var v = (GetCCV("sensValEn") == 0);
+      DisableObject("sensValEn", false);
+      DisableObject("sensVal", v);
+      DisableObject("sensLevel", !v);
+    }
+  }
+  WriteAppTxtPH(GL("alarm_motion") + (IsVS() ? (" " + GetChannelTextPanelHTML(g_CHID)) : ""));
+  if (!s_Motion) {
+    DW("<center><span class=m3 >" + GL("no_motion") + "</span></center>");
+  }
+  else {
+    WTablePH();
+    DW("<tr><td colspan=2 align=center>" + GetImageLeftVideo(true) + "<br><span class=m3>" + GL("motion_op_hint") + "</span></td></tr>");
+    DW("<tr><td height=30 class=b1 width=130 >" + GL("motion_detect") + ":</td><td class=b1 >" + GetRadioENDIS("motionEn") + "</td></tr>");
+    DW("<tr><td height=50 class=b1 >" + GL("sens") + ":</td><td class=b1 >");
+    DW(WRH_("sensValEn", 0) + "&nbsp;" + WH_("sensLevel") + "<br>");
+    DW(WRH_("sensValEn", 1) + "&nbsp;" + WH_("sensVal") + "&nbsp;(" + GL("custom_threshold") + ")");
+    DW("</td></tr>");
+    DW("<tr><td colspan=2 align=center><br>");
+    DW("<input type='button' id='smbtn_' value='" + GL("submit") + "' class='m1' onClick=MotionSendOnePack()>");
+    DW("</td></tr>");
+    WTablePB();
+  }
+  WriteAppPB();
+  ALC();
+</script>

@@ -1,0 +1,43 @@
+<script>
+    var v_UPnpCardRead = "<%upnpcardread%>";
+    var co_age = new CheckerObj(new V_NumRange(10, 3600, GL("upnp_max_age").toLowerCase()));
+    var hasStorage = (g_defaultStorage != 255);
+    CTRLARY = {
+        upnpEn: new Ctrl_Check("upnpEn", "<%upnpenable%>", "setupnpenable=", "FixStatus()"),
+        upnpExp: new Ctrl_Text("upnpExp", "4", "4", "<%upnpssdpage%>", "setupnpssdpage=", co_age),
+        upnpSSDP: new Ctrl_Text("upnpSSDP", "5", "5", "<%upnpssdpport%>", "setupnpssdpport=", gco_ipPort),
+        upnpPort: new Ctrl_Text("upnpPort", "5", "5", "<%upnpport%>", "setupnpport=", gco_ipPort),
+        upnpCard: new Ctrl_Check("upnpCard", "<%upnpcardread%>", "setupnpcardread=")
+    };
+
+    function FixStatus() {
+        DisableObjs(new Array("upnpExp", "upnpSSDP", "upnpPort", "upnpCard"), !(GetCCV("upnpEn") == 1));
+    }
+
+    function MY_ONLOAD() {
+        SetCIA("upnpCard", hasStorage);
+        FixStatus();
+        g_lockLink = false;
+    }
+
+    function MY_BEFORE_SUBMIT() {
+        if (GetCCV("upnpSSDP") == GetCCV("upnpPort")) {
+            alert(GL("err_ssdp_the_same_upnp"));
+            return false;
+        }
+        return true;
+    }
+    WriteNetPH("universal_pnp");
+    WTablePH();
+    WIP1(WH_("upnpEn") + " " + GL("en_upnp"));
+    WIPX("upnp_max_age", WH_("upnpExp") + " " + GL("upnp_sec") + " (10 ~ 3600)");
+    WIPX("upnp_ssdp_port", WH_("upnpSSDP") + " " + GL("_default") + ": 1900 ");
+    WIP("upnp_port", "upnpPort");
+    if (hasStorage) {
+        WIP1(WH_("upnpCard") + " " + GL("en_upnp_mem_card_acc"));
+    }
+    WIPSubmit();
+    WTablePB();
+    WriteNetPB();
+    ALC();
+</script>

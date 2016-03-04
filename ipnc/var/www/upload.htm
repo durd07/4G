@@ -1,0 +1,130 @@
+<html>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+
+        <script>
+            InitLoad();
+        </script>
+        <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+	</head>	
+	<body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+		<script>
+		  function MY_ONUNLOAD() {  
+		    clearTimeout(timerID);
+		  }
+				
+		// var flag = 0;
+		function MY_ONLOAD() {
+			g_lockLink = false;
+			reloadCount = 2;
+			var uri=window.location.href;
+			// alert(uri);
+			var namelist = uri.split('?');
+
+			var error = namelist[2];
+			// alert(error);
+
+			var importpara1 = namelist[1].split('.');
+
+			var importpara = importpara1[1];
+
+
+			// alert(upvalue);
+			// alert(upgradename);
+			if (error == "success"){
+
+				// alert(GL("upload_success"));
+				document.getElementById('upinfo').innerHTML = GL("upload_success") ;
+				var o = '';
+				o += c_iniUrl;
+				
+				window.flag = 0;
+				if (importpara == "ini")
+				{
+					var importpara2 = importpara1[0].split('_');
+					// alert(importpara2.length);
+					if (importpara2.length < 2)
+					{
+						o += GetSetterCmdKV("importirpara", "1");
+						window.flag = 1;
+					}
+					else
+					{
+						window.flag = 0;
+						o += GetSetterCmdKV("importlgpara", "1");
+					}						
+				}
+				else if (importpara == "cfg")
+				{
+					window.flag = 2;
+					o += GetSetterCmdKV("import8147para", "1");
+				}
+				// alert(o);
+				SendHttp(o, false, CallBack);
+			}
+			else
+			{
+				document.getElementById('upinfo').innerHTML = GL("upload_fail") ;
+				Wait();
+			}
+		}
+
+		function CallBack()
+		{
+			 if (g_SubmitHttp.readyState == 4) {
+			 	WS("");
+			    if (g_SubmitHttp.status == 200) {
+			    var txt = g_SubmitHttp.responseText;
+			    // alert(txt);
+			    if ((txt.indexOf("NG") >= 0) || (txt.indexOf("UW") >= 0)) {
+			    	if (window.flag == 2)
+			    		window.flag = 0;
+			        document.getElementById('upinfo').innerHTML = GL("upgrade_fail") ;
+			        Wait();					
+			      }
+			      else
+			      {
+			        document.getElementById('upinfo').innerHTML = GL("upgrade_success") ;
+			        Wait();
+			      }
+			        
+			    }
+			    else
+			    {
+			    	if (window.flag == 2)
+			    		window.flag = 0;
+			    	document.getElementById('upinfo').innerHTML = GL("upgrade_fail") ;
+			    	Wait();
+			    }
+  			}
+		}
+		function Wait()
+    	{
+
+	        g_lockLink = true;
+	        reloadCount--;
+	        if (reloadCount > 0)
+	        {
+	            timerID = setTimeout("Wait()", 1000);
+	            // document.getElementById('mcuupgradeinfo').innerHTML = '数据上传中，请稍候……' ;
+	        }          
+	        else
+	        {
+	        	// alert(window.flag);
+	          g_lockLink = false;
+	          if (flag == 0)
+	          	window.location = "smaintain.htm";
+	          else if (flag == 1)
+	          	window.location = "dn.htm";
+	          else if (flag == 2)
+	          	window.top.location = "wait.htm?restart";
+	        }
+    	}
+
+
+		</script>
+		<div id="upinfo"></div>
+	</body>
+</html>

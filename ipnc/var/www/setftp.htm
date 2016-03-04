@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script>
+            InitLoad();
+         </script>
+        <title>
+            
+        </title>
+    <style type="text/css">
+    td {
+      font-size: 12px;
+    }
+    </style>
+
+    </head>
+<body onload="MY_ONLOAD()">
+<script>
+function MY_ONLOAD() {
+    g_lockLink = false;
+  }
+
+    var v_maxPreAlarmJpeg = "<%maxprealarmjpeg%>";
+    var v_maxPostAlarmJpeg = "<%maxpostalarmjpeg%>";
+    var v_ftpip = "<%ftpip%>";
+    var v_ftpPort = "<%ftppiport%>";
+    var v_ftpUser = "<%ftpuser%>";
+    var v_ftpPath = "<%ftppath%>";
+    var V_PreAlarm = new V_NumRange(0, v_maxPreAlarmJpeg, GL("pre_alarm_buf").toLowerCase());
+    var V_PostAlarm = new V_NumRange(0, v_maxPostAlarmJpeg, GL("alarm_buf").toLowerCase());
+    CTRLARY = {
+        ftpFileFormat: new Ctrl_Select("ftpFileFormat", "<%ftpfileformatname.all%>", "<%ftpfileformat%>", "ftpfileformat=")
+    };
+
+    function WAI1(ctx) {
+        DW("<tr class=m1><td colspan=3 height=30>" + ctx + "</td></tr>");
+    }
+
+    function WAI3(tid, ctx) {
+        DW("<tr class=b1><td width=20 height=30>&nbsp;</td><td width=130 >" + GL(tid) + ":</td><td>" + ctx + "</td></tr>");
+    }
+    DW('<table>');
+    WAI1(GetContentLink("ftp_net", "nftp.htm"));
+    WAI3("ftp_server", v_ftpip + "&nbsp;&nbsp;" + GL("port") + ":" + v_ftpPort);
+    WAI3("user_name", v_ftpUser);
+    WAI3("file_update_path", v_ftpPath);
+    WAI1("<hr>");
+    WAI1(GL("storage_set"));
+    WAI3("ftpfileformat", WH_("ftpFileFormat"));
+    WAI1("<br><center>" + CreateSubmitButton_());
+    DW('</table>');
+    ALC();
+</script>
+</body>
+</html>

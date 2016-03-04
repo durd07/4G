@@ -1,0 +1,600 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="var.js"></script>
+        <script type="text/javascript" src="common.js"></script>
+        <script language="javascript" src="jquery/jquery-1.9.1.min.js"></script>
+        <script>
+            InitLoad();
+        </script>        
+        <title>
+            SD Card Config
+        </title>
+    <style type="text/css">
+body {
+margin: 0;		
+height:100%;
+min-width:1200px;
+min-height:580px;
+background:#D5D5D5;
+
+}
+
+.m2 {
+background-color: #666;
+color:white;
+font-weight:bold;
+padding:5px;
+}
+.m1 {
+max-width: 200px;
+}
+#sdstordiv {
+width: 760px;
+}
+#sdstortable {
+width: 750px;
+border: 1px solid #B9B9B9;
+border-collapse: collapse;
+}
+
+#sdstortable tr td {
+height: 20px;
+border: 1px solid #B9B9B9;
+text-align:center;
+/*border-collapse:collapse;*/
+}
+#sdinfotab {
+width: 750px;
+border: 1px solid #B9B9B9;
+border-collapse: collapse;
+}
+
+#sdinfotab tr td {
+height: 20px;
+border: 1px solid #B9B9B9;
+text-align:center;
+/*border-collapse:collapse;*/
+}
+.bottomline {border-bottom:1px solid #000000;color: black;}
+
+table
+{
+	font-size:13px;
+}
+</style>
+    </head>
+<body onLoad="MY_ONLOAD()">
+<script>
+    var lockThis = false;
+
+  function SDDao() {
+    this.insert = "<%sdinsert%>";
+    this.capLeft = parseFloat("<%sdleft%>");
+    this.capUsed = parseFloat("<%sdused%>");
+    this.formatKey = "sd_format";
+    this.formatCmd = "sdformat=1";
+    this.fileList = new Array("<%filelist.1%>", "<%filelist.2%>", "<%filelist.3%>", "<%filelist.4%>", "<%filelist.5%>", "<%filelist.6%>", "<%filelist.7%>", "<%filelist.8%>", "<%filelist.9%>", "<%filelist.10%>");
+    this.filelistLocation = parseInt("<%filelistlocation%>");
+    this.filePerPage = 10;
+    this.fileCount = parseInt("<%filelistcount%>");
+  }
+
+  var ISSD = (g_defaultStorage == 1);  
+  var mycard = new SDDao();
+  var v_recCount = new V_NumRange(1, mycard.recMax, GL("mjpeg_nums"));
+  var co_recCount = new CheckerObj(v_recCount, gco_empty);
+
+  if (mycard.fileCount == 0)
+    mycard.fileCount = 1;
+
+  var PageNum;
+
+  if (mycard.fileCount % 10 == 0)
+    PageNum = parseInt(mycard.fileCount / 10);
+  else
+    PageNum = parseInt(mycard.fileCount / 10) + 1;
+
+  if (PageNum == 0)
+    PageNum = 1;
+
+  CTRLARY = {
+    // sdFileFormat: new Ctrl_Select("sdFileFormat", "<%sdfileformatname.all%>", "<%sdfileformat%>", "sdfileformat=")
+  };
+
+  function MY_ONLOAD() {
+    g_lockLink = false;
+    FixStatus();
+    if (mycard.insert != 3)
+      document.getElementById("format").disabled = 1;
+
+    // GoPage(0);
+    if (PageNum > 1)
+    {
+      document.getElementById("tPageNum").value = PageNumCheck();
+      BtnCheck();      
+    }
+  }
+        /*  Go Page Num     */
+    function GoPage(sid) {
+        // alert(sid);
+        if (lockThis) return;
+        lockThis = true;
+        SendHttp(c_iniUrl + GetSetterCmdKV("fileliststart", sid));
+        window.location.reload("setcard.htm?1");
+        lockThis = false;
+        return true;
+    }
+
+    /*  Go to first page    */
+    function GoFirst() {
+        GoPage(0);
+    }
+
+    /*  Page Up */
+    function PageUp() {
+        var newLoc = 0;
+        PageNumCheck();
+        if (mycard.filelistLocation > mycard.filePerPage) {
+            newLoc = mycard.filelistLocation - mycard.filePerPage;
+        }
+        GoPage(newLoc);
+
+        BtnCheck();
+    }
+
+    /*  Page Down   */
+    function PageDown() {
+        PageNumCheck();
+        if (mycard.fileList[mycard.filePerPage - 1] != "") {
+          // alert(mycard.filelistLocation + mycard.filePerPage);
+            GoPage(mycard.filelistLocation + mycard.filePerPage);
+        }
+
+        BtnCheck();
+    }
+    /*  Check Button Pageup and Pagedown status */
+    function BtnCheck()
+    {
+        var pageval = document.getElementById("tPageNum").value;
+        if (mycard.filelistLocation == 0) {
+            document.getElementById("pageup").disabled = true;
+        }
+        if (mycard.fileList[ mycard.filePerPage - 1] == "" || pageval * mycard.filePerPage ==  mycard.fileCount)
+        {
+            document.getElementById("pagedown").disabled = true;
+        }
+        return true;
+    }
+
+    /*  Synchronize Page Text Value    */
+    function PageNumCheck()
+    {
+        var page;
+        if (mycard.filelistLocation %  mycard.filePerPage == 0) {
+            page = parseInt(mycard.filelistLocation /  mycard.filePerPage + 1);//document.getElementById("tPageNum").value = parseInt(eventLocation / eventPerPage + 1);
+        }
+        else
+           page = parseInt(mycard.filelistLocation /  mycard.filePerPage + 2);// document.getElementById("tPageNum").value = parseInt(eventLocation / eventPerPage + 2);
+         // alert(page);
+       return page;
+    }
+
+    function Query()
+    {
+        var page = parseInt(document.getElementById("tPageNum").value);
+
+        if(!CheckPage(page))
+        {
+            document.getElementById("tPageNum").value = PageNumCheck();
+            return false;
+        }
+        
+        var newLoc = (page -1) * mycard.filePerPage;
+        if (mycard.filelistLocation != newLoc)
+        {
+            GoPage(newLoc);
+            BtnCheck();
+        }
+
+        return true;
+    }
+        /*  Check Page Num is Legal or Not  */
+    function CheckPage(page)
+    {
+        if(page == 0 || page > PageNum)
+        {
+            alert(GL("page_err"));
+            return false;
+        }
+        return true;
+    }
+
+  function FixStatus() {
+    var sw = (GetCCV("recType") == 0);
+  }
+  function WIP3(ctx) {
+    DW("<tr><td colspan=3 class=m1 height=30 >");
+    DW(ctx);
+    DW("</td></tr>");
+  }
+  function WIP2(tid, ctx) {
+    DW("<tr><td width=20>&nbsp;</td><td class=b1 width=150 height=30 >");
+    DW(GL(tid) + ":</td><td>" + ctx + "</td></tr>");
+  }
+  function WIP_L() {
+    WIP3('<hr >');
+  }
+  function SendOut(setcmd) {
+    if (confirm(GL("card_format_warn"))) {
+      SendHttp(c_iniUrl + "&" + setcmd, false, SendOK);
+    }
+  }
+  function SendOK() {
+    if (g_SubmitHttp.readyState == 4) {
+      WS("");
+      if (g_SubmitHttp.status == 200) {
+        var txt = g_SubmitHttp.responseText;
+        if ((txt.indexOf("OK sdformat") >= 0) || (txt.indexOf("OK cfformat") >= 0)) {
+          alert(GL("card_format_ok"));
+          // ChangeContent(null, true);
+          window.location.reload();
+        } else {
+          alert(GL("card_format_fail"));
+          // window.location.reload();
+        }
+      } else {
+        alert(GL("card_format_fail"));
+        // window.location.reload();
+      }
+    }
+  }
+  function UmountCallBack() {
+    if (g_SubmitHttp.readyState == 4) {
+      WS("");
+      if (g_SubmitHttp.status == 200) {
+        var txt = g_SubmitHttp.responseText;
+        if (txt.indexOf("OK sdunmount") >= 0) {
+          alert(GL("card_unmount_ok"));
+          // ChangeContent(null, true);
+          window.location.reload();
+        } else {
+          alert(GL("card_busy"));
+          // window.location.reload();
+          // alert("SD card is busy.\nUnmount failed");
+        }
+      } else {
+        alert(GL("card_unmount_fail"));
+        // window.location.reload();
+        // alert("SD card Unmount failed");
+      }
+    }
+  }
+  function MountCallBack() {
+    if (g_SubmitHttp.readyState == 4) {
+      WS("");
+      if (g_SubmitHttp.status == 200) {
+        var txt = g_SubmitHttp.responseText;
+        if (txt.indexOf("OK sdunmount") >= 0) {
+          alert(GL("card_mount_ok"));
+          window.location.reload();
+          // ChangeContent(null, true);
+        } else {
+          alert(GL("card_mount_fail"));
+          // alert("SD card mount failed");
+          window.location.reload();
+          // ChangeContent(null, true);
+        }
+      } else {
+        alert(GL("card_mount_fail"));
+        // alert("SD card mount failed");
+        window.location.reload();
+        // ChangeContent(null, true);
+      }
+    }
+  }
+  function MY_SUBMIT_OK() {
+    alert(GL("submit_success"));
+    window.location.reload();
+    // ChangeContent(null, true);
+  }
+
+  function GBN(tid, setcmd) {
+    // alert(setcmd);
+    SendOut(setcmd);
+    // return "<input type=button class=m1 style='width:80px' value='" + GL(tid) + "' onClick='SendOut(\"" + setcmd + "\")' >";
+  }
+  function ClickUnmountSD() {
+    SendHttp(c_iniUrl + GetSetterCmdKV("sdunmount", "1"), false, UmountCallBack);
+  }
+  function ClickMountSD() {
+    SendHttp(c_iniUrl + GetSetterCmdKV("sdunmount", "8"), false, MountCallBack);
+  }
+
+Date.prototype.Format = function(fmt) 
+{ //author: meizz 
+  var o = { 
+    "M+" : this.getMonth()+1,                 //月份 
+    "d+" : this.getDate(),                    //日 
+    "h+" : this.getHours(),                   //小时 
+    "m+" : this.getMinutes(),                 //分 
+    "s+" : this.getSeconds(),                 //秒 
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度 
+    "S"  : this.getMilliseconds()             //毫秒 
+  }; 
+  if(/(y+)/.test(fmt)) 
+    fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length)); 
+  for(var k in o) 
+    if(new RegExp("("+ k +")").test(fmt)) 
+  fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length))); 
+  return fmt; 
+}
+var count_sec = 0;
+function autoclosesnap()
+{
+	if ( count_sec == 2 )
+	{
+		GoPage(0);
+	}
+	count_sec++;
+}
+
+function autocloserecord()
+{
+	if ( count_sec == 7 )
+	{
+		GoPage(0);
+	}
+	count_sec++;
+	
+	if(count_sec<=5)
+	document.getElementById("recordtosd").value = "录像至SD卡( " + (5-count_sec) +" )"; 
+}
+
+  function Click_snaptosd() {
+  //alert((new Date()).Format("yyyyMMddhhmmss"));
+	document.getElementById("snaptosd").disabled = true;
+    SendHttp(c_iniUrl + "&clicksnapfilename="+(new Date()).Format("yyyyMMddhhmmss"), false);
+	count_sec = 0;
+	window.setInterval( autoclosesnap, 1000 );
+  }
+  function Click_recordtosd() {
+	document.getElementById("recordtosd").disabled = true;
+    SendHttp(c_iniUrl + "&clicksnapstorage=/tmp", false);	
+	document.getElementById("recordstate").style.display = "block";
+	document.getElementById("recordtosd").value = "录像至SD卡( 5 )"; 
+	count_sec = 0;
+	window.setInterval( autocloserecord, 1000 );
+  }
+  
+  
+  
+  function WriteFileList(){
+    for (var i = 0; i < mycard.fileList.length; i++) {
+      // alert(fileList[i]);
+       if (mycard.fileList[i] != "")
+       {
+          var filename1 = mycard.fileList[i].split('-');
+          if (filename1.length != 4)
+          {
+            if (i == 0)
+            {
+              DW('<tr><td colspan=6>');
+              DW(GL("no_file_list"));
+              // alert(filename);
+              DW('</td></tr>');
+            }
+              
+            break;
+          }
+          var filename = filename1[0];
+          var num = parseInt(mycard.filelistLocation) + i + 1;
+          // alert(num);
+          // alert(filename1[0]);
+          DW('<tr id="' + i + '">');
+          DW('<td id="num' + i + '">');
+          DW(num);
+          DW('</td>');
+          //DW('<td width="200px" id="filename' + i + '" onclick="DowloadFile(this)" style="cursor:hand;">');
+		  DW('<td width="200px" id="filename' + i + '"  title="' + filename1[0] + '">');
+          DW('<a href="sdget.htm?filename='+ filename1[0] + '">' + filename1[0] +'</a>');
+          DW('</td><td width="50px">');
+          DW(filename1[1]);
+          DW('</td><td width="50px">');
+          DW(filename1[2]);
+          DW('</td><td width="100px">');
+          DW(filename1[3]);
+          DW('</td><td width="50px" onclick="DeleteFile(this)" style="cursor:hand;">');
+          DW(GL("_delete"));
+          // alert(filename);
+          DW('</td></tr>');
+
+       };
+     }; 
+    }
+
+    function DeleteFile()
+    { 
+        var oObj = event.srcElement;
+        var oTr = oObj.parentNode;   
+        var tdid = "filename" + oTr.id;
+        var filename = document.getElementById(tdid).title;
+		//alert(filename);
+        SendHttp(c_iniUrl + GetSetterCmdKV("delsdfile", filename), false);
+        // alert(mycard.filelistLocation);
+        // alert(mycard.fileCount);
+        if (mycard.fileCount % mycard.filelistLocation == 1)
+          PageUp();
+        window.location.reload();
+    }
+
+    function  DowloadFile() {
+        var oObj = event.srcElement;
+        var oTr = oObj.parentNode;   
+        var tdid = "filename" + oTr.id;
+        var filename = document.getElementById(tdid).innerHTML;
+        var o = '';
+        o += "http://" + gv_ip + "/sdget.htm?filename=";
+        o += filename;
+        // alert(o);
+        window.location.href = o;
+    }
+    function FormatSd()
+    {
+      // alert("format");
+      // alert(mycard.formatCmd);
+      ((mycard.formatCmd != "") ? GBN(mycard.formatKey, mycard.formatCmd) : GL(mycard.formatKey));
+    }
+    function WEBtn(tid, onClick) {
+        DW('<input type="button" id=' + tid + ' value="' + GL(tid) + '" class="m1" onClick="' + onClick + '">&nbsp;&nbsp;');
+    }
+
+  </script>
+  <script>
+
+    DW('<div id="sdstordiv">');
+
+    DW('<table>');
+    DW('<tr><td>');
+    DW('<div style="float:left">' + GL("sdinfo") + '</div>');
+    // DW('</td>');
+
+    // DW('<td width="50px">');
+    DW('<div style="float:right">');
+    DW('<table><tr><td>');
+    if (mycard.insert == 3)
+      DW('<input id="umount" type="button" value="' + GL("sd_unmount") + '" onclick="ClickUnmountSD()">');
+    else if (mycard.insert == 1)
+      DW('<input id="mount" type="button" value="' + GL("sd_mount") + '" onclick="ClickMountSD()">');
+    DW('</td><td width="50px">');
+    DW('<input id="format" type="button" value="' + GL("disk_format") + '" onclick="FormatSd()">');
+    DW('</td></tr></table>');
+
+    DW('</div>');
+
+    DW('</td></tr>');
+
+    DW('<tr><td colspan=3>');
+
+    DW('<table id="sdinfotab">');
+
+    DW('<tr class="m2"><td width="100px">');
+    DW(GL("sdcap"));
+    DW('</td><td width="100px">');
+    DW(GL("sdused"));
+    DW('</td><td width="100px">');
+    DW(GL("status"));
+    DW('</td></tr>');
+
+
+    if (mycard.insert == 3) {
+      var totalSize = mycard.capLeft + mycard.capUsed;
+      var totalStr = GetCapacityString(totalSize, 2);
+      DW('<tr><td>' + totalStr + '</td>');
+
+      // DW('<td>' + Math.round((mycard.capUsed / totalSize) * 100) + '%</td>');
+      DW('<td>' + parseFloat((mycard.capUsed / totalSize) * 100).toFixed(2) + '%</td>');
+
+      DW('<td>' + GL("mounted") + '</td></tr>');
+      // DW("<table class=m1><tr><td width=130 >" + GL((ISSD) ? "sd_cap": "cf_cap") + ":</td><td>" + totalStr + "</td></tr>");
+      // DW("<tr><td >" + GL((ISSD) ? "sd_usage": "cf_usage") + ":</td><td>" + Math.round((mycard.capUsed / totalSize) * 100) + " %</td></tr>");
+      // DW("<tr><td colspan=2 >&nbsp;</td></tr>");
+      // DW("<tr><td class=m3>" + GL("disk_format") + ":</td><td>" + ((mycard.formatCmd != "") ? GBN(mycard.formatKey, mycard.formatCmd) : GL(mycard.formatKey)) + "</td></tr>");
+      // DW("<tr><td class=m3>Storage Disk Unmount:</td><td><input type=button class=m1 value='SD Unmount' onClick='ClickUnmountSD()' ></td></tr>");
+      // DW("</table>");
+    } else if (mycard.insert == 1) {
+      DW('<tr><td></td>');
+
+      DW('<td></td>');
+
+      DW('<td>' + GL("unmounted") + '</td></tr>');
+
+      // DW("SD card is not mounted.");
+      // DW("<tr><td class=m3>Storage Disk mount:</td><td><input type=button class=m1 value='Mount' onClick='ClickMountSD()' ></td></tr>");
+    } else {
+      DW(GL((ISSD) ? "sd_no_card": "cf_no_card"));
+      //DW("<br>or, the card is not mounted.");
+    }
+
+    </script>
+    <script>
+    var uri=window.location.href;
+    // alert(uri);
+    var namelist = uri.split('?');
+    var flag1 = namelist[1];
+    // alert(namelist[1]);
+    if (namelist.length == 1)
+    {
+      window.flag = 1;
+      GoPage(0);
+    }
+    else if (namelist[1] == 1)
+    {
+      window.flag = 2;
+    }
+    </script>
+
+
+    <script>
+
+    DW("</td></tr>");
+    DW('</table>');
+
+    DW('</td></tr>');
+    DW('<tr><td colspan=3>');
+    DW('<br>');
+    DW('</td></tr>');
+
+    DW('<tr><td colspan=3>' + GL("sdstorage"));
+    DW('</td></tr>');
+
+    DW('<tr><td colspan=3 height="210px" style="vertical-align:text-top;">');
+
+    DW('<table id="sdstortable">');
+    DW('<tr class="m2"><td width="50px">');
+    DW(GL("no"));
+    DW('</td><td width="150px">');
+    DW(GL("filename"));
+    DW('</td><td width="50px">');
+    DW(GL("date"));
+    DW('</td><td width="50px">');
+    DW(GL("time"));
+    DW('</td><td width="50px">');
+    DW(GL("size"));
+    DW('</td><td width="50px">');
+    DW(GL("action"));
+    DW('</td></tr>');
+
+    WriteFileList();
+
+    DW('</table>');
+
+    DW('</td></tr>');
+
+    if (PageNum > 1)
+    {
+      DW('<tr>');
+      DW("<td colspan=3 align='right' height=30 style='vertical-align:text-top;'><div text-align='right'>");
+      DW('<table><tr><td align=right height=30>');
+      WEBtn("pageup", "PageUp()");
+      DW('</td><td align=right height=30>');
+      DW('<input type="text" id="tPageNum" size=5 maxlength=3 onchange="Query()">');
+      DW('</td><td align=right height=30>');
+      DW('<label id=lPageNum>/'+ PageNum +'</label>');
+      DW('</td><td align=right height=30>');
+      WEBtn("pagedown", "PageDown()");
+      DW('</td></tr></table></div></td></tr>');      
+    }
+
+    DW('</table>');
+
+	DW('<input id="snaptosd" type="button" value="快照至SD卡" onclick="Click_snaptosd()">');
+	DW('&nbsp;<input id="recordtosd" type="button" value="录像至SD卡" onclick="Click_recordtosd()">');
+	DW('<div id="recordstate" style="display:none"><image src="images/waiting.gif" />录像中，请稍候……</div>');
+    DW('</div>');
+	
+  ALC();
+</script>
+</body>
+</html>

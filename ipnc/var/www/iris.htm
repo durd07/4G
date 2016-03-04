@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script language="javascript" src="var.js"></script>
+    <script language="javascript" src="common.js"></script>
+    <script language="javascript" src="ptzctrl.js"></script>        
+    <script language="javascript" src="My97DatePicker/WdatePicker.js"></script>
+    <script language="javascript" src="jquery/jquery-1.9.1.min.js"></script>
+    <script language="javascript" src="js/minking.js"></script>
+    <script language="javascript" src="js/panasonic.js"></script>
+    <script> InitLoad(); </script>
+    <script>
+      var focusSpeedList = GL("fine_tuning") + ";" + GL("sharp_tuning") + ";" + GL("normal_tuning");
+      // iris, focus, zoom
+      var irislist = "全开;F2.0;F2.2;F2.5;F2.8;F3.2;F3.5;F4.0;F4.5;F5.0;F5.6;F6.3;F7.1;F8;F9;F10;F11;F13;F14;F16;F18;F20;F22";
+      var modelist = "NTSC;PAL";
+      CTRLARY = {
+        focusspeedctrl: new Ctrl_Select("focusspeed", focusSpeedList, "<%focusspeed%>", "panasonic_focus_speed=", "SetFocusSpeed()"),
+        iris: new Ctrl_Select("iris", irislist, "<%iris%>", "iris=", "SetIris()"),
+        modeset: new Ctrl_Select("modeset", modelist, "<%modeset%>", "panasonic_mode=", "SetPanasonicMode()")
+      }
+
+      function Update() {
+        var o = '';
+        o += c_iniUrl + GetSetterCmdKV("getiris");
+        SendHttp(o, false);
+      }
+      function MY_ONLOAD() {
+        g_lockLink = false;
+        // Update();
+        // StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+      }
+      function MY_BEFORE_SUBMIT() {
+        if (loginauth != 0 && loginauth != 1) {
+          alert(GL("auth_not"));
+          return false;
+        }
+        var value = document.getElementById("iris").selectedIndex;
+        if (value == "<%iris%>") {
+          alert(GL("para_not_change"));
+          return false;
+        }
+        return true;
+
+      }
+      function MY_SUBMIT_OK() {
+        alert(GL("submit_success"));
+        // ChangeContent("iris.htm", true);
+        window.location.reload();
+      }
+
+      function CreatSubmitBtn(SubBtn) {
+        var o = '';
+        o += '<input type="button" id="smbtn" value="' + GL("submit") + '" class="m1" onClick="' + fun + '">';
+      }
+
+      function SubBtn() {
+        if (g_lockLink) {
+          WS("LOCKED...");
+          return;
+        }
+        //call back
+        if (MY_BEFORE_SUBMIT() == false) {
+          return false;
+        }
+        //submit ,
+        g_httpOK = true;
+        var o = c_iniUrl;
+        o += GetSetterCmd("iris", GetCCV("iris"));
+        SendHttp(o, false);
+
+        if (g_httpOK) {
+          MY_SUBMIT_OK();
+        }
+      };
+
+      function FocusNStart() {
+        // alert("FocusNStart");
+        SendHttp(c_iniUrl + GetSetterCmdKV("focusnear", 1), false);
+      }
+
+      function FocusNStop() {
+        // alert("FocusNStop");
+        SendHttp(c_iniUrl + GetSetterCmdKV("focusnear", 0), false);
+      }
+
+      function FocusFStart() {
+        // alert("FocusFStart");
+        SendHttp(c_iniUrl + GetSetterCmdKV("focusfar", 1), false);
+      }
+
+      function FocusFStop() {
+        // alert("FocusFStop");
+        SendHttp(c_iniUrl + GetSetterCmdKV("focusfar", 0), false);
+      }
+
+      function WiperOn() {
+        SendHttp(c_iniUrl + GetSetterCmdKV("wiper", 1), false);
+      }
+
+      function WiperOff() {
+        SendHttp(c_iniUrl + GetSetterCmdKV("wiper", 0), false);
+      }
+      function FanOn() {
+        SendHttp(c_iniUrl + GetSetterCmdKV("fanon", "1"), false);
+      }
+
+      function FanOff() {
+        SendHttp(c_iniUrl + GetSetterCmdKV("fanoff", "1"), false);
+      }
+
+      function PtzStop() {
+        var cmd = minkingPtzStopCmd();
+        SendHttp(c_iniUrl + GetSetterCmdKV("ptz_minking_set", cmd), false);
+      }
+
+      function PtzLeft() {
+        var cmd = minkingPanLeftCmd();
+        SendHttp(c_iniUrl + GetSetterCmdKV("ptz_minking_set", cmd), false);
+      }
+
+      function PtzRight() {
+        var cmd = minkingPanRightCmd();
+        SendHttp(c_iniUrl + GetSetterCmdKV("ptz_minking_set", cmd), false);
+      }
+
+      function PtzUp() {
+        var cmd = minkingTiltUpCmd();
+        SendHttp(c_iniUrl + GetSetterCmdKV("ptz_minking_set", cmd), false);
+      }
+
+      function PtzDown() {
+        var cmd = minkingTiltDownCmd();
+        SendHttp(c_iniUrl + GetSetterCmdKV("ptz_minking_set", cmd), false);
+      }
+
+      function ZoomTele() {
+        var cmd = panasonicZoomTeleCmd();
+        SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", cmd), false);
+      }
+
+      function ZoomWide() {
+        var cmd = panasonicZoomWideCmd();
+        SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", cmd), false);
+      }
+
+      function ZoomStop() {
+        var cmd = panasonicZoomStopCmd();
+        SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", cmd), false);
+      }
+
+      function FocusNear() {
+        var cmd = panasonicFocusNearCmd();
+        SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", cmd), false);
+      }
+
+      function FocusFar() {
+        var cmd = panasonicFocusFarCmd();
+        SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", cmd), false);
+      }
+
+      function FocusStop() {
+        var cmd = panasonicFocusStopCmd();
+        SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", cmd), false);
+      }
+
+      function AutoFocus(auto) {
+        var cmd;
+        if (auto) {
+          cmd = panasonicAutoFocusOnCmd();
+          SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", cmd), false);
+        }
+        else {
+          cmd = panasonicAutoFocusStopCmd();
+          SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", cmd), false);
+          cmd = panasonicManualFocusOnCmd();
+          SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", cmd), false);
+        }
+      }
+
+      function CallBack() {
+        if (g_SubmitHttp.readyState == 4) {
+          if (g_SubmitHttp.status == 200) {
+            var txt = g_SubmitHttp.responseText;
+            // alert(txt);
+            if (txt.indexOf("NG") >= 0) {
+              alert(GL("submit_fail"));
+            } else {
+              alert(GL("submit_success"));
+              window.location.reload();
+            }
+
+          }
+        }
+      }
+
+      function SetFocusSpeed() {
+        var value = document.getElementById("focusspeed").selectedIndex;
+        if (value == "<%focusspeed%>") {
+          alert(GL("para_not_change"));
+          return false;
+        }
+        value += 1;
+        g_httpOK = true;
+        var cmd = panasonicFocusSpeedCmd(value);
+        var o = '';
+        o += c_iniUrl + GetSetterCmdKV("panasonic_camera_set", cmd);
+        SendHttp(o, false, CallBack);
+      }
+
+      function SetIris() {
+        var value = document.getElementById("iris").selectedIndex;
+        //alert("select=" + value + "; origin=" + "<%focusspeedctrl%>");
+        if (value == "<%iris%>") {
+          alert(GL("para_not_change"));
+          return false;
+        }
+
+        g_httpOK = true;
+        var o = '';
+        o += c_iniUrl + GetSetterCmdKV("iris", value);
+        SendHttp(o, false, CallBack);
+      }
+
+      function SetPanasonicMode() {
+        var value = document.getElementById("modeset").selectedIndex;
+        if (value == "<%modeset%>") {
+          alert(GL("para_not_change"));
+          return false;
+        }
+
+        var cmd = panasonicModeCmd(value);
+        g_httpOK = true;
+        var o = '';
+        o += c_iniUrl + GetSetterCmdKV("panasonic_camera_set", cmd);
+        SendHttp(o, false);
+      }
+
+    </script>
+    <title> </title>
+    <style type="text/css">
+      .ptz_button {
+          position: absolute;
+          width: 16px;
+          height: 16px;
+      }
+
+      input[type="button"] {
+          width: 100%;
+      }
+    </style>
+  </head>
+  <body onload="MY_ONLOAD()">
+    <div class="layout" id="tabs-1">
+      <div style="width:60px; height:60px; background-image:url(../skin/PTZ.png); background-repeat:no-repeat;">
+        <div id="ptz_up" class="ptz_button" style="margin:3px 23px 0px 21px" onmousedown="PtzUp()" onmouseup="PtzStop()">
+        </div>
+        <div id="ptz_left" class="ptz_button" style="margin:20px 0px 0px 4px;" onmousedown="PtzLeft()" onmouseup="PtzStop()">
+        </div>
+        <div id="ptz_right" class="ptz_button" style="margin:20px 6px 0px 38px;" onmousedown="PtzRight()" onmouseup="PtzStop()">
+        </div>
+        <div id="ptz_down" class="ptz_button" style="margin:37px 0px 0px 21px" onmousedown="PtzDown()" onmouseup="PtzStop()">
+        </div>
+        <script>
+          document.getElementById("ptz_up").title = GL("ptz_up");
+          document.getElementById("ptz_left").title = GL("ptz_left");
+          document.getElementById("ptz_right").title = GL("ptz_right");
+          document.getElementById("ptz_down").title = GL("ptz_down");
+        </script>
+      </div>
+      <table>
+        <tr>
+          <td>
+            <input type="button" id="zoom_tele" onmousedown="ZoomTele()" onmouseup="ZoomStop()">
+          </td>
+          <td>
+            <input type="button" id="zoom_wide" onmousedown="ZoomWide()" onmouseup="ZoomStop()">
+          </td>
+          <script>
+            document.getElementById("zoom_tele").value = GL("zoom_tele");
+            document.getElementById("zoom_wide").value = GL("zoom_wide");
+          </script>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <input type="checkbox" id="auto_focus" onclick="AutoFocus(this.checked)">
+            <label for="auto_focus"><script>DW(GL("auto_focus"));</script></label>
+          </td>
+          <td>
+            <script>
+              DW(GL("focus_speed") + ': ');
+              WH('focusspeedctrl');
+            </script>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input type="button" id="focus_near" onmousedown="FocusNear()" onmouseup="FocusStop()">
+          </td>
+          <td>
+            <input type="button" id="focus_far" onmousedown="FocusFar()" onmouseup="FocusStop()">
+          </td>
+          <script>
+            document.getElementById("focus_near").value = GL("focus_near");
+            document.getElementById("focus_far").value = GL("focus_far");
+          </script>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <script>
+              DW(GL("mode_set") + ': ');
+              WH('modeset');
+            </script>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

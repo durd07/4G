@@ -1,0 +1,2251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<title>video config</title>
+<link rel="stylesheet" type="text/css" href="css/video.css"/>
+<script src="js/jquery-1.10.2.js"></script>
+<script src="js/video.js"></script>
+<script language="javascript" src="var.js"></script>
+<script language="javascript" src="common.js"></script>
+<script>
+      InitLoad();
+	  var pageflag=1;
+	  var dev_type = device_type;
+</script>
+</head>
+<body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+<!--上面tab Div-->
+<script>
+ var isNoShowWaitImg = (parseInt(GV("<%waitserver%>", "0")) == 0);
+  var timerID, reloadCount;
+  var useActiveX = 1;//GV("<%layoutnum.0%>", 1);//GFL
+  var mpegstate = GV("<%supportmpeg4%>", 0);
+  var ww = "<%motionylimit%>";
+  var mpeg4CustomEnable = "<%mpeg4cenable%>";
+  var mpeg4CustomValue = "<%mpeg4cvalue%>";
+  var c_MaxTitleLen = parseInt("<%maxtitlelen%>"); //zdy
+  var c_MaxTextLen = parseInt("<%maxtextlen%>"); // add by zdy, 2013-05-03
+  var stremsel = "<%videocodec%>";
+  var framerate1sel = "<%framerate1%>";
+  var framerate2sel = "<%framerate2%>";
+  var framerate3sel = "<%framerate3%>";
+  var codeccomsel = "<%videocodeccombo%>";
+  // var title = "<%title%>";
+  var positionlist = GL("t_left") + ";" + GL("t_right") + ";" + GL("b_left") + ";" + GL("b_right");
+</script>
+<script>
+$(document).ready(function(){
+	$(window).resize(function() {
+		setTimeout(function(){adaptionComponent("ocx_object","vlc",16/9,0);},10);
+	});
+	
+});
+
+function MY_ONUNLOAD() {  
+	//StopActiveX();
+	VideoActiveXControl.videoStop();
+}
+
+function switch_stream(index)
+{
+	var threeDP;
+	if((dev_type==3)||(dev_type==4)){
+		threeDP = 1
+	}
+	else {
+		threeDP = 0;
+	} 	
+	VideoActiveXControl.videoPlay(index,threeDP,300);
+	pageflag = index;
+}
+/*
+function switch_stream1(){
+	StopV();
+	if((dev_type==3)||(dev_type==4)){
+		StartV(0, 0, Get9001FirstCodec(), 5, null); //stream 1
+	}
+	else {
+		StartVwithoutTDP(0, 0, Get9001FirstCodec(), 5, null); //stream 1	without 3D
+	} 	
+	pageflag=1;
+	//alert(1);
+}
+function switch_stream2(){
+	//document.getElementById('stream__1').style.display = "none";
+	//document.getElementById('stream__2').style.display = "";
+	StopV();
+	if((dev_type==3)||(dev_type==4)){
+		StartV(0, 0, Get9001FirstCodec(), 6, null); //stream 2
+	}
+	else{
+		StartVwithoutTDP(0, 0, Get9001FirstCodec(), 6, null); //stream 2	
+	}
+	pageflag=2;
+	//alert(2);
+}
+function switch_stream3(){
+    StopV();
+	if((dev_type==3)||(dev_type==4)){
+		StartV(0, 0, Get9001FirstCodec(), 1, null); //stream 3
+	}
+	else{
+		StartVwithoutTDP(0, 0, Get9001FirstCodec(), 1, null); //stream 3
+	}
+	pageflag=3;
+}
+*/
+if (IsVS()) {
+    useActiveX = 1;
+  }
+  var codecRes = parseInt("<%videocodecres%>");
+  //var codecMode = parseInt("<%videocodecmode%>");
+  var codecMode = parseInt("<%videocodec%>");//GFL
+  var img2amode = parseInt("<%img2a%>");
+  var img2atypemode = parseInt("<%img2atype%>");
+  var democfgmode = parseInt("<%democfg%>");
+  var mirctrlmode = parseInt("<%mirctrl%>");
+  var fdetectmode = parseInt("<%fdetect%>");
+  var rateConNow = parseInt("<%ratecontrol1%>");
+  var advmodeNow = parseInt("<%advmode%>");
+  var preprocessNow = parseInt("<%preprocess%>");
+  
+  var noisefiltNow = parseInt("<%nfltctrl%>");  
+  // UpdateGSizeLite();
+
+  //var codecResNameAry1 = "<%videocodecresname%>";
+  //codecResNameAry1.replace(/\@/g,";");
+  //alert(codecResNameAry1);
+  var codecResNameAry = "<%videocodecresname.all%>".split("@");
+  var codecNumber="<%videocodecname%>";
+  var codecResNameThirdAry0=codecResNameAry[0];//GFL
+  var codecResNameThirdAry1=codecResNameAry[1];//GFL
+  var codecResNameThirdAry2=codecResNameAry[8];//GFL
+  //follow add by zdy
+  var codecResNameSecAry0 = codecResNameThirdAry0.split(";");//zdy
+  // var len = codecResNameSecAry0.length;
+  // codecResNameSecAry0[len] = "{$cut_res}";    
+
+  var codecResNameSecAry1 = codecResNameThirdAry1.split(";");//zdy
+  // var len = codecResNameSecAry1.length;
+  // codecResNameSecAry1[len] = "{$cut_res}";                    
+
+  var codecResNameSecAry2 = codecResNameThirdAry2.split(";");//zdy 
+  // var len = codecResNameSecAry2.length;
+  // codecResNameSecAry2[len] = "{$cut_res}";                    
+                                    
+  var codecResNameSubAry="<%videocodeccomboname%>".split("@");
+  var codecNumberOption;
+  var codecMenuOption;
+  if (codecMode==0||codecMode==1||codecMode==2)
+  {
+    codecNumberOption=codecMode;//GFL
+    codecMenuOption=0;//GFL
+  }
+  if (codecMode==3||codecMode==4||codecMode==5||codecMode==6||codecMode==7)
+  {
+    codecNumberOption=1;  
+    codecMenuOption=codecMode-3;
+  }
+  if (codecMode==8||codecMode==9)
+  {
+    codecNumberOption=2;
+    codecMenuOption=codecMode-8;
+  }   
+  //Follow add by GFL
+  var frameratenameall1SubAry="<%frameratenameall1%>".split("@");
+  var frameratenameall2SubAry="<%frameratenameall2%>".split("@");
+  var frameratenameall3SubAry="<%frameratenameall3%>".split("@");
+  var videocodeclist = GL("single") + ";" + GL("dual") + ";" + GL("tri_stream");
+  
+  CTRLARY = {
+    // devTitle: new Ctrl_Text("devTitle", c_MaxTitleLen + 5, c_MaxTitleLen, "<%title%>", "title="),
+    H264BitRate: new Ctrl_Text("H264BitRate", "5", 5, "<%bitrate1%>", "bitrate1"),
+    codecNumber: new Ctrl_Select("codecNumber",videocodeclist,"<%videocodec%>","","FixStatus()"),
+    codecMenu  : new Ctrl_Select("codecMenu","","0","","FixRes2()"),
+    resMenu :new Ctrl_Select("resMenu","","0",""),    
+    // width1: new Ctrl_Text("width1", 4, 4, "<%width1%>", "width1=", new CheckerObj(v_resRange, new CheckerObj(gv_empty))].Disabled(), "CheckWidth1()", "ChangeWidth()"),
+    // height1: new Ctrl_Text("height1", 4, 4, "<%height1%>", "height1=", new CheckerObj(v_resRange, new CheckerObj(gv_empty)), false, "CheckHeight1()", "ChangeWidth()"),
+    // width2: new Ctrl_Text("width2", 4, 4, "<%width2%>", "width=2", new CheckerObj(v_resRange, new CheckerObj(gv_empty)), false, "CheckWidth2()", "ChangeWidth()"),
+    // height2: new Ctrl_Text("height2", 4, 4, "<%height2%>", "height2=", new CheckerObj(v_resRange, new CheckerObj(gv_empty)), false, "CheckWidth2()", "ChangeWidth()"),  
+    H264BitRate2: new Ctrl_Text("H264BitRate2", "4", 4, "<%bitrate2%>", "bitrate2"),
+    H264BitRate3: new Ctrl_Text("H264BitRate3", "4", 4, "<%livequality.1%>", "livequality"),
+    rateCtrl1: new Ctrl_Select("rateCtrl1", "<%ratecontrolname.all%>", "<%ratecontrol1%>", "ratecontrol1="),
+    rateCtrl2: new Ctrl_Select("rateCtrl2", "<%ratecontrolname.all%>", "<%ratecontrol2%>", "ratecontrol2="),
+    // rateCtrl3: new Ctrl_Select("rateCtrl3", "<%ratecontrolname.all%>", "<%ratecontrol3%>", "ratecontrol3="),
+    frmH264: new Ctrl_Text("frmH264", 2, 2, "<%framerate1%>", "framerate1="),
+    frmH2642: new Ctrl_Text("frmH2642", 2, 2, "<%framerate2%>", "framerate2="),
+    // frmH2643: new Ctrl_Text("frmH2643", 2, 2, "<%framerate3%>", "framerate3="),
+
+    timestampenable1: new Ctrl_Check("timestampenable1", "<%timestampenable1%>", "timestampenable1=", "FixTime1()"),
+    timestampenable2: new Ctrl_Check("timestampenable2", "<%timestampenable2%>", "timestampenable2=", "FixTime2()"),
+    // timestampenable3: new Ctrl_Check("timestampenable3", "<%timestampenable3%>", "timestampenable3=", "FixTime3()"),
+    timeposition1: new Ctrl_Select("timeposition1", positionlist, "<%timeposition1%>", "timeposition1="),
+    timeposition2: new Ctrl_Select("timeposition2", positionlist, "<%timeposition2%>", "timeposition2="),
+    // timeposition3: new Ctrl_Select("timeposition3", positionlist, "<%timeposition3%>", "timeposition3="),
+    textenable1: new Ctrl_Check("textenable1", "<%textenable1%>", "textenable1=", "FixText1()"),
+    textenable2: new Ctrl_Check("textenable2", "<%textenable2%>", "textenable2=", "FixText2()"),
+    // textenable3: new Ctrl_Check("textenable3", "<%textenable3%>", "textenable3=", "FixText3()"),
+    overlaytext1: new Ctrl_Text("overlaytext1", c_MaxTextLen, c_MaxTextLen, "", "overlaytext1="),
+    overlaytext2: new Ctrl_Text("overlaytext2", c_MaxTextLen, c_MaxTextLen, "", "overlaytext2="),
+    // overlaytext3: new Ctrl_Text("overlaytext3", c_MaxTextLen + 5, c_MaxTextLen, "", "overlaytext3="),
+    textposition1: new Ctrl_Select("textposition1", positionlist, "<%textposition1%>", "textposition1="),
+    textposition2: new Ctrl_Select("textposition2", positionlist, "<%textposition2%>", "textposition2="),
+    // textposition3: new Ctrl_Select("textposition3", positionlist, "<%textposition3%>", "textposition3="),
+        useUniMul1: new Ctrl_Check("useUniMul1", "<%umenable1%>", "umenable1=", "isUMEnable1()"), //\u542F\u7528\u5355/\u7EC4\u64AD
+        useUniMul2: new Ctrl_Check("useUniMul2", "<%umenable2%>", "umenable2=", "isUMEnable2()"), //\u542F\u7528\u5355/\u7EC4\u64AD
+        useUniMul3: new Ctrl_Check("useUniMul3", "<%umenable3%>", "umenable3=", "isUMEnable3()"), //\u542F\u7528\u5355/\u7EC4\u64AD
+        umipaddr1: new Ctrl_Text("umipaddr1", "25", "25", "<%umip1%>", "umip1="), //\u5355/\u7EC4\u64ADIP\u5730\u5740
+        umipaddr2: new Ctrl_Text("umipaddr2", "25", "25", "<%umip2%>", "umip2="), //\u5355/\u7EC4\u64ADIP\u5730\u5740
+        umipaddr3: new Ctrl_Text("umipaddr3", "25", "25", "<%umip3%>", "umip3="), //\u5355/\u7EC4\u64ADIP\u5730\u5740
+        port1: new Ctrl_Text("port1", "5", "5", "<%umport1%>", "umport1="), //\u5355/\u7EC4\u64AD\u7AEF\u53E3
+        port2: new Ctrl_Text("port2", "5", "5", "<%umport2%>", "umport2="), //\u5355/\u7EC4\u64AD\u7AEF\u53E3
+        port3: new Ctrl_Text("port3", "5", "5", "<%umport3%>", "umport3=")//\u5355/\u7EC4\u64AD\u7AEF\u53E3
+    //follow add by zdy
+    // quality: new Ctrl_Text("quality", "2", 2, DCL["jpegQa"], "livequality", new CheckerObj(v_valueRange3, new CheckerObj(gv_empty))),
+    // localdisplay: new Ctrl_Select("localdisplay", "<%localdisplayname.all%>", "<%localdisplay%>", "localdisplay="),
+    // encryptvideoenable: new Ctrl_Radio("encryptvideoenable", "<%encryptvideo%>", "encryptvideo=", "", "", true)
+  };
+    function isUMEnable1()
+  {
+    CTRLARY["umipaddr1"].Disable(GetCCV("useUniMul1") == 0);
+    CTRLARY["port1"].Disable(GetCCV("useUniMul1") == 0);
+    // CTRLARY["umipaddr1", GetCCV("useUniMul1") == 0);
+    // CTRLARY["port1", GetCCV("useUniMul1") == 0);
+  }
+
+  function isUMEnable2()
+  {
+    CTRLARY["umipaddr2"].Disable(GetCCV("useUniMul2") == 0);
+    CTRLARY["port2"].Disable(GetCCV("useUniMul2") == 0);
+  }
+
+  function isUMEnable3()
+  {
+    CTRLARY["umipaddr3"].Disable(GetCCV("useUniMul3") == 0);
+    CTRLARY["port3"].Disable(GetCCV("useUniMul3") == 0);
+  }
+
+  //modified by zdy
+  function FixStatus(){
+    // alert("FixStatus");
+    FixRes0();    
+    //codec: Single
+    var codecVal = GE("codecNumber").selectedIndex;  
+  //  alert(codecVal);  
+    switch (codecVal){
+      case 0:{
+        //document.getElementById("tabs-2").disabled=true;
+        //document.getElementById("li2").disabled = true;
+        //document.getElementById("tabs-3").disabled=true;
+        //document.getElementById("li3").disabled = true;
+
+        break;
+      }
+      case 1:{
+        //document.getElementById("tabs-2").disabled=false;
+        //document.getElementById("li2").disabled = false;
+        //document.getElementById("tabs-3").disabled=true;
+        //document.getElementById("li3").disabled = true;
+
+        // CTRLARY["quality"].Disable(true);
+        break;
+      }
+      case 2: {
+        //document.getElementById("tabs-2").disabled=false;
+        //document.getElementById("li2").disabled = false;
+       // document.getElementById("tabs-3").disabled=false;
+        //document.getElementById("li3").disabled = false;
+
+
+        // CTRLARY["frmH2642"].Disable(false);
+        // CTRLARY["H264BitRate2"].Disable(false);
+        // CTRLARY["frmJpeg"].Disable(false);
+        // CTRLARY["quality"].Disable(false);
+      }
+    }   
+  }
+ //fix Codec Combo zdy 
+function FixRes0()
+{
+  // alert("FixRes0");
+  var idx = codeccomsel;
+  // alert(idx);
+  var i = GE("codecNumber").selectedIndex;  
+  // alert(i);
+  if (i<codecResNameSubAry.length)
+  {
+    var obj=GE("codecMenu");
+    if(obj!=null)
+    {
+      obj.length=0;
+      var v=codecResNameSubAry[i].split(";");
+      for (var j=0;j<v.length;j++)
+      {
+        obj.options[j] = new Option(v[j],j);        
+      }
+      if (obj.length <= idx)
+        obj.selectedIndex = 0;
+      else
+        obj.selectedIndex = idx;
+      FixRes2();
+      
+      // FixFramerate();//Add by GFL
+   // ChangeStream();
+    }
+  }
+}
+//fix condecMenu
+// modified by zdy
+function FixRes2()
+{
+  var i = GE("codecMenu").selectedIndex;
+  
+  var k=GE("codecNumber").selectedIndex;
+  if (k==0){
+      if (i<codecResNameSecAry0.length)
+      {
+        var obj=GE("resMenu");
+        if(obj!=null)
+        {    
+          obj.length=0;
+          var v = codecResNameSecAry0; 
+          // alert(v);
+          // alert(v.length);
+          for (var j=0;j<v.length;j++)
+          {
+            obj.options[j] = new Option(v[j],j);        
+          }
+          // alert(obj.options[0]);
+          obj.selectedIndex = 0;
+
+          if (v.length == 1)
+            document.getElementById("resMenu").disabled = 1;
+          else
+            document.getElementById("resMenu").disabled = 0;
+        }     
+      }
+  }
+  if (k==1){ 
+      if (i<codecResNameSecAry1.length)
+      {
+        var obj=GE("resMenu");
+        if(obj!=null)
+        { 
+          obj.length=0;
+          var v = codecResNameSecAry1;
+          // var len = v.length;
+          // v[len] = "{$cut_res}";
+          for (var j=0;j<v.length;j++)
+          {
+            obj.options[j] = new Option(v[j],j);        
+          }
+
+          // obj.options[0] = new Option(v,i);      
+          obj.selectedIndex = 0;
+          if (v.length == 1)
+            document.getElementById("resMenu").disabled = 1;
+          else
+            document.getElementById("resMenu").disabled = 0;
+        }     
+      }
+  }
+  if(k==2){
+    if(i==0){
+      var codecResNameThAry0 = codecResNameSecAry2;
+      
+      var obj=GE("resMenu");
+      if(obj!=null)
+      {
+        obj.length=0;
+        var v = codecResNameThAry0;
+        // var len = v.length;
+        //   v[len] = "{$cut_res}";
+        for (var j=0;j<v.length;j++)
+        {
+          obj.options[j] = new Option(v[j],j);
+        }
+        obj.selectedIndex = 0;
+          if (v.length == 1)
+            document.getElementById("resMenu").disabled = 1;
+          else
+            document.getElementById("resMenu").disabled = 0;
+      }
+    
+    }
+    if(i==1){
+      var obj=GE("resMenu");
+      if(obj!=null)
+      { 
+        obj.length=0;
+        var v = codecResNameSecAry2; 
+        // var len = v.length;
+        // v[len] = "{$cut_res}";
+        for (var j=0;j<v.length;j++)
+        {
+          obj.options[j] = new Option(v[j],j);        
+        }   
+        obj.selectedIndex = 0;
+          if (v.length == 1)
+            document.getElementById("resMenu").disabled = 1;
+          else
+            document.getElementById("resMenu").disabled = 0;
+      }     
+    }
+  }
+}
+
+//Add by GFL
+function FixFramerate()
+{
+  var i = GE("codecNumber").selectedIndex;
+  var k = GE("codecMenu").selectedIndex;
+  
+  if(i==0)
+  {
+     var obj=GE("frmH264");
+       if(obj!=null)
+      {
+         obj.length=0;
+         var v = frameratenameall1SubAry[k+i].split(",");
+         
+         for (var j=0;j<v.length;j++)
+        {
+           obj.options[j] = new Option(v[j],j);
+        }
+        obj.selectedIndex = framerate1sel;
+     }
+  }
+  
+  if(i==1){ 
+     var obj=GE("frmH264");
+       if(obj!=null)
+      {
+         obj.length=0;
+         var v = frameratenameall1SubAry[k+3].split(",");
+         
+         for (var j=0;j<v.length;j++)
+        {
+           obj.options[j] = new Option(v[j],j);
+        }
+        obj.selectedIndex = framerate2sel;
+     }
+     
+     var obj=GE("frmH2642");
+       if(obj!=null)
+      {
+         obj.length=0;
+         var v = frameratenameall2SubAry[k+3].split(",");
+         
+         for (var j=0;j<v.length;j++)
+        {
+           obj.options[j] = new Option(v[j],j);
+        }
+        obj.selectedIndex = framerate3sel;
+     }
+  }
+  
+  if(i==2){
+     var q = GE("resMenu").selectedIndex;
+     
+     var obj=GE("frmH264");
+       if(obj!=null)
+      {
+         obj.length=0;
+         var v = frameratenameall1SubAry[8].split(";");         
+         var v1 = v[q].split(",");
+         
+         for (var j=0;j<v1.length;j++)
+        {
+           obj.options[j] = new Option(v1[j],j);
+        }
+        obj.selectedIndex = framerate1sel;
+     }
+     
+     var obj=GE("frmH2642");
+       if(obj!=null)
+      {
+         obj.length=0;
+         var v = frameratenameall2SubAry[8].split(";");
+         var v1 = v[q].split(",");
+         for (var j=0;j<v1.length;j++)
+        {
+           obj.options[j] = new Option(v1[j],j);
+        }
+        obj.selectedIndex = framerate2sel;
+     }
+     
+     // var obj=GE("frmH2643");
+     //   if(obj!=null)
+     //  {
+     //     obj.length=0;
+     //     var v = frameratenameall3SubAry[8].split(";");
+     //     var v1 = v[q].split(",");
+     //     for (var j=0;j<v1.length;j++)
+     //    {
+     //       obj.options[j] = new Option(v1[j],j);
+     //    }
+     //    obj.selectedIndex = framerate3sel;
+     // }
+  }
+  //ChangeStream();
+  //SendHttp(c_iniUrl + GetSetterCmdKV("videocodeccombo", k), false);
+}
+
+function FixTime1(){
+  CTRLARY["timeposition1"].Disable(GetCCV("timestampenable1") == 0);
+}
+
+function FixTime2(){
+  CTRLARY["timeposition2"].Disable(GetCCV("timestampenable2") == 0);
+}
+
+function FixTime3(){
+  CTRLARY["timeposition3"].Disable(GetCCV("timestampenable3") == 0);
+}
+
+function FixText1(){
+  document.getElementById("overlaytext1").disabled = (GetCCV("textenable1") == 0);
+  CTRLARY["textposition1"].Disable(GetCCV("textenable1") == 0);
+  // SendHttp(c_iniUrl + GetSetterCmdKV("textenable1", GetCCV("textenable1")), false);
+  // ChangeContent("img.htm");
+}
+
+function FixText2(){
+  document.getElementById("overlaytext2").disabled = (GetCCV("textenable2") == 0);
+  CTRLARY["textposition2"].Disable(GetCCV("textenable2") == 0);
+  // SendHttp(c_iniUrl + GetSetterCmdKV("textenable2", GetCCV("textenable2")), false);
+
+}
+
+// function FixText3(){
+//   document.getElementById("overlaytext3").disabled = (GetCCV("textenable3") == 0);
+//   CTRLARY["textposition3"].Disable(GetCCV("textenable3") == 0);
+//   // SendHttp(c_iniUrl + GetSetterCmdKV("textenable2", GetCCV("textenable2")), false);
+
+// }
+
+ </script>
+<script language="JavaScript" event="OnDrawRect(x1, y1, x2, y2)" for="vlc">  
+	//var r = VLC1.SetRange(index, x1, y1, x2, y2, 0x00FF0000);====add by jackie
+	//if (r == 0) {
+	path =  "d:\\bit\\v\\2.txt";
+	var wid = x2-x1;
+	var hig = y2-y1;
+	var neirong = x1+','+ y1 +','+wid+','+hig;			
+	//creatfolder(path);
+	//alert("SetRange to index" + index + " failed " + x1 +"," + y1 +"," + x2 +"," + y2);
+	if( (wid >3)&&(hig>3)){
+		//SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_x", x1), false);
+		//SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_y", y1), false);
+		//SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_wide", wid), false);
+		//SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_high", hig), false);
+		SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_contral", neirong), false);
+	}
+	
+</script>
+ 
+ <script>
+ function ready()
+ {
+    $("ul.menu li:first-child").addClass("current");
+    $("div.content").find("div.layout:not(:first-child)").hide();
+    $("div.content div.layout").attr("id", function(){return idNumber("No")+ $("div.content div.layout").index(this)});    
+ }
+    
+    function show(controlMenu,num,prefix){
+        var content= prefix + num;
+        $('#'+content).siblings().hide();
+        $('#'+content).show();
+        controlMenu.eq(num).addClass("current").siblings().removeClass("current");
+    };
+ 
+    function idNumber(prefix){
+        var idNum = prefix;
+        return idNum;
+    };
+
+    function FixCtrl(value)
+    {
+      if (value == 0)
+      {
+          // alert(value);
+      CTRLARY["H264BitRate"].Disable(0);
+        CTRLARY["rateCtrl1"].Disable(0);
+        CTRLARY["frmH264"].Disable(0);
+        CTRLARY["timestampenable1"].Disable(0);
+        CTRLARY["timeposition1"].Disable(0);
+        CTRLARY["textenable1"].Disable(0);
+  document.getElementById("overlaytext1").disabled = 0;
+        CTRLARY["textposition1"].Disable(0);
+        CTRLARY["useUniMul1"].Disable(0);
+        CTRLARY["umipaddr1"].Disable(0);
+        CTRLARY["port1"].Disable(0);
+        CTRLARY["H264BitRate2"].Disable(1);
+        CTRLARY["rateCtrl2"].Disable(1);
+        CTRLARY["frmH2642"].Disable(1);
+        CTRLARY["timestampenable2"].Disable(1);
+        CTRLARY["timeposition2"].Disable(1);
+        CTRLARY["textenable2"].Disable(1);
+  document.getElementById("overlaytext2").disabled = 0;
+        CTRLARY["textposition2"].Disable(1);
+        CTRLARY["useUniMul2"].Disable(1);
+        CTRLARY["umipaddr2"].Disable(1);
+        CTRLARY["port2"].Disable(1);
+        CTRLARY["H264BitRate3"].Disable(1);      
+        CTRLARY["useUniMul3"].Disable(1);
+        CTRLARY["umipaddr3"].Disable(1);
+        CTRLARY["port3"].Disable(1);
+      FixText1();
+      FixText2();
+      FixText3();
+      FixTime1();
+      FixTime2();
+      FixTime3();
+      isUMEnable1();
+      isUMEnable2();
+      isUMEnable3();
+
+      }
+      else if (value == 1)
+      {
+        // alert(value);
+        CTRLARY["H264BitRate"].Disable(1);
+        CTRLARY["rateCtrl1"].Disable(1);
+        CTRLARY["frmH264"].Disable(1);
+        CTRLARY["timestampenable1"].Disable(1);
+        CTRLARY["timeposition1"].Disable(1);
+        CTRLARY["textenable1"].Disable(1);
+  document.getElementById("overlaytext1").disabled = 0;
+        CTRLARY["textposition1"].Disable(1);
+        CTRLARY["useUniMul1"].Disable(1);
+        CTRLARY["umipaddr1"].Disable(1);
+        CTRLARY["port1"].Disable(1);
+        CTRLARY["H264BitRate2"].Disable(0);
+        CTRLARY["rateCtrl2"].Disable(0);
+        CTRLARY["frmH2642"].Disable(0);
+        CTRLARY["timestampenable2"].Disable(0);
+        CTRLARY["timeposition2"].Disable(0);
+        CTRLARY["textenable2"].Disable(0);
+  document.getElementById("overlaytext2").disabled = 0;
+        CTRLARY["textposition2"].Disable(0);
+        CTRLARY["useUniMul2"].Disable(0);
+        CTRLARY["umipaddr2"].Disable(0);
+        CTRLARY["port2"].Disable(0);
+        CTRLARY["H264BitRate3"].Disable(1);       
+        CTRLARY["useUniMul3"].Disable(1);
+        CTRLARY["umipaddr3"].Disable(1);
+        CTRLARY["port3"].Disable(1);
+              FixText1();
+      FixText2();
+      FixText3();
+      FixTime1();
+      FixTime2();
+      FixTime3();
+      isUMEnable1();
+      isUMEnable2();
+      isUMEnable3();
+
+      }
+      else if (value == 2)
+      {
+        // alert(value);
+        CTRLARY["H264BitRate"].Disable(1);
+        CTRLARY["rateCtrl1"].Disable(1);
+        CTRLARY["frmH264"].Disable(1);
+        CTRLARY["timestampenable1"].Disable(1);
+        CTRLARY["timeposition1"].Disable(1);
+        CTRLARY["textenable1"].Disable(1);
+        CTRLARY["overlaytext1"].Disable(1);
+        CTRLARY["textposition1"].Disable(1);
+        CTRLARY["useUniMul1"].Disable(1);
+        CTRLARY["umipaddr1"].Disable(1);
+        CTRLARY["port1"].Disable(1);
+        CTRLARY["H264BitRate2"].Disable(1);
+        CTRLARY["rateCtrl2"].Disable(1);
+        CTRLARY["frmH2642"].Disable(1);
+        CTRLARY["timestampenable2"].Disable(1);
+        CTRLARY["timeposition2"].Disable(1);
+        CTRLARY["textenable2"].Disable(1);
+        CTRLARY["overlaytext2"].Disable(1);
+        CTRLARY["textposition2"].Disable(1);
+        CTRLARY["useUniMul2"].Disable(1);
+        CTRLARY["umipaddr2"].Disable(1);
+        CTRLARY["port2"].Disable(1);
+        CTRLARY["H264BitRate3"].Disable(0);       
+        CTRLARY["useUniMul3"].Disable(0);
+        CTRLARY["umipaddr3"].Disable(0);
+        CTRLARY["port3"].Disable(0);
+              FixText1();
+      FixText2();
+      FixText3();
+      FixTime1();
+      FixTime2();
+      FixTime3();
+      isUMEnable1();
+      isUMEnable2();
+      isUMEnable3();
+
+      }
+    }
+</script>
+<script>
+
+function Dispalysome()
+{
+	
+	//document.getElementById("port_1").style.display = "none";
+	//document.getElementById("umipaddr_1").style.display = "none";
+	//document.getElementById("useUniMul_1").style.display = "none";
+	document.getElementById("textposition_1").style.display = "none";
+	document.getElementById("textenable_1").style.display = "none";
+	document.getElementById("timeposition_1").style.display = "none";
+	document.getElementById("timestampenable_1").style.display = "none";
+	document.getElementById("overlay_setting_1").style.display = "none";
+	document.getElementById("textenable_2").style.display = "none";
+	document.getElementById("timeposition_2").style.display = "none";
+	document.getElementById("timestampenable_2").style.display = "none";
+	document.getElementById("overlay_setting_2").style.display = "none";
+	//document.getElementById("umipaddr_2").style.display = "none";
+	//document.getElementById("useUniMul_2").style.display = "none";
+	document.getElementById("textposition_2").style.display = "none";
+	//document.getElementById("port_2").style.display = "none";
+	document.getElementById("useUniMul_3").style.display = "none";
+	document.getElementById("umipaddr_3").style.display = "none";
+	document.getElementById("port_3").style.display = "none";
+}
+  function MY_ONLOAD() {
+	setTimeout(function(){adaptionComponent("ocx_object","vlc",16/9,0);},10);
+	//switch_stream1();
+	switch_stream(1);
+	Dispalysome();
+  GE("codecNumber").selectedIndex = codecNumberOption;
+  
+  if (codecMode==0||codecMode==1||codecMode==2)
+      SetValue("codecMenu", codecMode);
+  if (codecMode==3||codecMode==4||codecMode==5||codecMode==6||codecMode==7)
+      SetValue("codecMenu", codecMode-3);
+  if (codecMode==8||codecMode==9)
+    SetValue("codecMenu", codecMode-8);
+  FixStatus();
+  FixRes2();
+  FixTime1();
+  FixTime2();
+  // FixTime3();
+  FixText1();
+  FixText2();
+  // FixText3();
+  isUMEnable1();
+    isUMEnable2();
+    isUMEnable3();
+  SetValue("resMenu", codecRes);
+  // isNoShowWaitImg = 0;
+  //CTRLARY["democfg", true);
+  // CTRLARY["fdregusr", true);
+  // CTRLARY["encryptvideoenable", true);
+
+  
+    CTRLARY["codecMenu"].Disable(1);
+    CTRLARY["codecNumber"].Disable(1);
+	//CTRLARY["resMenu"].Disable(1);
+  }
+  function MY_CH_CHANGE() {
+  
+    StartActiveXEx(0, 0, Get9001FirstCodec(), g_CHID, 1);
+  }
+// function CheckTitle()
+// {
+//   // alert("CheckTitle");
+//   var title = document.getElementById("devTitle").value;
+//   var num = 0;
+//   // alert(title.length);
+//   if (title.length == 0)
+//   {
+//     alert(GL("title_empty"));
+//     return false;
+//   }
+//     for (var i = 0; i < title.length; i++) {
+//     var ch = title.charAt(i);
+//     // alert(ch);
+//     if (isChinese(ch))
+//     { 
+//       num = num + 2;      
+//     }
+//     else
+//     {
+//       num = num + 1;
+//     }
+//     if (num > 11)
+//     {
+//       alert(GL("title_long"));
+//       document.getElementById("devTitle").value = "";
+//       return false;
+//     }
+//     if (ch == ' ' || ch == '#' || ch == '=' || ch == '+' || ch == '&' || ch=='$' || ch == '%' || ch=='^' || ch=='!' || ch=='~' || ch=='`')
+//     {
+//       alert(GL("title_inv"));
+//       document.getElementById("devTitle").value = "";
+//       return false;
+//     }
+//   }
+//   return true;
+// }
+
+function CheckBitRate1(min, max)
+{
+  var value = document.getElementById("H264BitRate").value;
+  if (value.length == 0)
+  {
+    alert(GL("bit1_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("bit1_inva"));
+    document.getElementById("H264BitRate").value = "";
+    document.getElementById("H264BitRate").focus();
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("bit1_rager"));
+    document.getElementById("H264BitRate").value = "";
+    document.getElementById("H264BitRate").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckBitRate2(min, max)
+{
+  var value = document.getElementById("H264BitRate2").value;
+  if (value.length == 0)
+  {
+    alert(GL("bit2_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("bit2_inva"));
+    document.getElementById("H264BitRate2").value = "";
+    document.getElementById("H264BitRate2").focus();
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("bit2_rager"));
+    document.getElementById("H264BitRate2").value = "";
+    document.getElementById("H264BitRate2").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckBitRate3(min, max)
+{
+  var value = document.getElementById("H264BitRate3").value;
+  if (value.length == 0)
+  {
+    alert(GL("bit3_empty"));
+    document.getElementById("H264BitRate3").value = "<%livequality%>";
+    document.getElementById("H264BitRate3").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("bit3_inva"));
+    document.getElementById("H264BitRate3").value = "<%livequality%>";
+    document.getElementById("H264BitRate3").focus();
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("bit3_rager"));
+    document.getElementById("H264BitRate3").value = "<%livequality%>";
+    document.getElementById("H264BitRate3").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckFrm1(min, max)
+{
+  var value = document.getElementById("frmH264").value;
+  if (value.length == 0)
+  {
+    alert(GL("frm1_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("frm1_inv"));
+    document.getElementById("frmH264").value = "";
+    document.getElementById("frmH264").focus();
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("frm1_rager"));
+    document.getElementById("frmH264").value = "";
+    document.getElementById("frmH264").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckFrm2(min, max)
+{
+  var value = document.getElementById("frmH2642").value;
+  if (value.length == 0)
+  {
+    alert(GL("frm2_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("frm2_inv"));
+    document.getElementById("frmH2642").value ="";
+    document.getElementById("frmH2642").focus();
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("frm2_rager"));
+    document.getElementById("frmH2642").value = "";
+    document.getElementById("frmH2642").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckFrm3(min, max)
+{
+  var value = document.getElementById("frmH2643").value;
+  if (value.length == 0)
+  {
+    alert(GL("frm3_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("frm3_inv"));
+    document.getElementById("frmH2643").value = "";
+    document.getElementById("frmH2643").focus();
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("frm3_rager"));
+    document.getElementById("frmH2643").value = "";
+    document.getElementById("frmH2643").focus();
+    return false;
+  }
+  return true;
+}
+function JTrim(s)
+{
+    return s.replace(/(^\s*)|(\s*$)/g, "");
+}
+function CheckText1()
+{
+  var value = document.getElementById("overlaytext1").value;
+  var num = 0;
+  // alert(value.length);
+  
+  if ((value.length == 0)||JTrim(value) == "")
+  {
+    alert(GL("text1_empty"));
+      document.getElementById("overlaytext1").value = window.frames["hiddenIFrame"].document.getElementById("overlaytext1name").value;
+      document.getElementById("overlaytext1").focus();
+    return false;
+  }
+
+  for (var i = 0; i < value.length; i++) {
+    var ch = value.charAt(i);
+    // alert(ch);
+    if (isChinese(ch))
+    { 
+      num = num + 2;      
+    }
+    else
+    {
+      num = num + 1;
+    }
+    if (num > 64)
+    {
+      alert(GL("text1_long"));
+      document.getElementById("overlaytext1").value = window.frames["hiddenIFrame"].document.getElementById("overlaytext1name").value;
+      document.getElementById("overlaytext1").focus();
+      return false;
+    }
+    if (isInvalid(ch))
+    {
+      alert(GL("text1_inv"));
+      document.getElementById("overlaytext1").value = window.frames["hiddenIFrame"].document.getElementById("overlaytext1name").value;
+      document.getElementById("overlaytext1").focus();
+      return false;
+    }
+  }
+// alert(num);
+  return true;
+}
+function CheckText2()
+{
+  var value = document.getElementById("overlaytext2").value;
+  var num = 0;
+  // alert(value.length);
+
+  if (value.length == 0||JTrim(value) == "")
+  {
+    alert(GL("text2_empty"));
+      document.getElementById("overlaytext2").value = window.frames["hiddenIFrame"].document.getElementById("overlaytext2name").value;
+      document.getElementById("overlaytext2").focus();
+    return false;
+  }
+
+  for (var i = 0; i < value.length; i++) {
+    var ch = value.charAt(i);
+    // alert(ch);
+    if (isChinese(ch))
+    { 
+      num = num + 2;      
+    }
+    else
+    {
+      num = num + 1;
+    }
+    if (num > 64)
+    {
+      alert(GL("text2_long"));
+      document.getElementById("overlaytext2").value = window.frames["hiddenIFrame"].document.getElementById("overlaytext2name").value;
+      document.getElementById("overlaytext2").focus();
+      return false;
+    }
+    if (isInvalid(ch))
+    {
+      alert(GL("text2_inv"));
+      document.getElementById("overlaytext2").value = window.frames["hiddenIFrame"].document.getElementById("overlaytext2name").value;
+      document.getElementById("overlaytext2").focus();
+      return false;
+    }
+  }
+  return true;
+}
+
+function CheckText3()
+{
+  var value = document.getElementById("overlaytext3").value;
+  var num = 0;
+  // alert(value.length);
+
+  if (value.length == 0||JTrim(value) == "")
+  {
+    alert(GL("text3_empty"));
+    document.getElementById("overlaytext3").value = window.frames["hiddenIFrame"].document.getElementById("overlaytext3name").value;
+    document.getElementById("overlaytext3").focus();
+    return false;
+  }
+
+  for (var i = 0; i < value.length; i++) {
+    var ch = value.charAt(i);
+    // alert(ch);
+    if (isChinese(ch))
+    { 
+      num = num + 2;      
+    }
+    else
+    {
+      num = num + 1;
+    }
+    if (num > 64)
+    {
+      alert(GL("text3_long"));
+      document.getElementById("overlaytext3").value = window.frames["hiddenIFrame"].document.getElementById("overlaytext3name").value;
+      document.getElementById("overlaytext3").focus();
+      return false;
+    }
+      if (isInvalid(ch))
+      {
+        alert(GL("text3_inv"));
+        document.getElementById("overlaytext3").value = window.frames["hiddenIFrame"].document.getElementById("overlaytext3name").value;
+        document.getElementById("overlaytext3").focus();
+        return false;
+      }
+  }
+  return true;
+}
+
+function CheckUmip1()
+{
+  var value = document.getElementById("umipaddr1").value;
+      var res = false;    
+      var ipary = value.split(".");     
+      var num = ipary.length;
+      if (value.length == 0)
+      {
+        alert(GL("umip1_empty"));
+        document.getElementById("umipaddr1").value = "<%umip1%>";
+        document.getElementById("umipaddr1").focus();
+        return false;
+      }
+      if(num != 4)
+      {
+        if (!(IsNumeric(ipary[0])))
+          alert(GL("umip1_err1"));
+        else if(ipary[0] >= 224 && ipary[0] <= 239)
+          alert(GL("umip1_err1"));
+        else
+          alert(GL("umip1_err2"));
+        document.getElementById("umipaddr1").value = "<%umip1%>";
+        document.getElementById("umipaddr1").focus();
+        return false;
+      }
+      else
+      {
+        var i = 0;
+        if (ipary[0] <= 0 || !(IsNumeric(ipary[0])))
+        {
+          alert(GL("umip1_err"));
+          document.getElementById("umipaddr1").value = "<%umip1%>";
+          document.getElementById("umipaddr1").focus();
+          return false; 
+        } 
+
+        if (ipary[0] == 224 && ipary[1] == 0 && ipary[2] == 0)
+        {
+          alert(GL("umip1_err1"));
+          document.getElementById("umipaddr1").value = "<%umip1%>";
+          document.getElementById("umipaddr1").focus();
+          return false; 
+        }
+
+        for (i = 1; i<num; i++)
+        {
+          // alert(ipary[i]);
+          if(ipary[i] < 0 || ipary[i] >255 || !(IsNumeric(ipary[i])) || ipary[i] == '')
+          {
+            if (ipary[0] >= 224 && ipary[0] <= 239)
+              alert(GL("umip1_err1"));
+            else
+              alert(GL("umip1_err2"));
+            document.getElementById("umipaddr1").value = "<%umip1%>";
+            document.getElementById("umipaddr1").focus();
+            return false; 
+          }
+        }
+      }
+      return true;
+}
+
+function CheckUmip2()
+{
+  var value = document.getElementById("umipaddr2").value;
+      var res = false;    
+      var ipary = value.split(".");     
+      var num = ipary.length;
+      if (value.length == 0)
+      {
+        alert(GL("umip2_empty"));
+        document.getElementById("umipaddr2").value = "<%umip2%>";
+        document.getElementById("umipaddr2").focus();
+        return false;
+      }
+      if(num != 4)
+      {
+        if (!(IsNumeric(ipary[0])))
+          alert(GL("umip2_err"));
+        else if(ipary[0] >= 224 && ipary[0] <= 239)
+          alert(GL("umip2_err1"));
+        else
+          alert(GL("umip2_err2"));
+        document.getElementById("umipaddr2").value = "<%umip2%>";
+        document.getElementById("umipaddr2").focus();
+        return false;
+      }
+      else
+      {
+        var i = 0;
+        if (ipary[0] <= 0 || !(IsNumeric(ipary[0])))
+        {
+          alert(GL("umip2_err"));
+          document.getElementById("umipaddr2").value = "<%umip2%>";
+          document.getElementById("umipaddr2").focus();
+          return false; 
+        } 
+
+        if (ipary[0] == 224 && ipary[1] == 0 && ipary[2] == 0)
+        {
+          alert(GL("umip2_err1"));
+          document.getElementById("umipaddr2").value = "<%umip2%>";
+          document.getElementById("umipaddr2").focus();
+          return false; 
+        }
+
+        for (i = 1; i<num; i++)
+        {
+          if(ipary[i] < 0 || ipary[i] >255 || !(IsNumeric(ipary[i])) || ipary[i] == '')
+          {
+            if (ipary[0] >= 224 && ipary[0] <= 239)
+              alert(GL("umip2_err1"));
+            else
+              alert(GL("umip2_err2"));
+            document.getElementById("umipaddr2").value = "<%umip2%>";
+            document.getElementById("umipaddr2").focus();
+            return false; 
+          }
+        }
+      }
+      return true;
+}
+
+function CheckUmip3()
+{
+  var value = document.getElementById("umipaddr3").value;
+      var res = false;    
+      var ipary = value.split(".");     
+      var num = ipary.length;
+      if (value.length == 0)
+      {
+        alert(GL("umip3_empty"));
+        document.getElementById("umipaddr3").value = "<%umip3%>";
+        document.getElementById("umipaddr3").focus();
+        return false;
+      }
+      if(num < 4)
+      {
+        if (!(IsNumeric(ipary[0])))
+          alert(GL("umip3_err"));
+        else if(ipary[0] >= 224 && ipary[0] <= 239)
+          alert(GL("umip3_err1"));
+        else
+          alert(GL("umip3_err2"));
+        document.getElementById("umipaddr3").value = "<%umip3%>";
+        document.getElementById("umipaddr3").focus();
+        return false;
+      }
+      else
+      {
+        var i = 0;
+        if (ipary[0] <= 0 || !(IsNumeric(ipary[0])))
+        {
+          alert(GL("umip3_err"));
+          document.getElementById("umipaddr3").value = "<%umip3%>";
+          document.getElementById("umipaddr3").focus();
+          return false; 
+        } 
+
+        if (ipary[0] == 224 && ipary[1] == 0 && ipary[2] == 0)
+        {
+          alert(GL("umip3_err1"));
+          document.getElementById("umipaddr3").value = "<%umip3%>";
+          document.getElementById("umipaddr3").focus();
+          return false; 
+        }
+
+        for (i = 1; i<num;i++)
+        {
+          if(ipary[i] < 0 || ipary[i] >255 || !(IsNumeric(ipary[i])) || ipary[i] == '')
+          {
+            if (ipary[0] >= 224 && ipary[0] <= 239)
+              alert(GL("umip3_err1"));
+            else
+              alert(GL("umip3_err2"));
+            document.getElementById("umipaddr3").value = "<%umip3%>";
+            document.getElementById("umipaddr3").focus();
+            return false; 
+          }
+        }
+      }
+      return true;
+}
+
+function CheckUMPort1(min, max)
+{
+  var port = document.getElementById("port1").value;
+  var value = document.getElementById("umipaddr1").value;
+  var ipary = value.split(".");     
+
+  // alert(port);
+  if (ipary[0] >= 224 && ipary[0] <= 239)
+  {
+    if (port.length == 0)
+    {
+      alert(GL("port1_empty1"));
+      document.getElementById("port1").value = "<%umport1%>";
+      document.getElementById("port1").focus();
+      return false;
+    }
+    if (!(IsNumeric(port)))
+    {
+      alert(GL("port1_inva1"));
+      document.getElementById("port1").value = "<%umport1%>";
+      document.getElementById("port1").focus();
+      return false;
+    }
+    if (port%2 != 0)
+    {
+      alert(GL("port1_old1"));
+      document.getElementById("port1").value = "<%umport1%>";
+      document.getElementById("port1").focus();
+      return false;
+    }
+
+    if (!(port >= min && port <= max))
+    {
+      alert(GL("port1_range1"));
+      document.getElementById("port1").value = "<%umport1%>";
+      document.getElementById("port1").focus();
+      return false;
+    }
+  }
+  else
+    if (port.length == 0)
+    {
+      alert(GL("port1_empty2"));
+      return false;
+    }
+    if (!(IsNumeric(port)))
+    {
+      alert(GL("port1_inva2"));
+      document.getElementById("port1").value = "<%umport1%>";
+      document.getElementById("port1").focus();
+      return false;
+    }
+    if (port%2 != 0)
+    {
+      alert(GL("port1_old2"));
+      document.getElementById("port1").value = "<%umport1%>";
+      document.getElementById("port1").focus();
+      return false;
+    }
+
+    if (!(port >= min && port <= max))
+    {
+      alert(GL("port1_range2"));
+      document.getElementById("port1").value = "<%umport1%>";
+      document.getElementById("port1").focus();
+      return false;
+    }
+
+  return true;
+
+}
+
+function CheckUMPort2(min, max)
+{
+  var port = document.getElementById("port2").value;
+  var value = document.getElementById("umipaddr2").value;
+  var ipary = value.split(".");     
+
+  // alert(port);
+  if (ipary[0] >= 224 && ipary[0] <= 239)
+  {
+    if (port.length == 0)
+    {
+      alert(GL("port2_empty1"));
+      document.getElementById("port2").value = "<%umport2%>";
+      document.getElementById("port2").focus();
+      return false;
+    }
+    if (!(IsNumeric(port)))
+    {
+      alert(GL("port2_inva1"));
+      document.getElementById("port2").value = "<%umport2%>";
+      document.getElementById("port2").focus();
+      return false;
+    }
+
+    if (port%2 != 0)
+    {
+      alert(GL("port2_old1"));
+      document.getElementById("port2").value = "<%umport2%>";
+      document.getElementById("port2").focus();
+      return false;
+    }
+
+    if (!(port >= min && port <= max))
+    {
+      alert(GL("port2_range1"));
+      document.getElementById("port2").value = "<%umport2%>";
+      document.getElementById("port2").focus();
+      return false;
+    }
+  }
+  else
+    if (port.length == 0)
+    {
+      alert(GL("port2_empty2"));
+      return false;
+    }
+    if (!(IsNumeric(port)))
+    {
+      alert(GL("port2_inva2"));
+      document.getElementById("port2").value = "<%umport2%>";
+      document.getElementById("port2").focus();
+      return false;
+    }
+    if (port%2 != 0)
+    {
+      alert(GL("port2_old2"));
+      document.getElementById("port2").value = "<%umport2%>";
+      document.getElementById("port2").focus();
+      return false;
+    }
+
+    if (!(port >= min && port <= max))
+    {
+      alert(GL("port2_range2"));
+      document.getElementById("port2").value = "<%umport2%>";
+      document.getElementById("port2").focus();
+      return false;
+    }
+
+  return true;
+
+}
+
+function CheckUMPort3(min, max)
+{
+  var port = document.getElementById("port3").value;
+  var value = document.getElementById("umipaddr3").value;
+  var ipary = value.split(".");     
+
+  // alert(port);
+  if (ipary[0] >= 224 && ipary[0] <= 239)
+  {
+    if (port.length == 0)
+    {
+      alert(GL("port3_empty1"));
+      document.getElementById("port3").value = "<%umport3%>";
+      document.getElementById("port3").focus();
+      return false;
+    }
+    if (!(IsNumeric(port)))
+    {
+      alert(GL("port3_inva1"));
+      document.getElementById("port3").value = "<%umport3%>";
+      document.getElementById("port3").focus();
+      return false;
+    }
+
+    if (port%2 != 0)
+    {
+      alert(GL("port3_old1"));
+      document.getElementById("port3").value = "<%umport3%>";
+      document.getElementById("port3").focus();
+      return false;
+    }
+
+    if (!(port >= min && port <= max))
+    {
+      alert(GL("port3_range1"));
+      document.getElementById("port3").value = "<%umport3%>";
+      document.getElementById("port3").focus();
+      return false;
+    }
+  }
+  else
+    if (port.length == 0)
+    {
+      alert(GL("port3_empty2"));
+      return false;
+    }
+    if (!(IsNumeric(port)))
+    {
+      alert(GL("port3_inva2"));
+      document.getElementById("port3").value = "<%umport3%>";
+      document.getElementById("port3").focus();
+      return false;
+    }
+    if (port%2 != 0)
+    {
+      alert(GL("port3_old2"));
+      document.getElementById("port3").value = "<%umport3%>";
+      document.getElementById("port3").focus();
+      return false;
+    }
+
+    if (!(port >= min && port <= max))
+    {
+      alert(GL("port3_range2"));
+      document.getElementById("port3").value = "<%umport3%>";
+      document.getElementById("port3").focus();
+      return false;
+    }
+
+  return true;
+}
+
+function CheckUmport(val)
+{
+  var port1 = document.getElementById("port1").value;
+  var port2 = document.getElementById("port2").value;
+  var port3 = document.getElementById("port3").value;
+  var umenable1 = GetCCV("useUniMul1");
+  var umenable2 = GetCCV("useUniMul2");
+  var umenable3 = GetCCV("useUniMul3");
+
+    if (umenable1 == 1 && umenable2 == 1)
+    {
+      if (port1 == port2)
+      {
+        alert(GL("umport_ex"));
+        if (val == 1)
+        {
+          document.getElementById("port1").value = "<%umport1%>";
+          document.getElementById("port1").focus();
+        }
+        else if (val == 2)
+        {
+          document.getElementById("port2").value = "<%umport2%>";
+          document.getElementById("port2").focus();
+        }
+        else
+        {
+          document.getElementById("port3").value = "<%umport3%>";
+          document.getElementById("port3").focus();
+        }
+        return false;
+      }
+    }
+    if (umenable1 == 1 && umenable3 == 1)
+    {
+      if (port1 == port3)
+      {
+        alert(GL("umport_ex"));
+        if (val == 1)
+        {
+          document.getElementById("port1").value = "<%umport1%>";
+          document.getElementById("port1").focus();
+        }
+        else if (val == 2)
+        {
+          document.getElementById("port2").value = "<%umport2%>";
+          document.getElementById("port2").focus();
+        }
+        else
+        {
+          document.getElementById("port3").value = "<%umport3%>";
+          document.getElementById("port3").focus();
+        }
+        return false;
+      }
+    }
+    
+    if (umenable2 == 1 && umenable3 == 1)
+    {
+      if (port3 == port2)
+      {
+        alert(GL("umport_ex"));
+        if (val == 1)
+        {
+          document.getElementById("port1").value = "<%umport1%>";
+          document.getElementById("port1").focus();
+        }
+        else if (val == 2)
+        {
+          document.getElementById("port2").value = "<%umport2%>";
+          document.getElementById("port2").focus();
+        }
+        else
+        {
+          document.getElementById("port3").value = "<%umport3%>";
+          document.getElementById("port3").focus();
+        }
+        return false;
+      }
+    }
+  
+  return true;
+}
+
+
+function ParaCheck()
+{
+	
+  var flag1 = false;
+  window.log1 = 0;
+
+  var codecNumber = GetCCV("codecNumber");
+  var codecMenu = GetCCV("codecMenu");
+  var resMenu = GetCCV("resMenu");
+
+  if (codecNumber == "<%videocodec%>" && codecMenu == "<%videocodeccombo%>" && resMenu == "<%videocodecres%>")
+  {
+    CTRLARY["codecNumber"].active = 0;
+    CTRLARY["codecMenu"].active = 0;
+    CTRLARY["resMenu"].active = 0;
+  } 
+  else if (flag1 == false)
+    flag1 = true;
+
+  if (pageflag == 1)
+  {
+    CTRLARY["H264BitRate2"].active = 0;
+    CTRLARY["frmH2642"].active = 0;
+    CTRLARY["rateCtrl2"].active = 0;
+    CTRLARY["timestampenable2"].active = 0;
+    CTRLARY["timeposition2"].active = 0;
+    CTRLARY["overlaytext2"].active = 0;
+    CTRLARY["textenable2"].active = 0;
+    CTRLARY["textposition2"].active = 0;
+    CTRLARY["useUniMul2"].active = 0;
+    CTRLARY["umipaddr2"].active = 0;
+    CTRLARY["port2"].active = 0;
+
+    CTRLARY["useUniMul3"].active = 0;
+    CTRLARY["umipaddr3"].active = 0;
+    CTRLARY["port3"].active = 0;
+    CTRLARY["H264BitRate3"].active = 0;
+
+    var H264BitRate = GetCCV("H264BitRate");
+    if (H264BitRate == "<%bitrate1%>")
+    {
+      CTRLARY["H264BitRate"].active = 0;
+    } 
+    else if (flag1 == false)
+      flag1 = true;
+
+    var rateCtrl1 = GetCCV("rateCtrl1");
+    if (rateCtrl1 == "<%ratecontrol1%>")
+    {
+      CTRLARY["rateCtrl1"].active = 0;
+    } 
+    else if (flag1 == false)
+      flag1 = true;
+
+    var frmH264 = GetCCV("frmH264");
+    if (frmH264 == "<%framerate1%>")
+    {
+      CTRLARY["frmH264"].active = 0;
+    } 
+    else if (flag1 == false)
+      flag1 = true;
+
+    var timestampenable1 = GetCCV("timestampenable1");
+    if (timestampenable1 == "<%timestampenable1%>")
+    {
+      CTRLARY["timestampenable1"].active = 0;
+    } 
+    else {
+      if (flag1 == false)
+        flag1 = true;
+      if (window.log1 == 0)
+        window.log1 = 1;
+    }
+
+    var timeposition1 = GetCCV("timeposition1");
+    if (timeposition1 == "<%timeposition1%>")
+    {
+      CTRLARY["timeposition1"].active = 0;
+    } 
+    else {
+      if (flag1 == false)
+        flag1 = true;
+      if (window.log1 == 0)
+        window.log1 = 1;
+    }
+
+    var overlaytext1 = document.getElementById("overlaytext1").value;
+   // var overlaytext11 =  window.frames["hiddenIFrame"].document.getElementById("overlaytext1name").value;
+   // if (overlaytext1 == overlaytext11)
+    //{
+     // CTRLARY["overlaytext1"].active = 0;
+    //} 
+   // else {
+     // if (flag1 == false)
+       // flag1 = true;
+      //if (window.log1 == 0)
+        //window.log1 = 1;
+    //}
+
+    var textenable1 = GetCCV("textenable1");
+    if (textenable1 == "<%textenable1%>")
+    {
+      CTRLARY["textenable1"].active = 0;
+    } 
+    else {
+      if (flag1 == false)
+        flag1 = true;
+      if (window.log1 == 0)
+        window.log1 = 1;
+    }
+
+    var textposition1 = GetCCV("textposition1");
+    if (textposition1 == "<%textposition1%>")
+    {
+      CTRLARY["textposition1"].active = 0;
+    } 
+    else {
+      if (flag1 == false)
+        flag1 = true;
+      if (window.log1 == 0)
+        window.log1 = 1;
+    }
+
+    if (textenable1 == 0)
+    {
+      CTRLARY["textposition1"].active = 0;
+      CTRLARY["overlaytext1"].active = 0;
+    }
+
+    var useUniMul1 = GetCCV("useUniMul1");
+    var umipaddr1 = GetCCV("umipaddr1");
+    var port1 = GetCCV("port1");
+    if (useUniMul1 == "<%umenable1%>" && umipaddr1 == "<%umip1%>" && port1 == "<%umport1%>")
+    {
+      CTRLARY["useUniMul1"].active = 0;
+      CTRLARY["umipaddr1"].active = 0;
+      CTRLARY["port1"].active = 0;
+    } 
+    else if (flag1 == false)
+      flag1 = true;
+
+  }
+  else if (pageflag == 2)
+  {
+    CTRLARY["H264BitRate"].active = 0;
+    CTRLARY["rateCtrl1"].active = 0;
+    CTRLARY["frmH264"].active = 0;
+    CTRLARY["timestampenable1"].active = 0;
+    CTRLARY["timeposition1"].active = 0;
+    CTRLARY["overlaytext1"].active = 0;
+    CTRLARY["textenable1"].active = 0;
+    CTRLARY["textposition1"].active = 0;
+    CTRLARY["useUniMul1"].active = 0;
+    CTRLARY["umipaddr1"].active = 0;
+    CTRLARY["port1"].active = 0;
+
+    CTRLARY["useUniMul3"].active = 0;
+    CTRLARY["umipaddr3"].active = 0;
+    CTRLARY["port3"].active = 0;
+    CTRLARY["H264BitRate3"].active = 0;
+
+    var H264BitRate2 = GetCCV("H264BitRate2");
+    if (H264BitRate2 == "<%bitrate2%>")
+    {
+      CTRLARY["H264BitRate2"].active = 0;
+    } 
+    else if (flag1 == false)
+      flag1 = true;
+
+    var rateCtrl2 = GetCCV("rateCtrl2");
+    if (rateCtrl2 == "<%ratecontrol2%>")
+    {
+      CTRLARY["rateCtrl2"].active = 0;
+    } 
+    else if (flag1 == false)
+      flag1 = true;
+
+    var frmH264 = GetCCV("frmH2642");
+    if (frmH264 == "<%framerate2%>")
+    {
+      CTRLARY["frmH2642"].active = 0;
+    } 
+    else if (flag1 == false)
+      flag1 = true;
+
+    var timestampenable1 = GetCCV("timestampenable2");
+    if (timestampenable1 == "<%timestampenable2%>")
+    {
+      CTRLARY["timestampenable2"].active = 0;
+    } 
+    else {
+      if (flag1 == false)
+        flag1 = true;
+      if (window.log1 == 0)
+        window.log1 = 2;
+    }
+
+    var timeposition1 = GetCCV("timeposition2");
+    if (timeposition1 == "<%timeposition2%>")
+    {
+      CTRLARY["timeposition2"].active = 0;
+    } 
+    else {
+      if (flag1 == false)
+        flag1 = true;
+      if (window.log1 == 0)
+        window.log1 = 2;
+    }
+
+    var overlaytext1 = document.getElementById("overlaytext2").value;
+   // var overlaytext11 =  window.frames["hiddenIFrame"].document.getElementById("overlaytext2name").value;
+   // if (overlaytext1 == overlaytext11)
+   // {
+     // CTRLARY["overlaytext2"].active = 0;
+   // } 
+   // else {
+     // if (flag1 == false)
+       // flag1 = true;
+      //if (window.log1 == 0)
+       // window.log1 = 2;
+   // }
+
+    var textenable1 = GetCCV("textenable2");
+    if (textenable1 == "<%textenable2%>")
+    {
+      CTRLARY["textenable2"].active = 0;
+    } 
+    else {
+      if (flag1 == false)
+        flag1 = true;
+      if (window.log1 == 0)
+        window.log1 = 2;
+    }
+
+    var textposition1 = GetCCV("textposition2");
+    if (textposition1 == "<%textposition2%>")
+    {
+      CTRLARY["textposition2"].active = 0;
+    } 
+    else {
+      if (flag1 == false)
+        flag1 = true;
+      if (window.log1 == 0)
+        window.log1 = 2;
+    }
+
+    if (textenable1 == 0)
+    {
+      CTRLARY["textposition2"].active = 0;
+      CTRLARY["overlaytext2"].active = 0;
+    }
+
+    var useUniMul1 = GetCCV("useUniMul2");
+    var umipaddr1 = GetCCV("umipaddr2");
+    var port1 = GetCCV("port2");
+    if (useUniMul1 == "<%umenable2%>" && umipaddr1 == "<%umip2%>" && port1 == "<%umport2%>")
+    {
+      CTRLARY["useUniMul2"].active = 0;
+      CTRLARY["umipaddr2"].active = 0;
+      CTRLARY["port2"].active = 0;
+    } 
+    else if (flag1 == false)
+      flag1 = true;
+  }
+  else if (pageflag == 3)
+  {
+    CTRLARY["H264BitRate2"].active = 0;
+    CTRLARY["frmH2642"].active = 0;
+    CTRLARY["rateCtrl2"].active = 0;
+    CTRLARY["timestampenable2"].active = 0;
+    CTRLARY["timeposition2"].active = 0;
+    CTRLARY["overlaytext2"].active = 0;
+    CTRLARY["textenable2"].active = 0;
+    CTRLARY["textposition2"].active = 0;
+    CTRLARY["useUniMul2"].active = 0;
+    CTRLARY["umipaddr2"].active = 0;
+    CTRLARY["port2"].active = 0;
+
+    CTRLARY["H264BitRate"].active = 0;
+    CTRLARY["rateCtrl1"].active = 0;
+    CTRLARY["frmH264"].active = 0;
+    CTRLARY["timestampenable1"].active = 0;
+    CTRLARY["timeposition1"].active = 0;
+    CTRLARY["overlaytext1"].active = 0;
+    CTRLARY["textenable1"].active = 0;
+    CTRLARY["textposition1"].active = 0;
+    CTRLARY["useUniMul1"].active = 0;
+    CTRLARY["umipaddr1"].active = 0;
+    CTRLARY["port1"].active = 0;
+
+    var quality = GetCCV("H264BitRate3");
+    if (quality == "<%livequality%>")
+    {
+      CTRLARY["H264BitRate3"].active = 0;
+    } 
+    else if (flag1 == false)
+      flag1 = true;
+
+    var useUniMul1 = GetCCV("useUniMul3");
+    var umipaddr1 = GetCCV("umipaddr3");
+    var port1 = GetCCV("port3");
+    if (useUniMul1 == "<%umenable3%>" && umipaddr1 == "<%umip3%>" && port1 == "<%umport3%>")
+    {
+      CTRLARY["useUniMul3"].active = 0;
+      CTRLARY["umipaddr3"].active = 0;
+      CTRLARY["port3"].active = 0;
+    } 
+    else if (flag1 == false)
+      flag1 = true; 
+  }
+  //上面逻辑看不懂，太复杂了，为了简单，点击保存都让提交。
+  flag1 = true;
+  return flag1;
+}
+
+
+
+  function MY_BEFORE_SUBMIT() {  
+    if (pageflag == 1)
+    {
+      if (GetCCV("useUniMul1") == 1)
+      {
+        if (CheckUMPort1(2000, 65535) == false)
+          return false;
+        if (CheckUmip1() == false)
+          return false;
+        if (CheckUmport(1) == false)
+          return false;
+      }
+      if (CheckBitRate1(64, 16000) == false)
+        return false;
+      if (CheckFrm1(1, 25) == false)
+        return false;
+      if (GetCCV("textenable1") == 1)
+      {
+        if (CheckText1() == false)
+          return false;
+      }
+    }
+    else if (pageflag == 2)
+    {
+      if (GetCCV("useUniMul2") == 1)
+      {
+      if (CheckUMPort2(2000, 65535) == false)
+          return false;
+      
+        if (CheckUmip2() == false)
+          return false;
+        if (CheckUmport(2) == false)
+          return false;
+      }      
+      if (CheckBitRate2(64, 8000) == false)
+        return false;
+      if (CheckFrm2(1, 25) == false)
+        return false;
+      if (GetCCV("textenable2") == 1)
+      {
+        if (CheckText2() == false)
+         return false;
+      }
+    }
+    else if (pageflag == 3)
+    {
+      if (GetCCV("useUniMul3") == 1)
+      {    
+        if (CheckUmip3() == false)
+          return false;      
+
+        if (CheckUMPort3(2000, 65535) == false)
+          return false;
+
+        if (CheckUmport(3) == false)
+          return false;
+      }          
+      if (CheckBitRate3(2, 80) == false)
+        return false;
+    }    
+    if (ParaCheck() == false)
+    {
+      alert(GL("para_not_change"));
+      ChangeActive();
+      return false;
+    }
+    
+    var logflag = window.log1;
+    // alert(logflag);
+    SendHttp(c_iniUrl +  GetSetterCmdKV("osdlog", logflag), false);
+
+    return true;
+  }
+  function MY_SUBMIT_OK() {
+    // alert("submit");
+    // Submit();
+    alert(GL("submit_success"));
+    if ((codecRes != GetCCV("resMenu") || 
+    codecNumberOption!=GetCCV("codecNumber") || 
+    codecMenuOption != GetCCV("codecMenu")) && (GetCCV("useUniMul1") != "<%umenable1%>" || GetCCV("umipaddr1") != "<%umip1%>" || GetCCV("port1") != "<%umport1%>" || GetCCV("useUniMul2") != "<%umenable2%>" || GetCCV("umipaddr2") != "<%umip2%>" || GetCCV("port2") != "<%umport2%>" || GetCCV("useUniMul3") != "<%umenable3%>" || GetCCV("umipaddr3") != "<%umip3%>" || GetCCV("port3") != "<%umport3%>"))
+    {
+      var o = '';
+      o += c_iniUrl;
+      o += GetSetterCmdKV("videocodeccombo", 0);
+      o += GetSetterCmdKV("videocodecres", GetCCV("resMenu"));
+      o += GetSetterCmdKV("videocodec", GetCCV("codecNumber"));
+      // alert(o);
+      SendHttp(o , false);
+
+      //StopV();
+	  VideoActiveXControl.videoStop();
+      try {
+        window.parent.document.getElementById("imgAX").innerHTML = GL("encoding_restarting");//"<img id='sampleimg' name='sampleimg' src='../skin/loading.gif' width=410 height='231' border=2>";
+        // GE("imgAX").innerHTML = "<img id='sampleimg' name='sampleimg' src='../skin/loading.gif' width=352 height='240' border=2>";
+      } catch(e) {};
+      reloadCount = 2;
+      ChangeMode("codec");
+    }
+    else if (codecRes != GetCCV("resMenu") || 
+    codecNumberOption!=GetCCV("codecNumber") || 
+    codecMenuOption != GetCCV("codecMenu")) 
+  {
+      var o = '';
+      o += c_iniUrl;
+      o += GetSetterCmdKV("videocodeccombo", 0);
+      o += GetSetterCmdKV("videocodecres", GetCCV("resMenu"));
+      o += GetSetterCmdKV("videocodec", GetCCV("codecNumber"));
+      // alert(o);
+      SendHttp(o , false);
+
+    //StopV();
+	 VideoActiveXControl.videoStop();
+    try {
+      window.parent.document.getElementById("imgAX").innerHTML = GL("encoding_restarting");//"<img id='sampleimg' name='sampleimg' src='../skin/loading.gif' width=410 height='231' border=2>";
+      // GE("imgAX").innerHTML = "<img id='sampleimg' name='sampleimg' src='../skin/loading.gif' width=352 height='240' border=2>";
+    } catch(e) {};
+    reloadCount = 2;
+    ChangeMode("codec");
+  }
+  else if (GetCCV("useUniMul1") != "<%umenable1%>" || GetCCV("umipaddr1") != "<%umip1%>" || GetCCV("port1") != "<%umport1%>" || GetCCV("useUniMul2") != "<%umenable2%>" || GetCCV("umipaddr2") != "<%umip2%>" || GetCCV("port2") != "<%umport2%>" || GetCCV("useUniMul3") != "<%umenable3%>" || GetCCV("umipaddr3") != "<%umip3%>" || GetCCV("port3") != "<%umport3%>")
+  {
+     //StopV();
+	 VideoActiveXControl.videoStop();
+      try {
+        // GE("imgAX").innerHTML = GL("encoding_restarting");//"<img id='sampleimg1' name='sampleimg1' src='../skin/loading.gif' width=352 height='240' border=2>";
+        window.parent.document.getElementById("imgAX").innerHTML = GL("encoding_restarting");
+      } catch(e) {};
+    reloadCount = 5;
+    ChangeMode("um");
+  }
+  else {
+    reloadCount = 2;
+    Wait();    
+  }   
+  }
+
+  function Wait () {
+    g_lockLink = true;
+    reloadCount--;
+    if (reloadCount > 0)
+      timerID = setTimeout("Wait()", 1000);
+    else {
+    g_lockLink = false;
+     window.location.reload();
+     
+    }
+  }
+
+  function ChangeMode(msgKey) {                 
+  
+    g_lockLink = true;
+    reloadCount--;
+    if (reloadCount>0)
+      timerID = setTimeout("ChangeMode('" + msgKey + "')", 1000);
+    else
+    {
+      g_lockLink = false;
+      // ChangeContent(null, true);
+      // alert(msgKey);
+      if (msgKey == "codec")
+        window.location.reload();
+      else if(msgKey == "um")
+      {
+        if (pageflag == 1)
+         window.location.reload();
+        else if (pageflag == 2)
+          window.location.reload();
+        else if (pageflag == 3)
+         window.location.reload();
+        else
+          window.location.reload();
+      }
+    }    
+  }  
+</script>
+<div id="top_div">
+	<div id="empty_div"></div>
+	<div id="tab_container">
+    	<span id="stream_1" onclick = "switch_stream(1)"><script>DW(GL("stream1"));</script></span>
+        <span id="stream_2" onclick = "switch_stream(2)"><script>DW(GL("stream2"));</script></span>
+        <span id="stream_3" onclick = "switch_stream(3)"><script>DW(GL("stream3"));</script></span>
+    </div>
+	
+
+</div>
+<div id="main_div">
+	<div id="video_ocx_div">
+    	<script>
+		  WriteVideo();
+		</script>
+    </div>
+    <div id="video_config_div">
+    	<div id="video_common_config_div">
+        	<table id="common_config_table">
+            	<tr  align="right">
+                	<td width="80px"><script>DW(GL("stream_type"));</script></td>
+                    <td>
+                    	<script>WH("codecNumber");</script>
+                    </td>
+                </tr>
+                <tr  align="right">
+                	<td><script>DW(GL("codec_combo"));</script></td>
+                    <td>
+					<script>WH("codecMenu");</script>                    	                 
+                    </td>
+                </tr>
+                <tr  align="right">
+                	<td><script>DW(GL("codec_res"));</script></td>
+                    <td>
+                    	<script>WH("resMenu");</script>                   
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="video_stream_1">
+        	<table id="video_stream_1_table">
+            	<th colspan="2"><script>DW(GL("steam1_set"));</script></th>
+            	<tr  align="right">
+                	<td width="100px"><script>DW(GL("rate_ctrl"));</script></td>
+                    <td>
+                    	<script>WH("rateCtrl1");</script>     
+                    </td>
+                </tr>
+                <tr  align="right">
+                	<td><script>DW(GL("frame_rate"));</script></td>
+                    <td align="left">
+                    	<script>WH("frmH264");DW(GL("fps"));DW(GL("frame_rang"));</script>
+                    </td>
+                </tr>
+                <tr  align="right">
+                	<td><script>DW(GL("bitrate"));</script></td>
+                    <td align="left">
+                    	<script> WH("H264BitRate");DW(GL("kbps"));DW(GL("bit1_range"));</script>	              
+                    </td>
+                </tr>
+                <tr  align="left">                	
+                	<td width="80px" colspan="2" style="padding-top:20px;"><hr />
+					<script>WH("useUniMul1");DW('&nbsp;' + GL("umenable"));</script>
+					</td>
+                </tr>
+                <tr  align="right">
+                	<td><script>DW(GL("umipaddr"));</script></td>
+                    <td  align="left">
+                    	<script>WH("umipaddr1");</script> 
+                    </td>
+                </tr>
+                <tr  align="right">
+                	<td><script>DW(GL("umport"));</script></td>
+                    <td align="left">
+                    	<script>WH("port1");DW(GL("port_msg"));</script>	               
+                    </td>
+                </tr>
+				<script>
+					DW('<tr id="overlay_setting_1"><td>' + GL("overlay_setting") + ':</td></tr>');
+					DW('<tr id="timestampenable_1"><td>');
+					WH("timestampenable1");
+					DW('&nbsp;' + GL('time'));
+					DW('</td></tr>');
+					DW('<tr id="timeposition_1"><td>' + GL("time_loc") + ': </td><td>');
+					WH("timeposition1");
+					DW('</td></tr>');
+					DW('<tr id="textenable_1"><td>');
+					WH("textenable1");
+					DW('&nbsp;' + GL("text"));
+					DW('</td><td width="50px">');
+					DW('<input type="text" style="width: 150px" id="overlaytext1">');
+					// WH("overlaytext1");
+					DW('</td></tr>');
+					DW('<tr id="textposition_1"><td colspan=2>' + GL("text_loc") + ': </td><td>');
+					WH("textposition1");
+					DW('</td></tr>');
+				</script>
+				
+            </table>        
+        </div>
+        <div id="video_stream_2" style="display:none;">
+        	<table id="video_stream_2_table">
+            	<th colspan="2"><script>DW(GL("steam2_set"));</script></th>
+            	<tr  align="right">
+                	<td width="100px"><script>DW(GL("rate_ctrl"));</script></td>
+                    <td>
+                    	<script> WH("rateCtrl2");</script>
+                    </td>
+                </tr>
+                <tr  align="right">
+                	<td><script>DW(GL("frame_rate"));</script></td>
+                    <td align="left">
+                    	<script>WH("frmH2642");DW(GL("fps"));DW(GL("frame_rang"));</script>
+                    </td>
+                </tr>
+                <tr  align="right">
+                	<td><script>DW(GL("bitrate"));</script></td>
+                    <td align="left">
+                    	<script>WH("H264BitRate2");DW(GL("kbps"));DW(GL("bit2_range"));</script>	              
+                    </td>
+                </tr>
+                <tr  align="left">
+                	
+                	<td width="80px" colspan="2" style="padding-top:20px;"><hr />
+					<script> WH("useUniMul2");DW('&nbsp;' + GL("umenable"));</script>
+					</td>
+                </tr>
+                <tr  align="right">
+                	<td><script>DW(GL("umipaddr"));</script></td>
+                    <td  align="left">
+                    	<script>WH("umipaddr2");</script>         
+                    </td>
+                </tr>
+                <tr  align="right">
+                	<td><script>DW(GL("umport"));</script></td>
+                    <td align="left">
+                    	<script>WH("port2");DW(GL("port_msg"));</script>              
+                    </td>
+                </tr>
+				<script>
+					DW('<tr id="overlay_setting_2"><td colspan=3>' + GL("overlay_setting") + ':</td></tr>');
+					DW('<tr id="timestampenable_2"><td>');
+					WH("timestampenable2");
+					DW('&nbsp;' + GL('time'));
+					DW('</td></tr>');
+					DW('<tr id="timeposition_2"><td colspan=2>' + GL("time_loc") + ': </td><td>');
+					WH("timeposition2");
+					DW('</td></tr>');
+					DW('<tr id="textenable_2"><td colspan=2>');
+					WH("textenable2");
+					DW('&nbsp;' + GL("text"));
+					DW('</td><td>');
+					DW('<input type="text" style="width: 150px" id="overlaytext2">');
+					DW('</td></tr>');
+
+					// WH("overlaytext2");  
+					DW('<tr id="textposition_2"><td colspan=2>' + GL("text_loc") + ': </td><td>');
+					WH("textposition2");
+					DW('</td></tr>');
+				</script>
+            </table>   
+        </div>
+        <div id="video_stream_3" style="display:none;">
+        	<table id="video_stream_3_table">
+            	<th colspan="2"><script>DW(GL("steam3_set"));</script></th>
+            	<tr  align="right">
+                	<td width="100px"><script>DW(GL("quality"));</script></td>
+                    <td align="left">
+                    	<script>WH("H264BitRate3");DW(GL("bit3_range"));</script>
+                    </td>
+                </tr>
+				<script>
+					DW('<tr><td height=30></td></tr>');
+					DW('<tr id="useUniMul_3"><td colspan=3>');
+					WH("useUniMul3");
+					DW('&nbsp;' + GL("umenable"));
+					DW('</td></tr>');
+					DW('<tr id="umipaddr_3"><td colspan=2>' + GL("umipaddr") + ': </td><td>');
+					WH("umipaddr3");
+					DW('</td></tr>');
+					DW('<tr id="port_3" > <td colspan=2>' + GL("umport") + ': </td><td>');
+					WH("port3");
+					DW(GL("port_msg"));
+					DW('</td></tr>');
+				</script>
+            </table>
+        	
+        </div>
+        
+        <div id="save_div">
+			 <script>CreateSubmitButton();</script>
+        </div>
+    </div>
+</div>
+    
+</body>

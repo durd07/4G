@@ -1,0 +1,507 @@
+<html>
+  <head>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+	<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script>
+      InitLoad();
+	  var cs=null;
+	  var lip=null;
+	  var pip=null;
+	  var check = null;
+    </script>   
+     <style type="text/css">
+		td {font-size:12px}
+ 	</style>
+    <title>
+      PPTP Setting
+    </title>
+     <style type="text/css">
+		body {
+			margin: 0;
+			padding:0;
+			height:100%;
+			min-width:1200px;
+			min-height:580px;
+			font-size:16px;
+			color: white;
+			background:#999;
+		}
+    tr {
+      font-size: 16px;
+    }
+    td, form, div {
+        font-size:16px; 
+    }
+    div.headline {
+		height:20px;
+		color: black;
+    	font-size: 17px;
+    	background-color:#F0F0F0;
+    	font-weight:bold;
+    	margin-top:10px;
+        /*margin-left: 10px;*/
+    }
+    </style>
+
+  </head>
+
+  <body onload="MY_ONLOAD()">
+<script>
+ function MY_ONLOAD() {
+		document.getElementById("lrcc").style.display = "none";
+		CTRLARY["cstatue"].Disable(1);
+		CTRLARY["clocalip"].Disable(1);
+		CTRLARY["peerip"].Disable(1);
+		var return_str1 = AjaxFunction("get_statue");
+		var return_str2 = AjaxFunction("get_setinfo");
+		disablesome();
+        g_lockLink = false;        
+    }
+	
+	
+	function AjaxFunction(str)
+	{
+		var xmlHttp;
+		var result
+		try
+		{
+			// Firefox, Opera 8.0+, Safari
+			xmlHttp=new XMLHttpRequest();
+		}
+		catch (e)
+		{
+			// Internet Explorer
+			try
+			{
+				xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
+			}
+			catch (e)
+			{
+
+				try
+				{
+					xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				catch (e)
+				{
+					alert("浏览器不支持AJAX！");
+					return false;
+				}
+			}
+		}				
+		
+		hicmdurl = "/cgi-bin/pptp.cgi?" + str ;
+		xmlHttp.open("GET", hicmdurl, true);
+		xmlHttp.send(null);
+		
+		xmlHttp.onreadystatechange=function()
+		{
+			if(xmlHttp.readyState==4)
+			{
+				if(str == "get_statue"){
+				result= xmlHttp.responseText;
+					var array = result.split(";");
+						cs = array[2];
+						pip = array[1];
+						lip = array[0];
+						document.getElementById("cstatue").value = parseInt(cs);
+						document.getElementById("clocalip").value = lip;
+						document.getElementById("peerip").value = pip ;
+						//alert(cs);
+						//alert(pip);
+						//alert(lip);
+				}
+				if(str == "get_setinfo"){
+				result= xmlHttp.responseText;
+					var array = result.split(";");
+						if(array[0] ==1){
+							document.getElementById("pptp").checked=true;
+							check = 1;
+						}
+						else{
+							document.getElementById("pptp").checked=false;
+							 check = 0;
+						}
+						
+						document.getElementById("serverip").value = array[1];
+						document.getElementById("subnet").value = array[2] ;
+						document.getElementById("subnet_mask").value = array[3] ;
+						document.getElementById("puser").value = array[4] ;
+						document.getElementById("ppassword").value = array[5] ;
+												
+				}
+				
+			}
+			else{
+				result= xmlHttp.responseText;
+			}
+		}
+		return result;		
+	}	
+	function getpptp(){
+		var value;
+		
+		return value;
+	}
+	
+	function getserverip(){
+		var value;
+		
+		return value;
+	}
+	
+	function getsubnet(){
+		var value;
+		
+		return value;
+	}
+	
+	function getsubnet_mask(){
+		var value;
+		
+		return value;
+	}
+	
+	function getpuser(){
+		var value;
+		
+		return value;
+	}
+	
+	function getppassword(){
+		var value;
+		
+		return value;
+	}
+	
+	function getpagreement(){
+		var value;
+		
+		return value;
+	}
+	
+	function getmppe(){
+		var value;
+		
+		return value;
+	}
+	
+	function getdefault_route(){
+		var value;
+		
+		return value;
+	}
+	
+	function getlocalip(){
+		var value;
+		
+		return value;
+	}
+	
+	function getcheckinterval(){
+		var value;
+		
+		return value;
+	}
+	
+	function getremoteip(){
+		var value;
+		
+		return value;
+	}
+	
+	function getchecktimeouttimes(){
+		var value;
+		
+		return value;
+	}
+	
+	
+	function get_statueinfo()
+	{
+		var return_str = AjaxFunction("get_statue");	
+		
+	}
+	
+	function getcstatue(){
+		var value;
+		//get_statueinfo();		
+		return cs;
+	}
+	
+	function getclocalip(){
+		
+		
+		return lip;
+	}
+	
+	function getpeerip(){
+		
+		
+		return pip;
+	}
+	
+</script>
+  
+  
+<script>
+
+  var agreementlist = GL("ANY");
+  var mppelist = GL("ReuireMppe")+";"+GL("NoMppe");
+  var cstatuelist = GL("OFF")+";"+GL("ON");
+  var agreementcrklist = GL("bitcom");
+  CTRLARY = {
+	pptp: new Ctrl_Check("pptp", getpptp(), "pptp=","Change_pptp()"),
+	serverip: new Ctrl_Text("serverip", "25", "25", getserverip(), "serverip=","Changeserip()"), 
+	subnet: new Ctrl_Text("subnet", "25", "25", getsubnet(), "subnet=","Changesubnetp()"), 
+	subnet_mask: new Ctrl_Text("subnet_mask", "25", "25", getsubnet_mask(), "subnet_mask=","Changesubnet_mask()"), 
+	puser: new Ctrl_Text("puser", "25", "25", getpuser(), "puser=","Changepuser()"), 
+	ppassword: new Ctrl_Text("ppassword", "25", "25", getppassword(), "ppassword=","Changeppassword()"), 
+	pagreement: new Ctrl_Select("pagreement", agreementlist, getpagreement(), "pagreement=", "Changepagreement()"),	
+    mppe: new Ctrl_Select("mppe",mppelist, getmppe(), "mppe=", "Changemppe()"),
+	default_route: new Ctrl_Check("default_route", getdefault_route(), "default_route=","Change_default_route()"),
+	
+	localip: new Ctrl_Text("localip", "25", "25", getlocalip(), "localip=","Changelocalip()"), 
+	remoteip: new Ctrl_Text("remoteip", "25", "25", getremoteip(), "remoteip=","Changeremoteip()"), 
+	checkinterval: new Ctrl_Text("checkinterval", "25", "25", getcheckinterval(), "checkinterval=","Changecheckinterval()"), 
+	checktimeouttimes: new Ctrl_Text("checktimeouttimes", "25", "25", getchecktimeouttimes(), "checktimeouttimes=","Changechecktimeouttimes()"),
+	
+	cstatue: new Ctrl_Select("cstatue",cstatuelist, getcstatue(), "cstatue=", "Changcstatue()"),
+	clocalip: new Ctrl_Text("clocalip", "25", "25", getclocalip(), "clocalip=","Changeclocalip()"), 
+	peerip: new Ctrl_Text("peerip", "25", "25", getpeerip(), "peerip=","Changepeerip()")
+	
+  };
+</script>
+<script> 
+	function disablesome()
+	{		
+		if(check == 1){
+			CTRLARY["serverip"].Disable(0);
+			CTRLARY["subnet"].Disable(0);
+			CTRLARY["subnet_mask"].Disable(0);
+			CTRLARY["puser"].Disable(0);
+			CTRLARY["ppassword"].Disable(0);
+			CTRLARY["pagreement"].Disable(0);
+			CTRLARY["mppe"].Disable(0);
+			CTRLARY["default_route"].Disable(0);
+			CTRLARY["save"].Disable(0);
+		}
+		if(check == 0){
+			CTRLARY["serverip"].Disable(1);
+			CTRLARY["subnet"].Disable(1);
+			CTRLARY["subnet_mask"].Disable(1);
+			CTRLARY["puser"].Disable(1);
+			CTRLARY["ppassword"].Disable(1);
+			CTRLARY["pagreement"].Disable(1);
+			CTRLARY["mppe"].Disable(1);
+			CTRLARY["default_route"].Disable(1);
+			CTRLARY["save"].Disable(1);
+		}
+	}
+   function Change_pptp()
+   {
+		check = GetCCV("pptp");
+		disablesome();
+   }
+	function refreshPage() 
+	{ 
+		//alert("reload");
+		var return_str1 = AjaxFunction("get_statue");
+		
+	} 
+	
+	function SaveAllSet()
+	{
+		var cmd =null;		
+		cmd = GetCCV("pptp")+","+GetCCV("serverip")+","+GetCCV("puser")+","+GetCCV("ppassword");
+		var moudle = document.getElementById("mppe").selectedIndex;
+		if(moudle == 0){
+			cmd = cmd +","+ "require-mppe";
+		}
+		if(moudle == 1){
+			cmd = cmd +","+ "no-mppe";
+		}
+		cmd = cmd +","+GetCCV("subnet")+","+GetCCV("subnet_mask");
+		//alert(cmd);
+		
+		var return_str=AjaxFunction(cmd);
+		
+	   window.setTimeout("refreshPage()",2000);
+		
+	}
+	function Set_OffLine_Vlue()
+	{
+		document.getElementById("cstatue").value = 0;
+		document.getElementById("clocalip").value = 0;
+		document.getElementById("peerip").value = 0 ;
+	}
+	function Hang_Up()
+	{
+		var cmd =null;		
+		
+		var moudle = document.getElementById("mppe").selectedIndex;		
+		cmd = "hang_up";
+		alert("确认挂断VPN连接吗？");
+		
+		var return_str = AjaxFunction(cmd);
+		Set_OffLine_Vlue();
+		
+	}
+	
+	
+</script>
+<script>
+  DW('<table><tr><td width="750px">');	
+  DW('<div class="headline">' + GL("pptpset") + '</div>');	
+  DW('<table>');
+  DW('<tr><td >' + GL("turnon_pptp") + '</td><td>');
+  WH("pptp");
+  DW('</td></tr>');
+  DW('<tr id="vpnserver"><td>'+ GL("vpnserver_ip") + ': </td><td>');
+  WH("serverip");
+  DW('</td></tr>');
+  
+  DW('<tr id="subnet1"><td>'+ GL("subnet_ip") + ': </td><td>');
+  WH("subnet");
+  DW('</td></tr>');
+  
+  DW('<tr id="subnet_mask1"><td>'+ GL("subnet_mask") + ': </td><td>');
+  WH("subnet_mask");
+  DW('</td></tr>');
+  
+  DW('<tr>');
+  DW('<table border="1" cellspacing="0" cellpadding="0">');
+  DW('<tr>');
+  DW('<td>');
+  DW(GL("user"));
+  DW('</td>');
+  DW('<td>');
+  DW(GL("password"));
+  DW('</td>');
+  DW('<td>');
+  DW(GL("agreement"));
+  DW('</td>');
+  DW('<td>');
+  DW(GL("MPPE"));
+  DW('</td>');
+  DW('</tr>');
+  
+  DW('<tr>');
+  DW('<td>');
+  WH("puser");
+  DW('</td>');
+  DW('<td>');
+  WH("ppassword");
+  DW('</td>');
+  DW('<td>');
+  WH("pagreement");
+  DW('</td>');
+  DW('<td>');
+  WH("mppe");
+  DW('</td>');
+  DW('</tr>');  
+  DW('</table>');  
+  DW('</tr>');
+  
+  DW('<table>');
+  DW('<tr id="subnet_mask"><td>'+ GL("adddefault_route") + ': </td><td>');
+  WH("default_route");
+  DW('</td></tr>');
+  DW('</table>');
+  
+  DW('<tr>');
+  DW('<table id = "lrcc" border="1" cellspacing="0" cellpadding="0">');
+  DW('<tr>');
+  DW('<td>');
+  DW(GL("localip"));
+  DW('</td>');
+  DW('<td>');
+  DW(GL("remote_ip"));
+  DW('</td>');
+  DW('<td>');
+  DW(GL("check_interval"));
+  DW('</td>');
+  DW('<td>');
+  DW(GL("check_timeout_times"));
+  DW('</td>');
+  DW('</tr>');
+  
+  DW('<tr>');
+  DW('<td>');
+  WH("localip");
+  DW('</td>');
+  DW('<td>');
+  WH("remoteip");
+  DW('</td>');
+  DW('<td>');
+  WH("remoteip");
+  DW('</td>');
+  DW('<td>');
+  WH("checktimeouttimes");
+  DW('</td>');
+  DW('</tr>');  
+  DW('</table>');  
+  DW('</tr>');
+ 
+  DW('<br>');
+  DW('<tr><td>');
+  DW('<input type="button" id="save" onclick="SaveAllSet()" style="height:30px;width:80px;">');
+  document.getElementById("save").value=GL("save_set");    
+  document.getElementById("save").title=GL("Save_the_Vpn_set"); 
+  DW('</td></tr>'); 
+  DW('<br>');
+  DW('<br>');
+  
+  DW('<tr>');
+  DW('<table border="1" cellspacing="0" cellpadding="0">');
+  DW('<tr>');
+  DW('<td>');
+  DW(GL("type"));
+  DW('</td>');
+  DW('<td>');
+  DW(GL("connection_status"));
+  DW('</td>');
+  DW('<td>');
+  DW(GL("local_ip"));
+  DW('</td>');
+  DW('<td>');
+  DW(GL("peer_ip"));
+  DW('</td>');
+  DW('<td>');
+  DW('</td>');
+  DW('</tr>');
+  
+  DW('<tr>');
+  DW('<td>');
+  DW(GL("NONE"));
+  DW('</td>');
+  DW('<td>');
+  WH("cstatue");
+  DW('</td>');
+  DW('<td>');
+  WH("clocalip");
+  DW('</td>');
+  DW('<td>');
+  WH("peerip");
+  DW('</td>');
+  DW('<td>');
+  DW('<input type="button" id="hang_up" onclick="Hang_Up()" style="height:30px;width:80px;">');
+  document.getElementById("hang_up").value=GL("hang_up");    
+  document.getElementById("hang_up").title=GL("hang_up"); 
+  DW('</td>');
+  DW('</tr>');  
+  DW('</table>');  
+  DW('</tr>');
+  
+  DW('</table>');
+  
+  
+  DW('</td></tr>');
+  DW('</table>');
+</script>
+</body>
+</html>

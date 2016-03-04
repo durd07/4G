@@ -1,0 +1,15 @@
+<html>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=GB2312">
+    </head> 
+    <body onload="MY_ONLOAD()">
+        <script>
+        function MY_ONLOAD()
+        {
+            window.parent.document.getElementById("smtpUser").value = document.getElementById("smtpuser").value;
+        }
+
+        </script>
+        <input name="smtpuser"  type="text" value="<%smtpuser%>" />
+    </body>
+</html>

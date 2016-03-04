@@ -1,0 +1,633 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+    <script language="javascript" src="var.js"></script>
+    <script language="javascript" src="common.js"></script>
+    <script language="javascript" src="js/panasonic.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <title>
+    </title>
+    <style type="text/css">
+      body { text-align:left;font-size: 9px; }
+      td { font-size: 12px; }
+    </style>
+  </head>
+
+  <body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()" onkeydown="On_Keydown(event)">
+<script>
+var dnr3dlist = GL("off") + ";" + GL("low") + ";" + GL("mid") + ";" + GL("high") + ";" + GL("LOW1") + ";" + GL("LOW2") + ";" + GL("LOW3");
+var dnr2dlist = GL("off") + ";" + GL("low") + ";" + GL("mid") + ";" + GL("high");
+var gammalist =  GL("off") + ";" + GL("on") + ";SMART1;SMART2;SMART3;SMART4;SMART5";
+var deffectlist =GL("off") + ";" + GL("mirror") + ";" + GL("v_flip") + ";" + GL("rotate");
+var stabilizerList = GL("low") + ";" + GL("mid") + ";" + GL("high");
+
+CTRLARY = {
+  // advance setting
+  dnr3d: new Ctrl_Select("dnr3d", dnr3dlist, "<%dnr3d%>", "dnr3d=", "ChangeDnr3d()"),
+  dnr2d: new Ctrl_Select("dnr2d", dnr2dlist, "<%dnr2d%>", "dnr2d=", "ChangeDnr2d()"),
+  contrast: new Ctrl_Text("contrast", 3, 3, "<%contrastlg%>", "lgcontrast=", null, false, "ChangeContrast()"),
+  saturation: new Ctrl_Text("saturation", 3, 3, panasonicGetVividColor(), "saturation=", null, false, "ChangeSaturation()"),
+  luminance: new Ctrl_Text("luminance", 3, 3, "<%luminance%>", "luminance=", null, false, "ChangeLumi()"),
+  sharpness: new Ctrl_Check("sharpness", panasonicGetAperture(), "sharpness=", "ChangeSharp()"),
+  sharpnessV: new Ctrl_Text("sharpnessV", 3, 3, panasonicGetApertureV(), "sharpnessV=", null, false, "ChangeSharpV()"),
+  sharpnessH: new Ctrl_Text("sharpnessH", 3, 3, panasonicGetApertureH(), "sharpnessH=", null, false, "ChangeSharpH()"),
+
+  FogCorrect: new Ctrl_Check("FogCorrect", panasonicGetFogCorrect(), "FogCorrect=", "ChangeFogCorrect()"),
+  deffect: new Ctrl_Select("deffect", deffectlist, panasonicGetMirror(), "deffect=", "ChangeDeffect()"),
+  freeze: new Ctrl_Check("freeze", "<%freeze%>", "freeze=", "ChangeFreeze()"),
+  stabilizer: new Ctrl_Check("stabilizer", panasonicGetStabilizer(), "stabilizer=", "ChangeStab()"),
+  stabilizerLevel: new Ctrl_Select("stabilizerLevel", stabilizerList, panasonicGetStabilizerLevel(), "stabilizerLevel=", "ChangeStabilizerLevel()"),
+  zoommag: new Ctrl_Check("zoommag", panasonicGetZoomRatio(), "zoommag=", "ChangeZoommag()"),
+  // osddis: new Ctrl_Check("osddis", "<%osddis%>", "osddis=", "ChangeOsddis()"),
+  gamma: new Ctrl_Select("gamma", gammalist, panasonicGetGamma(), "lggamma=", "ChangeGamma()")
+};
+
+</script>
+
+<script>
+
+function On_Keydown(event)
+{
+  if (event.keyCode == 13) // enter key
+  {
+    var act = document.activeElement;
+    act.blur();
+    act.focus();
+  }
+}
+
+function ChangeFogCorrect()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetFogCorrectCmd(GetCCV("FogCorrect"))), false, SendImgCallBack);
+}
+
+function ChangeDnr3d()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("dnr3d", GetCCV("dnr3d")), false, SendImgCallBack);
+}
+
+function ChangeDnr2d()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("dnr2d", GetCCV("dnr2d")), false, SendImgCallBack);
+}
+
+function ChangeContrast()
+{
+  if (CheckContrast(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("lgcontrast", GetCCV("contrast")), false, SendImgCallBack);
+}
+
+function ChangeSaturation()
+{
+  if (CheckSat(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetVividColorCmd(GetCCV("saturation"))), false, SendImgCallBack);
+}
+function ChangeLumi()
+{
+  if (CheckLum(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("luminance", GetCCV("luminance")), false, SendImgCallBack);
+}
+function ChangeSharp()
+{
+  FixSharp();
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetApertureCmd(GetCCV("sharpness"))), false, SendImgCallBack);
+}
+
+function FixSharp()
+{
+  var stabilizer = document.getElementById("sharpness").checked;
+  if (stabilizer){
+    CTRLARY["sharpnessV"].Disable(0);
+    CTRLARY["sharpnessH"].Disable(0);
+  }
+  else {
+    CTRLARY["sharpnessV"].Disable(1);
+    CTRLARY["sharpnessH"].Disable(1);
+  }
+}
+
+function ChangeSharpV()
+{
+  if (CheckShaV(0, 63) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetApertureVCmd(GetCCV("sharpnessV"))), false, SendImgCallBack);
+}
+function ChangeSharpH()
+{
+  if (CheckShaH(0, 63) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetApertureHCmd(GetCCV("sharpnessH"))), false, SendImgCallBack);
+}
+function ChangeDeffect()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetMirrorCmd(GetCCV("deffect"))), false, SendImgCallBack);
+}
+function ChangeFreeze()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("freeze", GetCCV("freeze")), false, SendImgCallBack);
+}
+function ChangeStab()
+{
+  FixStab();
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetStabilizerCmd(GetCCV("stabilizer"))), false, SendImgCallBack);
+}
+
+function FixStab()
+{
+  var stabilizer = document.getElementById("stabilizer").checked;
+  if (stabilizer){
+    CTRLARY["stabilizerLevel"].Disable(0);
+  }
+  else {
+    CTRLARY["stabilizerLevel"].Disable(1);
+  }
+}
+
+function ChangeStabilizerLevel()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetStabilizerLevelCmd(GetCCV("stabilizer"))), false, SendImgCallBack);
+}
+
+function ChangeZoommag()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetZoomRatioCmd(GetCCV("zoommag"))), false, SendImgCallBack);
+}
+// function ChangeOsddis()
+// {
+//   SendHttp(c_iniUrl + GetSetterCmdKV("osddis", GetCCV("osddis")), false, SendImgCallBack);
+// }
+function ChangeGamma()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetGammaCmd(GetCCV("gamma"))), false, SendImgCallBack);
+}
+function ParaCheck()
+{
+  var flag = false;
+
+  var dnr3d = GetCCV("dnr3d");
+  if (dnr3d == "<%dnr3d%>")
+  {
+    CTRLARY["dnr3d"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var dnr2d = GetCCV("dnr2d");
+  if (dnr2d == "<%dnr2d%>")
+  {
+    CTRLARY["dnr2d"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var contrast = GetCCV("contrast");
+  if (contrast == "<%contrastlg%>")
+  {
+    CTRLARY["contrast"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var saturation = GetCCV("saturation");
+  if (saturation == "<%saturation%>")
+  {
+    CTRLARY["saturation"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var luminance = GetCCV("luminance");
+  if (luminance == "<%luminance%>")
+  {
+    CTRLARY["luminance"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var sharpness = GetCCV("sharpness");
+  if (sharpness == "<%lgsharpness%>")
+  {
+    CTRLARY["sharpness"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var deffect = GetCCV("deffect");
+  if (deffect == "<%deffect%>")
+  {
+    CTRLARY["deffect"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var freeze = GetCCV("freeze");
+  if (freeze == "<%freeze%>")
+  {
+    CTRLARY["freeze"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var stabilizer = GetCCV("stabilizer");
+  if (stabilizer == "<%stabilizer%>")
+  {
+    CTRLARY["stabilizer"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var zoommag = GetCCV("zoommag");
+  if (zoommag == "<%zoommag%>")
+  {
+    CTRLARY["zoommag"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  // var osddis = GetCCV("osddis");
+  // if (osddis == "<%osddis%>")
+  // {
+  //   CTRLARY["osddis"].active = 0;
+  // }
+  // else if (flag == false)
+  //   flag = true;
+
+  var gamma = GetCCV("gamma");
+  if (gamma == "<%lggamma%>")
+  {
+    CTRLARY["gamma"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+
+  return flag;
+}
+
+function ContrastCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      var sysinfolist = txt.split('=');
+      document.getElementById("contrast").value = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+    }
+  }
+}
+
+// if awb == auto || awb == ATW; rgain , bgain and colortemp.disabled == true
+function CheckContrast(min, max)
+{
+  var value = document.getElementById("contrast").value;
+  if (value.length == 0)
+  {
+    alert(GL("con_empty"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+    document.getElementById("contrast").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("con_inv"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+    // document.getElementById("contrast").value = "";
+    document.getElementById("contrast").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("con_num"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+    // document.getElementById("contrast").value = "";
+    document.getElementById("contrast").focus();
+    return false;
+  }
+  return true;
+}
+
+function SaturationCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      var sysinfolist = txt.split('=');
+      document.getElementById("saturation").value = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+    }
+  }
+}
+
+function CheckSat(min, max)
+{
+  var value = document.getElementById("saturation").value;
+  if (value.length == 0)
+  {
+    alert(GL("sat_empty"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation"), false, SaturationCallBack);
+    document.getElementById("saturation").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("sat_inv"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation"), false, SaturationCallBack);
+    // document.getElementById("saturation").value = "";
+    document.getElementById("saturation").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("sat_num"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation"), false, SaturationCallBack);
+    // document.getElementById("saturation").value = "";
+    document.getElementById("saturation").focus();
+    return false;
+  }
+  return true;
+}
+
+function LumiCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      var sysinfolist = txt.split('=');
+      document.getElementById("luminance").value = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+    }
+  }
+}
+
+function CheckLum(min, max)
+{
+  var value = document.getElementById("luminance").value;
+  if (value.length == 0)
+  {
+    alert(GL("lum_empty"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getluminance"), false, LumiCallBack);
+    document.getElementById("luminance").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("lum_inv"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getluminance"), false, LumiCallBack);
+    // document.getElementById("luminance").value = "";
+    document.getElementById("luminance").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("lum_num"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getluminance"), false, LumiCallBack);
+    // document.getElementById("luminance").value = "";
+    document.getElementById("luminance").focus();
+    return false;
+  }
+  return true;
+}
+
+function SharpCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      var sysinfolist = txt.split('=');
+      document.getElementById("sharpness").value = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+    }
+  }
+}
+
+function CheckShaV(min, max)
+{
+  var value = document.getElementById("sharpnessV").value;
+  if (value.length == 0)
+  {
+    alert(GL("sha_empty"));
+    document.getElementById("sharpnessV").focus();
+    document.getElementById("sharpnessV").value = panasonicGetApertureV();
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("sha_inv"));
+    document.getElementById("sharpnessV").focus();
+    document.getElementById("sharpnessV").value = panasonicGetApertureV();
+    return false;
+  }
+
+  if ((value < min) || (value > max))
+  {
+    alert(GL("sha_num"));
+    document.getElementById("sharpnessV").focus();
+    document.getElementById("sharpnessV").value = panasonicGetApertureV();
+    return false;
+  }
+  return true;
+}
+
+function CheckShaH(min, max)
+{
+  var value = document.getElementById("sharpnessH").value;
+  if (value.length == 0)
+  {
+    alert(GL("sha_empty"));
+    document.getElementById("sharpnessH").focus();
+    document.getElementById("sharpnessH").value = panasonicGetApertureH();
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("sha_inv"));
+    document.getElementById("sharpnessH").focus();
+    document.getElementById("sharpnessH").value = panasonicGetApertureH();
+    return false;
+  }
+
+  if ((value < min) || (value > max))
+  {
+    alert(GL("sha_num"));
+    document.getElementById("sharpnessH").focus();
+    document.getElementById("sharpnessH").value = panasonicGetApertureH();
+    return false;
+  }
+  return true;
+}
+
+function MY_ONUNLOAD() {
+    // StopActiveX();
+}
+
+function MY_ONLOAD() {
+  g_lockLink = false;
+  FixStab();
+  FixSharp();
+  // StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+}
+
+  function MY_BEFORE_SUBMIT() {
+    if (ParaCheck() == false)
+    {
+      alert(GL("para_not_change"));
+      ChangeActive();
+      return false;
+    }
+
+    if (CheckContrast(0, 255) == false)
+      return false;
+    if (CheckSat(0, 255) == false)
+      return false;
+    if (CheckLum(0, 255) == false)
+      return false;
+    if (CheckSha(0, 63) == false)
+      return false;
+    return true;
+  }
+
+  function MY_SUBMIT_OK() {
+    // alert(GL("submit_success"));
+    // ReFresh();
+    // window.location.reload();
+  }
+
+function AdvanceDefault()
+{
+  var o = '';
+  o += c_iniUrl;
+  o += GetSetterCmdKV("advdefault");
+  SendHttp(o, false, DefaultCallBack);
+}
+
+function DefaultCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      if (txt.indexOf("NG") >= 0 || txt.indexOf("UW") >= 0)
+      {
+        alert(GL("submit_fail"));
+        WS(GL("fail_"));
+      }
+      else
+      {
+        alert(GL("submit_success"));
+        WS(GL("ok_"));
+        window.location.reload();
+      }
+    }
+  }
+}
+</script>
+
+    <div id="advancediv">
+      <table cellpadding="0" cellspacing="2">
+        <tr>
+          <td style="vertical-align:text-top;">
+            <div class="layout" id="tabs-1">
+              <table>
+                <tr>
+                  <td><script>DW(GL("gamma"))</script></td>
+                  <td><script>WH("gamma");</script></td>
+                </tr>
+                <tr>
+                  <td><script>DW(GL("deffect"))</script></td>
+                  <td><script>WH("deffect");</script></td>
+                </tr>
+                <tr>
+                  <td colspan=2>
+                    <!input id="default" type="button" style="width:80px;height:20px" onclick="AdvanceDefault()">
+                    <script>//document.getElementById("default").value = GL("_default");
+					</script>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td width="30px"></td>
+          <td style="vertical-align:text-top;">
+            <div class="layout" id="tabs-2">
+              <table>
+                <!--tr>
+                  <td><script>DW(GL("dnr_2d"))</script></td>
+                  <td><script>WH("dnr2d");</script></td>
+                </tr-->
+                <tr>
+                  <td><script>DW(GL("saturation"))</script></td>
+                  <td><script>WH("saturation");DW(GL("satu_range"));</script></td>
+                </tr>
+                <tr>
+                  <td><script>DW(GL("stabilizer"))</script></td>
+                  <td><script>WH("stabilizer");</script></td>
+                </tr>
+                <tr>
+                  <td><script>DW(GL("Stabilizer_Level"))</script></td>
+                  <td><script>WH("stabilizerLevel");</script></td>
+                </tr>
+                <!--tr>
+                  <td><script>DW(GL("contrast"))</script></td>
+                  <td><script>WH("contrast");DW(GL("satu_range"));</script></td>
+                </tr>
+                <tr style="">
+                  <td><script>DW(GL("luminance"))</script></td>
+                  <td><script>WH("luminance");DW(GL("satu_range"));</script></td>
+                </tr-->
+              </table>
+            </div>
+          </td>
+          <td style="width:30px;"></td>
+          <td style="vertical-align:text-top;">
+            <div class="layout" id="tabs-3">
+              <table>
+                <tr>
+                  <td><script>DW(GL("FogCorrect"))</script></td>
+                  <td><script>WH("FogCorrect");</script></td>
+                </tr>
+                <tr>
+                  <td><script>DW(GL("freeze"))</script></td>
+                  <td><script>WH("freeze");</script></td>
+                </tr>
+                <tr>
+                  <td><script>DW(GL("zoom_mag"))</script></td>
+                  <td><script>WH("zoommag");</script></td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td width="30px"></td>
+          <td style="vertical-align:text-top;">
+            <div class="layout" id="tabs-4">
+              <table>
+                <tr>
+                  <td><script>DW(GL("sharpness"))</script></td>
+                  <td><script>WH("sharpness");</script></td>
+                </tr>
+                <tr>
+                  <td><script>DW(GL("sharpnessV"))</script></td>
+                  <td><script>WH("sharpnessV");</script>(0~63)</td>
+                </tr>
+                <tr>
+                  <td><script>DW(GL("sharpnessH"))</script></td>
+                  <td><script>WH("sharpnessH");</script>(0~63)</td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
+

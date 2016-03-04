@@ -1,0 +1,224 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <!-- // <script language="javascript" src="browsefolder.js"></script> -->
+        <script>
+            InitLoad();
+         </script>
+        <title>
+            
+        </title>
+    <style type="text/css">
+    td {
+        font-size: 12px;
+    }
+    div.headline {
+        font-size: 13px;
+        background-color:#F0F0F0;
+        /*font-weight:bold;*/
+        margin-top:10px;
+        height: auto;
+        /*margin-left: 10px;*/
+    }
+
+    .pathtext {
+        width: 300px;
+    }
+    </style>
+
+    </head>
+    <body onload="MY_ONLOAD()">
+        <script>
+        var flowtypelist = "UDP;TCP";
+
+        // for (var i = 1; i < 64; i++) {
+        //     flowtypelist += GL("preset_location") + i;
+        //     flowtypelist += ';';
+        // };
+
+        // flowtypelist += GL("preset_location") + i;
+
+        CTRLARY = {
+          flowtype: new Ctrl_Select("flowtype", flowtypelist, "<%flowtype%>")
+        }
+
+            function MY_ONLOAD() {
+              g_lockLink = false;
+              document.getElementById("ctrlCtx1").style.display="none";
+            }
+
+
+            function CheckPath()
+            {
+                var path = document.getElementById("getshapfolder").value;
+
+
+                if (path.length == 0)
+                {
+                    alert(GL("shappath_empty"));
+                    return false;
+                }
+
+                if (path == "undefined")
+                {
+                    alert(GL("shappath_inv"));
+                    return false;
+                }
+                for (var i = 0; i < path.length; i++) {
+                    var ch = path.charAt(i);
+                    // alert(ch);
+                    if (isChinese(ch))
+                    { 
+                      alert(GL("shappath_invalid"));
+                      return false;
+                    }
+                }
+
+                var path = document.getElementById("getrecfolder").value;
+                if (path.length == 0)
+                {
+                    alert(GL("recpath_empty"));
+                    return false;
+                }
+                if (path == "undefined")
+                {
+                    alert(GL("recpath_inv"));
+                    return false;
+                }
+                for (var i = 0; i < path.length; i++) {
+                    var ch = path.charAt(i);
+                    // alert(ch);
+                    if (isChinese(ch))
+                    { 
+                      alert(GL("recpath_invalid"));
+                      return false;
+                    }
+                }
+                return true;
+            }
+            function SubmitFoder() {
+                var snapshotpath1 = document.getElementById("getshapfolder").value;
+                var recpath1 = document.getElementById("getrecfolder").value;
+
+                if (CheckPath() == false)
+                    return false;  
+
+                var snapshotpath = snapshotpath1.replace(/\\/g,'\\\\');
+                var recpath = recpath1.replace(/\\/g,'\\\\');
+                var flowtype = document.getElementById("flowtype").selectedIndex;
+
+                if (snapshotpath1 == "<%snapshotpath%>" && recpath1 == "<%recordpath%>" && flowtype == "<%flowtype%>")
+                {
+                    alert(GL("para_not_change"));
+                    return false;
+                }                
+
+                var o = '';
+                o += c_iniUrl;
+                o += GetSetterCmdKV("snapshotpath", snapshotpath);
+                o += GetSetterCmdKV("recordpath", recpath);
+                o += GetSetterCmdKV("flowtype", flowtype);
+
+                SendHttp(o, false);
+                alert(GL("submit_success"));
+                window.location.reload();
+            }
+
+              function BrowseFolder(){
+                var strPath = "D:\\";
+
+                // alert(AxID);
+                var obj = GE(AxID);
+                // alert(obj);
+                var path = obj.SelectDirectory(strPath);
+                // alert(path);
+                return path;
+                
+            }
+
+            // snapshot path
+            function BrowseShap () {
+                document.all.getshapfolder.value = BrowseFolder();
+
+            }
+
+            // record path
+            function BrowseRec(){
+                document.all.getrecfolder.value = BrowseFolder();
+            }
+
+            function VideoCtrlDiv()
+            {
+                var o = '';
+                o += '<div id="ctrlCtx1">';
+                o += TagAX1(null, 1, 1); // (984, 583)
+                o += '</div>';
+                DW(o);
+            }
+        </script>
+
+        <script>
+
+// alert("<%snapshotpath%>");
+        VideoCtrlDiv();
+
+        DW('<div id="localdiv">');
+        DW('<table>');
+        DW('<tr><td width=750px height="30px;">');
+        // snapshot
+        DW('<div class="headline" >' + GL("snapshot") + '</div>');
+
+        DW('<table width=750px><tr><td width="150px">');
+        DW(GL("sel_snap_folder"));
+
+        DW('</td><td width="300px"><input type="text" id="getshapfolder" name="getshapfolder" value="<%snapshotpath%>" width="300px" maxlength="99" readonly="readonly"  class="pathtext">');
+        DW('</td><td width="80px"><input type="button" id="recpath" onclick="BrowseShap()" value="' + GL("browse") + '">');
+
+        DW('</td></tr></table>');
+
+        DW('</td></tr>');
+
+
+        DW('<tr><td width=750px>');
+
+        // record
+        DW('<div class="headline">' + GL("record") + '</div>');
+
+        DW('<table width=750px><tr><td width="150px">');
+        DW(GL("sel_record_folder"));
+        DW('</td><td width="300px"><input type="text" id="getrecfolder" name="getrecfolder" value="<%recordpath%>" width="300px" maxlength="99"  readonly="readonly" class="pathtext">');
+
+        DW('</td><td width="80px"><input type="button" id="recpath" onclick="BrowseRec()" value="' + GL("browse") + '">');
+
+        DW('</td></tr></table>');
+
+        DW('</td></tr>');
+
+        //TCP or UDP
+        DW('<tr><td width=750px>');
+
+        DW('<div class="headline">' + GL("sel_flow_type") + '</div>');
+
+        DW('<table>');
+        DW('<tr><td width="210px">' + GL("flow_type") + '</td><td width="300px">');
+        WH("flowtype");
+        DW('</td></tr>');
+        DW('</table>');
+
+        DW('</td></tr>');
+
+        DW('<tr><td width="750px">');
+        DW('<div id="submit" style="float:right;">');
+        DW('<input type="button" width="80px" value="' + GL("submit") + '" onclick="SubmitFoder()">');
+        DW('</div>')
+        DW('</td></tr>');
+
+        DW('</table>')
+        DW('</div>');
+        </script>
+
+    </body>
+</html>

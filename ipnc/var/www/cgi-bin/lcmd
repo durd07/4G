@@ -1,0 +1,500 @@
+#!/bin/sh
+
+cat << EOF
+Content-type: text/plain
+Cache-control: no-cache
+
+EOF
+
+do_action(){
+case "$1" in
+	"vi") echo "Can not vi now."
+		cmd=cat
+		;;
+	"top" ) echo "Can not top now."
+		;;
+	"sed" ) echo "Can not sed now."
+		;;
+
+	"ropen" ) echo "Red light open."
+		if [ "$bdv" = "1" ]; then
+			echo 0 > /sys/class/gpio/gpio9/value
+			echo 0 > /sys/class/gpio/gpio100/value
+			echo 0 > /sys/class/gpio/gpio99/value
+			usleep 1
+			echo 1 > /sys/class/gpio/gpio73/value
+			echo 1 > /sys/class/gpio/gpio9/value
+		else
+			echo 1 > /sys/class/gpio/gpio28/value
+			echo 1 > /sys/class/gpio/gpio99/value
+		fi
+		;;
+	"rclose" ) echo "Red light close."
+		if [ "$bdv" = "1" ]; then
+			echo 0 > /sys/class/gpio/gpio73/value
+			echo 0 > /sys/class/gpio/gpio9/value
+		else
+			echo 1 > /sys/class/gpio/gpio28/value
+			echo 0 > /sys/class/gpio/gpio99/value
+		fi
+		;;
+	"bopen" ) echo "Blue light open."
+		if [ "$bdv" = "1" ]; then
+			echo 0 > /sys/class/gpio/gpio9/value
+			echo 0 > /sys/class/gpio/gpio73/value
+			echo 0 > /sys/class/gpio/gpio100/value
+			usleep 1
+			echo 1 > /sys/class/gpio/gpio99/value
+			echo 1 > /sys/class/gpio/gpio9/value
+		else
+			echo 1 > /sys/class/gpio/gpio28/value
+			echo 1 > /sys/class/gpio/gpio72/value
+		fi
+		;;
+	"bclose" ) echo "Blue light close."
+		if [ "$bdv" = "1" ]; then
+			echo 0 > /sys/class/gpio/gpio99/value
+			echo 0 > /sys/class/gpio/gpio9/value
+		else
+			echo 1 > /sys/class/gpio/gpio28/value
+			echo 0 > /sys/class/gpio/gpio72/value
+		fi
+		;;
+	"gopen" ) echo "Green light open."
+		if [ "$bdv" = "1" ]; then
+			echo 0 > /sys/class/gpio/gpio9/value
+			echo 0 > /sys/class/gpio/gpio73/value
+			echo 0 > /sys/class/gpio/gpio99/value
+			usleep 1
+			echo 1 > /sys/class/gpio/gpio100/value
+			echo 1 > /sys/class/gpio/gpio9/value
+		else
+			echo 1 > /sys/class/gpio/gpio28/value
+			echo 1 > /sys/class/gpio/gpio73/value
+		fi
+		;;
+	"gclose" ) echo "Green light close."
+		if [ "$bdv" = "1" ]; then
+			echo 0 > /sys/class/gpio/gpio100/value
+			echo 0 > /sys/class/gpio/gpio9/value
+		else
+			echo 1 > /sys/class/gpio/gpio28/value
+			echo 0 > /sys/class/gpio/gpio73/value
+		fi
+		;;
+	"wopen" ) echo "White light open."
+		if [ "$bdv" = "1" ]; then
+			echo 1 > /sys/class/gpio/gpio85/value
+			echo 4166000 > /proc/pwm/pwm1
+		else
+			echo 1 > /sys/class/gpio/gpio28/value
+			echo 1 > /sys/class/gpio/gpio85/value
+			echo 4166000 > /proc/pwm/pwm1
+		fi
+		;;
+	"wclose" ) echo "White light close."
+		if [ "$bdv" = "1" ]; then
+			insmod /opt/ipnc/pinmux_module.ko a=0x48140ac8 v=0x80
+			rmmod pinmux_module.ko
+			echo 0 > /sys/class/gpio/gpio85/value
+			echo 0 > /proc/pwm/pwm1
+		else
+			echo 1 > /sys/class/gpio/gpio28/value
+			echo 0 > /sys/class/gpio/gpio85/value
+			echo 0 > /proc/pwm/pwm1
+		fi
+		;;
+	"allopen" ) echo "All light open."
+		if [ "$bdv" = "1" ]; then
+			echo 1 > /sys/class/gpio/gpio73/value
+			echo 1 > /sys/class/gpio/gpio100/value
+			echo 1 > /sys/class/gpio/gpio99/value
+			echo 0 > /sys/class/gpio/gpio9/value
+			echo 1 > /sys/class/gpio/gpio9/value
+			echo 1 > /sys/class/gpio/gpio85/value
+			echo 4166000 > /proc/pwm/pwm1
+		else
+			echo 1 > /sys/class/gpio/gpio28/value
+			echo 1 > /sys/class/gpio/gpio72/value
+			echo 1 > /sys/class/gpio/gpio73/value
+			echo 1 > /sys/class/gpio/gpio99/value
+			echo 1 > /sys/class/gpio/gpio85/value
+			echo 4166000 > /proc/pwm/pwm1
+		fi
+		;;
+	"allclose" ) echo "All light close."
+		if [ "$bdv" = "1" ]; then
+			echo 0 > /sys/class/gpio/gpio73/value
+			echo 0 > /sys/class/gpio/gpio100/value
+			echo 0 > /sys/class/gpio/gpio99/value
+			echo 0 > /sys/class/gpio/gpio9/value
+			
+			insmod /opt/ipnc/pinmux_module.ko a=0x48140ac8 v=0x80
+			rmmod pinmux_module.ko
+			echo 0 > /sys/class/gpio/gpio85/value
+			echo 0 > /proc/pwm/pwm1
+		else
+			echo 0 > /sys/class/gpio/gpio28/value
+			echo 0 > /sys/class/gpio/gpio72/value
+			echo 0 > /sys/class/gpio/gpio73/value
+			echo 0 > /sys/class/gpio/gpio99/value
+			echo 0 > /sys/class/gpio/gpio85/value
+			echo 0 > /proc/pwm/pwm1
+		fi
+		;;
+	"lockup" ) echo "lockup"
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0xfe & $I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        usleep 100000
+        let "NEWVALUE=0x01 | $I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+		;;
+	"lockdown" ) echo "lockdown"
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0xfd & $I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        usleep 100000
+        let "NEWVALUE=0x02 | $I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+		;;
+
+	"open" )  echo " open "
+		bit_dlsx bb 01 04 53 00 01 ff 
+		;;
+	"close" )  echo "close"
+		bit_dlsx bb 01 04 53 00 00 ff
+		;;
+	"reset" ) echo "reset"
+		bit_dlsx bb 01 04 53 05 00 ff 
+		;;
+	"left" )  echo "left"
+		bit_dlsx  bb 01 04 53 01 01 ff
+		;;
+	"right"  )echo "right"
+		bit_dlsx 
+		;;
+	"right_yuntai" )echo "right_1"
+		seri_wxy ea d5 06 f9 01 00 02 30 00 00 33
+		;;
+	"up_yuntai" )echo "up_1"
+		seri_wxy ea d5 06 f9 01 00 08 00 30 00 39
+		;;
+	 
+	"down_yuntai" ) echo "down_1"
+		seri_wxy  ea d5 06 f9 01 00 10 00 30 00 21
+		;;
+	"left_yuntai" ) echo "left_1"
+		seri_wxy ea d5 06 f9 01 00 04 30 00 00 35
+		;;
+	"right_yuntai" ) echo "right_1"
+		seri_wxy ea d5 06 f9 01 00 02 20 00 00 23
+		;;
+	 "stop_yuntai" ) echo "stop_1"
+		seri_wxy  ea d5 06 f9 01 00 00 00 00 00 01
+		;;
+	 "CruiseSetting" ) echo "CruiseSetting"
+		seri_wxy  ea d5 05 fa 01 00 21 00 01 21 
+		;;
+	 "EndCruiseSetting" ) echo "EndCruiseSetting"
+		seri_wxy ea d5 05 fa 01 00 25 00 00 24
+		;;
+	 "StartCruise" )  echo "StartCruise"
+		seri_wxy ea d5 05 fa 01 00 29 00 01 29
+		;;
+	 "EndCruise" ) echo "EndCruise"
+		seri_wxy ea d5 05 fa 01 00 2b 00 00 2a
+		;;
+	"ClearCruise" ) echo "ClearCruise"
+		seri_wxy ea d5 05 fa 01 00 27 00 01 27 
+		;;
+	"StartRecordStudy" )echo "StartRecordStudy"
+		seri_wxy ea d5 05 fa 01 00 11 00 01 11
+		;;
+	"StopRecordStudy" ) echo "StopRecordStudy"
+		seri_wxy ea d5 05 fa 01 00 13 00 00 12
+		;;
+	"ReplayStudy" ) echo "ReplayStudy"
+		seri_wxy ea d5 05 fa 01 00 15 00 01 15
+		;;
+	"StopReplay" )echo "StopReplay"
+		seri_wxy ea d5 05 fa 01 00 17 00 00 16
+		;;
+	
+	
+	
+	
+	
+	 
+	 "HomingSwitchOpen" ) echo "HomingSwitchOpen"
+		seri_wxy ea d5 05 fa 01 00 41 00 02 42 
+		;;
+     "HomingSwitchClose" ) echo "HomingSwitchClose"
+		 seri_wxy ea d5 05 fa 01 00 41 00 03 43
+		 ;;	
+	 "LineStartPoint"  ) echo  "LineStartPoint"
+		seri_wxy ea d5 06 f9 01 00 31 00 01 00 31
+		;;
+	 "LineEndPoint"  ) echo  "LineEndPoint"
+		seri_wxy ea d5 06 f9 01 00 33 00 01 00 33
+		;;
+	 "StartLine"  ) echo  "StartLine"
+		seri_wxy ea d5 06 f9 01 00 35 20 01 00 15
+		;;
+	 "StopLine"  ) echo "StopLine"
+		seri_wxy ea d5 06 f9 01 00 37 00 00 00 36
+		;;
+	 
+	 
+	 
+	"near" ) echo "near"
+		bit_dlsx  81 01 04 07 02 ff
+		;;
+	"far" ) echo "far"
+		bit_dlsx 81 01 04 07 03 ff
+		;;
+	"stop" ) echo"stop"
+		bit_dlsx  81 01 04 07 00 ff
+		;;
+	
+	#"allclose" ) echo "All light close."
+	#	bit_dlsx bb 01 04 53 04 0f ff
+	#	;;
+
+	"small_up" ) echo "All light close."
+		bit_dlsx bb 01 04 53 03 01 ff
+		;;
+	"small_dn" ) echo "All light close."
+		bit_dlsx bb 01 04 53 04 01 ff
+        ;;
+    "ropen_e" ) echo "Open red light for entrance."
+        echo 0 > /sys/class/gpio/gpio99/value
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0x7f&$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        echo 0 > /sys/class/gpio/gpio100/value
+        echo 1 > /sys/class/gpio/gpio73/value
+        echo 1 > /sys/class/gpio/gpio99/value
+        ;;
+    "rclose_e" ) echo "Close red light for entrance."
+        echo 0 > /sys/class/gpio/gpio73/value
+        echo 0 > /sys/class/gpio/gpio99/value
+        ;;
+    "gopen_e" ) echo "Open green light for entrance."
+        echo 0 > /sys/class/gpio/gpio99/value
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0x7f&$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        echo 0 > /sys/class/gpio/gpio73/value
+        echo 1 > /sys/class/gpio/gpio100/value
+        echo 1 > /sys/class/gpio/gpio99/value
+        ;;
+    "gclose_e" ) echo "Close green light for entrance."
+        echo 0 > /sys/class/gpio/gpio100/value
+        echo 0 > /sys/class/gpio/gpio99/value
+        ;;
+    "bopen_e" ) echo "Open blue light for entrance."
+        echo 0 > /sys/class/gpio/gpio99/value
+        echo 0 > /sys/class/gpio/gpio73/value
+        echo 0 > /sys/class/gpio/gpio100/value
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0x80|$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        echo 1 > /sys/class/gpio/gpio99/value
+        ;;
+    "bclose_e" ) echo "Close blue light for entrance."
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0x7f&$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        echo 0 > /sys/class/gpio/gpio99/value
+        ;;
+    "wopen_e" ) echo "Open white light for entrance."
+        echo 1 > /sys/class/gpio/gpio85/value
+        ;;
+    "wclose_e" ) echo "Close white light for entrance."
+        echo 0 > /sys/class/gpio/gpio85/value
+        ;;
+    "allopen_e" ) echo "Open all light for entrance."
+        i2cset -y 3 0x38 0x0f
+        echo 1 > /sys/class/gpio/gpio99/value
+        echo 1 > /sys/class/gpio/gpio100/value
+        echo 1 > /sys/class/gpio/gpio73/value
+        echo 1 > /sys/class/gpio/gpio99/value
+        echo 1 > /sys/class/gpio/gpio85/value
+        ;;
+    "allclose_e" ) echo "Close all light for entrance."
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0x7f&$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        echo 0 > /sys/class/gpio/gpio99/value
+        echo 0 > /sys/class/gpio/gpio100/value
+        echo 0 > /sys/class/gpio/gpio73/value
+        echo 0 > /sys/class/gpio/gpio99/value
+        echo 0 > /sys/class/gpio/gpio85/value
+        ;;
+    "relay1_open" ) echo "relay1_open"
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0xfe&$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        ;;
+    "relay1_close" ) echo "relay1_close"
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0x01|$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        ;;
+    "relay2_open" ) echo "relay2_open"
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0xfd&$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        ;;
+    "relay2_close" ) echo "relay2_close"
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0x02|$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        ;;
+    "relay3_open" ) echo "relay3_open"
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0xfb&$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        ;;
+    "relay3_close" ) echo "relay3_close"
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0x04|$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        ;;
+    "out_alert1_open" ) echo "out_alert1_open"
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0x20|$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        ;;
+    "out_alert1_close" ) echo "out_alert1_close"
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0xdf&$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        ;;
+    "out_alert2_open" ) echo "out_alert2_open"
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0x10|$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        ;;
+    "out_alert2_close" ) echo "out_alert2_close"
+        I2CVALUE=`i2cget -y 3 0x38`
+        let "NEWVALUE=0xef&$I2CVALUE"
+        i2cset -y 3 0x38 `printf "0x%x" $NEWVALUE`
+        ;;
+    "in_alert1_query" ) echo "in_alert1_query"
+        in_alert1=`cat /sys/class/gpio/gpio72/value`
+        if [ $in_alert1 = '1' ]; then
+            echo "报警入1 = 1 - 断开"
+        else 
+            echo "报警入1 = 0 - 闭合"
+        fi
+        ;;
+    "in_alert2_query" ) echo "in_alert2_query"
+        in_alert2=`cat /sys/class/gpio/gpio24/value`
+        if [ $in_alert2 = '1' ]; then
+            echo "报警入2 = 1 - 断开"
+        else 
+            echo "报警入2 = 0 - 闭合"
+        fi
+        ;;
+    "in_alert3_query" ) echo "in_alert3_query"
+        I2CVALUE=`i2cget -y 3 0x38`
+        NEWVALUE=`echo $I2CVALUE | awk '{print rshift($0, 6)}'`
+        let "NEWVALUE=0x01&$NEWVALUE"
+        if [ $NEWVALUE = '1' ]; then
+            echo "报警入3 = 1 - 断开"
+        else 
+            echo "报警入3 = 0 - 闭合"
+        fi
+        ;;
+    "audio_play" ) echo "audio_play"
+        aplay /opt/ipnc/alarm_2_8K.wav
+        ;;
+    "audio_loopback_on" ) echo "audio loopback test"
+        i2c-8812 -w 0x1a 0x0a 0x08
+        i2c-8812 -w 0x1a 0x05 0x01
+        ;;
+    "audio_loopback_off" ) echo "audio loopback test"
+        i2c-8812 -w 0x1a 0x0a 0x08
+        i2c-8812 -w 0x1a 0x05 0x00
+        ;;
+
+    "rs485_test" ) echo "rs485_test"
+        /var/www/cgi-bin/serial
+        ;;
+    * ) 
+        $cmd
+        ;;
+esac
+}
+
+#######################################################
+# start from here
+#######################################################
+cmd=${QUERY_STRING//%20/ }
+
+########################################################
+echo 20 > /sys/class/gpio/export
+bdv=`cat /sys/class/gpio/gpio20/value`
+#if [ "$bdv" = "1" ]; then 
+#		echo "Board 2ddr"
+#else
+#		echo "Board 4ddr"
+#fi
+#########################################################
+
+# XXX initialize GPIO and I2C in case changed by vd or other processes.
+/opt/ipnc/gpio_init.sh
+case "$cmd" in 
+    "open_seq" ) echo "open red green blue white lights in sequence." 
+        do_action ropen
+        usleep 500000 
+        do_action gopen
+        usleep 500000 
+        do_action bopen
+        usleep 500000 
+        do_action allclose
+        do_action wopen
+        usleep 500000 
+        do_action allclose
+        ;;
+    "open_seq_e" ) echo "open red green blue white lights in sequence." 
+        do_action ropen_e
+        usleep 500000
+        do_action gopen_e
+        usleep 500000 
+        do_action bopen_e
+        usleep 500000 
+        do_action allclose_e
+        do_action wopen_e
+        usleep 500000 
+        do_action allclose_e
+        ;;
+    "relay_open_all" ) echo "open all the relaies."
+        do_action relay1_open 
+        do_action relay2_open
+        do_action relay3_open
+        ;;
+    "relay_close_all" ) echo "open all the relaies."
+        do_action relay1_close 
+        do_action relay2_close
+        do_action relay3_close
+        ;;
+    "in_alert_query_all" ) echo "query all the in alert" 
+        do_action in_alert1_query
+        do_action in_alert2_query
+        do_action in_alert3_query
+        ;;
+    "prevent_vd_start" ) echo "prevent vd"
+        killall prevent_vd
+        /var/www/cgi-bin/prevent_vd
+	;;
+    "prevent_vd_stop" ) echo "prevent vd"
+        killall prevent_vd
+	;;
+    * ) 
+        do_action $cmd
+        ;;
+esac
+exit 0

@@ -1,0 +1,953 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<title>image config</title>
+<link rel="stylesheet" type="text/css" href="css/image.css"/>
+<!--link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"-->
+<script src="js/jquery-1.10.2.js"></script>
+<script src="js/image.js"></script>
+<script language="javascript" src="var.js"></script>
+<script language="javascript" src="common.js"></script>
+<script>
+      InitLoad();	 
+</script>
+</head>
+
+<body  onunload="MY_ONUNLOAD()">
+<script>
+var emoudlelist = GL("auto") + ";" + GL("manual");
+var shutteruplist = "35us;50us;100us;200us;500us;1ms;2ms;3ms;4ms;5ms;6ms;8ms;10ms;15ms;20ms;25ms;30ms;35ms;40ms";
+var shutterlowlist = "35us;50us;100us;200us;500us;1ms;2ms;3ms;4ms;5ms;6ms;8ms;10ms;15ms;20ms;25ms;30ms;35ms;40ms";
+var gainuplist = "0db;6db;12db;18db;24db;30db;36db;42db;48db";
+var gainlowlist ="0db;6db;12db;18db;24db;30db;36db;42db;48db";
+var gainsetlist ="0db;6db;12db;18db;24db;30db;36db;42db;48db";
+var shuttersetlist ="35us;50us;100us;200us;500us;1ms;2ms;3ms;4ms;5ms;6ms;8ms;10ms;15ms;20ms;25ms;30ms;35ms;40ms";
+//======================================================================================================================================
+var wblist = GL("auto") + ";" + GL("6500")+ ";" + GL("5000")+ ";" + GL("4000")+ ";" + GL("3000")+ ";" + GL("manual");
+var redlist = '';
+for (var i = 0; i <= 255; i++ ) {
+  redlist += i;
+  if (i != 255)
+    redlist += ';';
+};
+var bluelist = '';
+for (var i = 0; i <= 255; i++ ) {
+  bluelist += i;
+  if (i != 255)
+    bluelist += ';';
+};
+var greenlist = '';
+for (var i = 0; i <= 255; i++ ) {
+  greenlist += i;
+  if (i != 255)
+    greenlist += ';';
+};
+var colortemplist ='';
+for (var i = 0; i <= 255; i++ ) {
+  colortemplist += i;
+  if (i != 255)
+    colortemplist += ';';
+};
+var daynightlist = GL("auto") + ";" + GL("day") + ";" + GL("night");
+//=====================================================================
+var dnr3dlist = GL("off") + ";" + GL("low") + ";" + GL("mid") + ";" + GL("high") + ";" + GL("LOW1") + ";" + GL("LOW2") + ";" + GL("LOW3");
+var dnr2dlist = GL("off") + ";" + GL("low") + ";" + GL("mid") + ";" + GL("high");
+var gammalist =  GL("off") + ";" + GL("on") + ";SMART1;SMART2;SMART3;SMART4;SMART5";
+var deffectlist =GL("off") + ";" + GL("mirror") + ";" + GL("v_flip") + ";" + GL("h_flip");
+var c_blclist = GL("low") + ";" + GL("mid") + ";" + GL("high");
+CTRLARY = {  
+	
+  exposure_moudle: new Ctrl_Select("exposure_moudle",emoudlelist,"<%exposure_moudle%>","exposure_moudle=","Change_exposure_moudle()"),//曝光模式
+  shutter_up: new Ctrl_Select("shutter_up",shutteruplist,"<%shutter_up%>","shutter_up=","Change_shutter_up()"),//快门上限
+  shutter_low: new Ctrl_Select("shutter_low",shutterlowlist,"<%shutter_low%>","shutter_low=","Change_shutter_low()"),//快门下限
+  gain_up: new Ctrl_Select("gain_up",gainuplist,"<%gain_up%>","gain_up=","Change_gain_up()"),//增益上限
+  gain_low: new Ctrl_Select("gain_low",gainlowlist,"<%gain_low%>","gain_low","Change_gain_low()"),//增益下限
+  gain_set: new Ctrl_Select("gain_set",gainsetlist,"<%gain_set%>","gain_set","Change_gain_set()"),//增益手动设置
+  shutter_set: new Ctrl_Select("shutter_set",shuttersetlist,"<%shutter_set%>","shutter_set=","Change_shutter_set()"),//快门手动值
+//============awb===============================================================================================================================
+  awbmodule: new Ctrl_Select("awbmodule",wblist,"<%awbmodule%>","awbmodule=","change_awbmodule()"),//白平衡自动切换
+  red_awb: new Ctrl_Select("red_awb",redlist,"<%red_awb%>","red_awb=","Change_red()"),//红
+  blue_awb: new Ctrl_Select("blue_awb",bluelist,"<%blue_awb%>","blue_awb=","Change_blue()"),//蓝
+  green_awb: new Ctrl_Select("green_awb",greenlist,"<%green_awb%>","green_awb=","Change_green()"),//绿
+  colortempture: new Ctrl_Select("colortempture",colortemplist,"<%colortempture%>","colortempture=","Change_colortemp()"),//色温
+//===============================================================================================================================================
+  daynight: new Ctrl_Select("daynight", daynightlist, "<%daynight%>", "daynight=", "ChangeDN()"),//日夜模式
+//=============================================================================================================================================
+	//noise fileter
+	tnfltctrl: new Ctrl_Radio("tnfltctrl", "<%tnfltctrl%>", "tnfltctrl=","Change_tnfltctrl()"),
+	// vnf strength
+	maxexposuretime: new Ctrl_Select("maxexposuretime", "<%maxexposuretimename%>","<%maxexposuretime%>", "maxexposuretime=","Change_maxexposuretime()"),
+	nfltctrl: new Ctrl_Select("nfltctrl", "<%nfltctrlname%>","<%nfltctrl%>", "nfltctrl=","Change_nfltctrl()"),
+//==========================================================================================================================
+ c_blc: new Ctrl_Select("c_blc", c_blclist, "<%c_blc%>", "c_blc=", "ChangeBlc()"),//背光补偿
+  c_contrast: new Ctrl_Text("c_contrast", 3, 3, "<%c_contrast%>", "c_contrast=", null, false, "ChangeContrast()"),//对比度
+  c_brightness: new Ctrl_Text("c_brightness", 3, 3, "<%c_brightness%>", "c_brightness=", null, false, "ChangeBrightness()"),//亮度
+  c_saturation: new Ctrl_Text("c_saturation", 3, 3, "<%c_saturation%>", "c_saturation=", null, false, "ChangeSaturation()"),//饱和度
+  c_sharpness: new Ctrl_Text("c_sharpness", 3, 3, "<%c_sharpness%>", "c_sharpness=", null, false, "ChangeSharpness()"),//锐度  
+  c_gamma: new Ctrl_Text("c_gamma", 3,2, "<%c_gamma%>", "c_gamma=", null, false, "ChangeGamma()"),//灰度  
+  
+  deffect: new Ctrl_Select("deffect", deffectlist, "<%deffect%>", "deffect=", "ChangeDeffect()")
+};
+ 
+ //各省份经纬度配置
+var provinceInfo = [
+{value:1,name:"安徽",coordinates:"117.17,31.52"},
+{value:2,name:"北京",coordinates:"116.24,39.55"},
+{value:3,name:"重庆",coordinates:"106.54,29.59"},
+{value:4,name:"福建",coordinates:"119.18,26.05"},
+{value:5,name:"甘肃",coordinates:"103.51,36.04"},
+{value:6,name:"广东",coordinates:"113.14,23.08"},
+{value:7,name:"广西",coordinates:"108.19,22.48"},
+{value:8,name:"贵州",coordinates:"106.42,26.35"},
+{value:9,name:"海南",coordinates:"110.20,20.02"},
+{value:10,name:"河北",coordinates:"114.30,38.02"},
+{value:11,name:"河南",coordinates:"113.40,34.46"},
+{value:12,name:"黑龙江",coordinates:"126.36,45.44"},
+{value:13,name:"湖北",coordinates:"114.17,30.35"},
+{value:14,name:"湖南",coordinates:"112.59,28.12"},
+{value:15,name:"吉林",coordinates:"125.19,43.54"},
+{value:16,name:"江苏",coordinates:"118.46,32.03"},
+{value:17,name:"江西",coordinates:"115.55,28.40"},
+{value:18,name:"辽宁",coordinates:"123.25,41.48"},
+{value:19,name:"内蒙古",coordinates:"111.41,40.48"},
+{value:20,name:"宁夏",coordinates:"106.16,38.27"},
+{value:21,name:"青海",coordinates:"101.48,36.38"},
+{value:22,name:"山东",coordinates:"117.00,36.40"},
+{value:23,name:"山西",coordinates:"112.33,37.54"},
+{value:24,name:"陕西",coordinates:"108.57,34.17"},
+{value:25,name:"上海",coordinates:"121.29,31.14"},
+{value:26,name:"四川",coordinates:"104.04,30.40"},
+{value:27,name:"天津",coordinates:"117.12,39.02"},
+{value:28,name:"西藏",coordinates:"91.08,29.39"},
+{value:29,name:"新疆",coordinates:"87.36,43.45"},
+{value:30,name:"云南",coordinates:"102.42,25.04"},
+{value:31,name:"浙江",coordinates:"120.10,30.16"},
+{value:32,name:"香港",coordinates:"115.12,21.23"},
+{value:33,name:"澳门",coordinates:"115.07,21.33"},
+{value:34,name:"台湾",coordinates:"121.30,25.03"}];
+
+
+</script>
+<script>
+$(document).ready(function(){
+	MY_ONLOAD();
+	$(window).resize(function() {
+		setTimeout(function(){adaptionComponent("ocx_object","vlc",16/9,0);},10);
+	});
+});
+
+
+function switch_stream(index)
+{
+	VideoActiveXControl.videoPlay(index,1,300);
+}
+/*
+function switch_stream1(){
+	StopV();
+   StartVwithoutTDP(0, 0, Get9001FirstCodec(), 5, null); //stream 1	without 3D
+}
+function switch_stream2(){	
+	StopV();
+   StartVwithoutTDP(0, 0, Get9001FirstCodec(), 6, null); //stream 2	
+}
+function switch_stream3(){	
+    StopV();
+    StartVwithoutTDP(0, 0, Get9001FirstCodec(), 1, null); //stream 3
+	
+}
+*/
+//===================================================================================================
+ function Fixexpose()
+  {
+	var moudle = document.getElementById("exposure_moudle").selectedIndex;
+	//alert(moudle);
+	switch (moudle)
+	{
+		case 1://手動
+			document.getElementById("gainup").style.display = "none";
+			document.getElementById("gainlow").style.display = "none";
+			document.getElementById("shutterup").style.display = "none";
+			document.getElementById("shutterlow").style.display = "none";
+			document.getElementById("gainset").style.display = "";
+			document.getElementById("shutterset").style.display = "";
+			break;
+		case 0://自動
+			document.getElementById("gainup").style.display = "";
+			document.getElementById("gainlow").style.display = "";
+			document.getElementById("shutterup").style.display = "";
+			document.getElementById("shutterlow").style.display = "";
+			document.getElementById("gainset").style.display = "none";
+			document.getElementById("shutterset").style.display = "none";
+			break;
+	}
+  }
+function Change_exposure_moudle()
+{
+  Fixexpose();
+  var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set");
+  SendHttp(c_iniUrl + GetSetterCmdKV("exposure_moudle_change", exp_struct), false); 
+}
+
+function Checkshutterup(){
+  var res = false;
+  var low_shutter = document.getElementById("shutter_low").selectedIndex;
+  var up_shutter = document.getElementById("shutter_up").selectedIndex;
+  if (up_shutter < low_shutter )
+  {
+    alert(GL("shutter_endno"));
+    return res;
+  }
+  return true;
+};
+function Change_shutter_up()
+{ 
+  if (Checkshutterup() == false)
+  {    
+     document.getElementById("shutter_up").selectedIndex = "<%shutter_up%>";   
+	  return;
+  }
+ var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set");
+ SendHttp(c_iniUrl + GetSetterCmdKV("shutter_up_change",exp_struct ), false); 
+}
+function Checkshutterlow(){
+  var res = false;
+  var low_shutter = document.getElementById("shutter_low").selectedIndex;
+  var up_shutter = document.getElementById("shutter_up").selectedIndex;
+  if (up_shutter < low_shutter )
+  {
+    alert(GL("shutter_lowno"));
+    return res;
+  }
+  return true;
+};
+
+function Change_shutter_low()
+{ 
+  if (Checkshutterlow() == false)
+  {    
+     document.getElementById("shutter_low").selectedIndex = "<%shutter_low%>";   
+	  return;
+  }
+  var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set");
+  SendHttp(c_iniUrl + GetSetterCmdKV("shutter_low_change", exp_struct), false); 
+}
+function Checkgainup(){
+  var res = false;
+  var low_gain = document.getElementById("gain_low").selectedIndex;
+  var up_gain = document.getElementById("gain_up").selectedIndex;
+  if ( up_gain<  low_gain)
+  {
+    alert(GL("gain_upno"));
+    return res;
+  }
+  return true;
+};
+
+function Change_gain_up()
+{ 
+   if (Checkgainup() == false)
+  {    
+     document.getElementById("gain_up").selectedIndex = "<%gain_up%>";   
+	  return;
+  }
+   var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set");
+  SendHttp(c_iniUrl + GetSetterCmdKV("gain_up_change", exp_struct), false); 
+}
+function Checkgainlow(){
+  var res = false;
+  var low_gain = document.getElementById("gain_low").selectedIndex;
+  var up_gain = document.getElementById("gain_up").selectedIndex;
+  if ( up_gain<  low_gain )
+  {
+    alert(GL("gain_lowno"));
+    return res;
+  }
+  return true;
+};
+
+function Change_gain_low()
+{ 
+    if (Checkgainlow() == false)
+  {    
+     document.getElementById("gain_low").selectedIndex = "<%gain_low%>";   
+	  return;
+  }
+   var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set");
+  SendHttp(c_iniUrl + GetSetterCmdKV("gain_low_change", exp_struct), false); 
+}
+function Change_gain_set()
+{ 
+   var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set");
+  SendHttp(c_iniUrl + GetSetterCmdKV("gain_manu_set", exp_struct), false); 
+}
+
+function Change_shutter_set()
+{ 
+   var exp_struct = GetCCV("exposure_moudle")+','+ GetCCV("shutter_up")+','+GetCCV("shutter_low")+','+GetCCV("gain_up")+','+GetCCV("gain_low")+','+GetCCV("shutter_set")+','+GetCCV("gain_set");
+  SendHttp(c_iniUrl + GetSetterCmdKV("shutter_manu_set", exp_struct), false); 
+}
+//-----------------------------------------------------------------------------------------------------
+function change_awbmodule()
+{
+  Fixawb();
+  var awbstruct = GetCCV("awbmodule")+','+ GetCCV("red_awb")+','+ GetCCV("green_awb")+','+GetCCV("blue_awb")+','+GetCCV("colortempture") ; 
+  SendHttp(c_iniUrl + GetSetterCmdKV("awb", GetCCV("awbmodule"))+ GetSetterCmdKV("awb_moudle_change", awbstruct), false); 
+  //alert(awbstruct);
+}
+
+function Change_red()
+{
+  var awbstruct = GetCCV("awbmodule")+','+ GetCCV("red_awb")+','+ GetCCV("green_awb")+','+GetCCV("blue_awb")+','+GetCCV("colortempture") ; 
+  SendHttp(c_iniUrl + GetSetterCmdKV("red_change", awbstruct), false);   
+  //alert(awbstruct);
+}
+
+function Change_blue()
+{ 
+  //alert(GetCCV("blue_awb"));
+  var awbstruct = GetCCV("awbmodule")+','+ GetCCV("red_awb")+','+ GetCCV("green_awb")+','+GetCCV("blue_awb")+','+GetCCV("colortempture") ; 
+  SendHttp(c_iniUrl + GetSetterCmdKV("blue_change", awbstruct), false); 
+  //alert(awbstruct);
+}
+
+function Change_green()
+{ 
+   //alert(GetCCV("green_awb"));
+   var awbstruct = GetCCV("awbmodule")+','+ GetCCV("red_awb")+','+ GetCCV("green_awb")+','+GetCCV("blue_awb")+','+GetCCV("colortempture") ; 
+   SendHttp(c_iniUrl + GetSetterCmdKV("green_change", awbstruct), false);
+	//alert(awbstruct);
+
+}
+
+function Change_colortemp()
+{ 
+  //alert(GetCCV("colortempture"));
+   var awbstruct = GetCCV("awbmodule")+','+ GetCCV("red_awb")+','+ GetCCV("green_awb")+','+GetCCV("blue_awb")+','+GetCCV("colortempture") ; 
+   SendHttp(c_iniUrl + GetSetterCmdKV("colortemp_change", awbstruct), false); 
+  // alert(awbstruct);
+
+}
+
+function Fixawb()
+  {
+	var moudle = document.getElementById("awbmodule").selectedIndex;
+	//alert(moudle);
+		if (moudle<=4)
+		{
+			document.getElementById("green_id").style.display = "none";	//自動		
+			document.getElementById("red_id").style.display = "none";
+			document.getElementById("blue_id").style.display = "none";			
+			document.getElementById("colortemp").style.display = "none";
+		}
+		else 
+		{
+			//document.getElementById("green_id").style.display = "";//手動
+			document.getElementById("red_id").style.display = "";
+			document.getElementById("blue_id").style.display = "";
+			
+		}	
+			
+}
+function ChangeDN()
+{
+  
+  SendHttp(c_iniUrl + GetSetterCmdKV("daynight_change", GetCCV("daynight")), false);
+  if(GetCCV("daynight") == 1){
+	SendHttp(c_iniUrl + GetSetterCmdKV("ir_cut", 1), false);	//日,yong
+  } 
+  if(GetCCV("daynight") == 2){
+	SendHttp(c_iniUrl + GetSetterCmdKV("ir_cut", 0), false);	//夜,buyong
+  }
+}
+//-------------------------------------------------------------------------------------------------------
+function fixswitch()
+{	
+	if(GetCCV("tnfltctrl")==0)//降噪关
+	{
+		CTRLARY["nfltctrl"].Disable(1);
+		CTRLARY["maxexposuretime"].Disable(1);
+		//document.getElementById("d_module").style.display = "none";
+		//document.getElementById("d_strength").style.display = "none";
+	}
+	if(GetCCV("tnfltctrl")==1)//降噪开
+	{
+		CTRLARY["nfltctrl"].Disable(0);
+		CTRLARY["maxexposuretime"].Disable(0);
+		//document.getElementById("d_module").style.display = "";
+		//document.getElementById("d_strength").style.display = "";
+	}
+	
+}
+function Change_tnfltctrl()
+{
+   //alert(GetCCV("tnfltctrl"));
+   SendHttp(c_iniUrl + GetSetterCmdKV("tnfltctrl", GetCCV("tnfltctrl")), false);
+   fixswitch();
+}
+function Change_maxexposuretime()
+{ 
+  //alert(GetCCV("maxexposuretime"));
+  SendHttp(c_iniUrl + GetSetterCmdKV("maxexposuretime", GetCCV("maxexposuretime")), false);
+}
+function Change_nfltctrl()
+{     
+  //alert(GetCCV("nfltctrl"));
+  SendHttp(c_iniUrl + GetSetterCmdKV("nfltctrl", GetCCV("nfltctrl")), false);
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------
+function CheckContrast(min, max)
+{
+  var value = document.getElementById("c_contrast").value;
+  if (value.length == 0||value==" ")
+  {
+    alert(GL("con_empty"));
+    document.getElementById("c_contrast").value = "<%c_contrast%>";
+    document.getElementById("c_contrast").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("con_inv"));
+    document.getElementById("c_contrast").value = "<%c_contrast%>";
+    document.getElementById("c_contrast").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("con_num"));
+    document.getElementById("c_contrast").value = "<%c_contrast%>";
+    document.getElementById("c_contrast").focus();
+    return false;
+  }
+  return true;
+}
+function ChangeBlc()
+{
+  var color_struct;
+  color_struct = GetCCV("c_blc")+','+GetCCV("c_brightness")+','+GetCCV("c_contrast")+','+GetCCV("c_saturation")+','+GetCCV("c_sharpness")+','+GetCCV("c_gamma");
+  SendHttp(c_iniUrl +GetSetterCmdKV("backlight", GetCCV("c_blc")) +GetSetterCmdKV("c_blc_change", color_struct), false);
+  //alert(color_struct);
+}
+function ChangeContrast()
+{
+  if (CheckContrast(0, 255) == false)
+    return ;
+  var color_struct;
+ color_struct = GetCCV("c_blc")+','+GetCCV("c_brightness")+','+GetCCV("c_contrast")+','+GetCCV("c_saturation")+','+GetCCV("c_sharpness")+','+GetCCV("c_gamma");
+ SendHttp(c_iniUrl +GetSetterCmdKV("contrast", GetCCV("c_contrast")) + GetSetterCmdKV("c_contrast_change", color_struct),false);
+   //alert(color_struct);
+}
+function CheckSat(min, max)
+{
+  var value = document.getElementById("c_saturation").value;
+  if (value.length == 0||value==" ")
+  {
+    alert(GL("sat_empty"));
+	 document.getElementById("c_saturation").value = "<%c_saturation%>";
+    document.getElementById("c_saturation").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("sat_inv"));
+    document.getElementById("c_saturation").value = "<%c_saturation%>";
+    document.getElementById("c_saturation").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("sat_num"));
+    document.getElementById("c_saturation").value = "<%c_saturation%>";
+    document.getElementById("c_saturation").focus();
+    return false;
+  }
+  return true;
+}
+function ChangeSaturation()
+{
+  var color_struct;
+  if (CheckSat(0, 255) == false)
+    return ;
+  color_struct = GetCCV("c_blc")+','+GetCCV("c_brightness")+','+GetCCV("c_contrast")+','+GetCCV("c_saturation")+','+GetCCV("c_sharpness")+','+GetCCV("c_gamma");
+  SendHttp(c_iniUrl +GetSetterCmdKV("saturation", GetCCV("c_saturation")) + GetSetterCmdKV("c_saturation_change", color_struct), false);
+   //alert(color_struct);
+}
+function CheckBri(min, max)
+{
+  var value = document.getElementById("c_brightness").value;
+  if (value.length == 0||value==" ")
+  {
+    alert(GL("lum_empty"));
+	document.getElementById("c_brightness").value = "<%c_brightness%>";
+    document.getElementById("c_brightness").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("lum_inv"));
+    document.getElementById("c_brightness").value = "<%c_brightness%>";
+    document.getElementById("c_brightness").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("lum_num"));
+    document.getElementById("c_brightness").value = "<%c_brightness%>";
+    document.getElementById("c_brightness").focus();
+    return false;
+  }
+  return true;
+}
+function ChangeBrightness()
+{
+  var color_struct;
+  if (CheckBri(0, 255) == false)
+    return ;
+  color_struct = GetCCV("c_blc")+','+GetCCV("c_brightness")+','+GetCCV("c_contrast")+','+GetCCV("c_saturation")+','+GetCCV("c_sharpness")+','+GetCCV("c_gamma");
+  SendHttp(c_iniUrl +GetSetterCmdKV("brightness", GetCCV("c_brightness"))+ GetSetterCmdKV("c_brightness_change", color_struct), false);
+   //alert(color_struct);
+}
+function CheckSha(min, max)
+{
+  var value = document.getElementById("c_sharpness").value;
+  if (value.length == 0||value==" ")
+  {
+    alert(GL("sha_empty"));
+    document.getElementById("c_sharpness").focus();
+    document.getElementById("c_sharpness").value = "<%c_sharpness%>";
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("sha_inv"));
+    document.getElementById("c_sharpness").focus();
+    document.getElementById("c_sharpness").value = "<%c_sharpness%>";
+    return false;
+  }
+
+  if ((value < min) || (value > max))
+  {
+    alert(GL("sha_num"));
+    document.getElementById("c_sharpness").focus();
+    document.getElementById("c_sharpness").value = "<%c_sharpness%>";
+    return false;
+  }
+  return true;
+}
+function CheckGamma(min, max)
+{
+  var value = document.getElementById("c_gamma").value;
+  if (value.length == 0||value==" ")
+  {
+    alert(GL("gamma_empty"));
+    document.getElementById("c_gamma").focus();
+    document.getElementById("c_gamma").value = "<%c_gamma%>";
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("gamma_inv"));
+    document.getElementById("c_gamma").focus();
+    document.getElementById("c_gamma").value = "<%c_gamma%>";
+    return false;
+  }
+
+  if ((value < min) || (value > max))
+  {
+    alert(GL("gamma_num"));
+    document.getElementById("c_gamma").focus();
+    document.getElementById("c_gamma").value = "<%c_gamma%>";
+    return false;
+  }
+  return true;
+}
+
+function ChangeSharpness()
+{
+  var color_struct;
+  if (CheckSha(0, 255) == false)
+    return ;
+  color_struct = GetCCV("c_blc")+','+GetCCV("c_brightness")+','+GetCCV("c_contrast")+','+GetCCV("c_saturation")+','+GetCCV("c_sharpness")+','+GetCCV("c_gamma");
+  SendHttp(c_iniUrl +GetSetterCmdKV("sharpness", GetCCV("c_sharpness"))+ GetSetterCmdKV("c_sharpness_change", color_struct), false);
+   //alert(color_struct);
+}
+function ChangeGamma()
+{
+  var color_struct;
+  if (CheckGamma(0, 18) == false)
+    return ;
+  color_struct = GetCCV("c_blc")+','+GetCCV("c_brightness")+','+GetCCV("c_contrast")+','+GetCCV("c_saturation")+','+GetCCV("c_sharpness")+','+GetCCV("c_gamma");
+  SendHttp(c_iniUrl + GetSetterCmdKV("c_gamma", color_struct), false);
+}
+
+function ChangeDeffect()
+{
+  //alert(GetCCV("deffect"));
+  SendHttp(c_iniUrl + GetSetterCmdKV("deffect_set", GetCCV("deffect")), false);
+}
+//----------------------------------------------------------------------------------------------------------------------------------------------
+function MY_ONLOAD(){
+	//初始化省份经纬度选择。
+	initProvinceSelect();//
+	//读取补光灯状态
+	if(device_type==3 || device_type==2)
+	{
+		getFlashConfig();
+	}
+	else
+	{
+		$("#flash_config_tr_1").css("display","none");
+	}
+	//setTimeout(function(){adaptionComponent("ocx_object","vlc",16/9,0);},10);
+	switch_stream(1);
+	Fixexpose(); 
+	Fixawb();
+	document.getElementById("colortemp").style.display = "none";
+	document.getElementById("green_id").style.display = "none";
+	fixswitch();
+	g_lockLink = false;
+}
+
+function initProvinceSelect()
+{
+	var htmlText = "";
+	for(var i = 0 ; i< provinceInfo.length; i++)
+	{
+		var vo = provinceInfo[i];
+		htmlText+= '<option value="'+vo.value+'" coordinates="'+vo.coordinates+'">'+vo.name+'</option>';
+	}
+	$("#province").append(htmlText);
+}
+//获得补光灯状态
+function getFlashConfig()
+{
+	requestStr = {
+				"destination":"VD",
+				"method":"getFlashConfig",
+				"param":{}
+		  }
+
+	var cmd = JSON.stringify(requestStr);//字符串化
+	$.get("/vb.htm?language=ie"+"&flash_ctrl="+cmd,function(data){
+		var back;
+		if ((data.indexOf("OK flash_ctrl") >= 0) ) {		
+			back = data.substring(25);
+		}	
+		
+		back=JSON.parse(back);//转换为json
+		var mode = back.result.mode;
+		if(mode==0)
+		{
+			$("input[name=lightconfig]:eq(1)").attr("checked",'checked'); 
+		}
+		else if(mode==1)
+		{
+			$("input[name=lightconfig]:eq(0)").attr("checked",'checked'); 
+		}
+		else if(mode==2)
+		{
+			$("input[name=lightconfig]:eq(2)").attr("checked",'checked'); 
+		}
+		else if(mode==3)
+		{
+			
+			$("#flash_config_tr").slideDown("fast",function(){
+				$("#flash_config_tr td").css({dislplay:"block",border:"none"});
+			});
+			$("input[name=lightconfig]:eq(3)").attr("checked",'checked'); 
+			
+			//var coordinates = back.result.longitude+","+back.result.latitude;
+            var coordinates = parseFloat(back.result.longitude).toFixed(2)+"," + parseFloat(back.result.latitude).toFixed(2); 
+
+			$("#sunrise").html(back.result.sunrise);	
+			$("#sunset").html(back.result.sunset);	
+			for(var i=0; i<provinceInfo.length; i++)
+			{
+				var vo = provinceInfo[i];
+				if(vo.coordinates == coordinates)
+				{
+					$("#province").val(vo.value);
+				}
+			}
+			
+		}
+	});
+}
+
+function MY_ONUNLOAD() {  
+	VideoActiveXControl.videoStop();
+	//StopActiveX();
+}
+ function SaveCamPara()
+  {
+	SendHttp(c_iniUrl + GetSetterCmdKV("camera_save", 1), false);
+	alert("OK");
+  }
+  function Restore_Defaults()
+  {
+	SendHttp(c_iniUrl + GetSetterCmdKV("camera_default", 1), false);
+	alert("OK");
+	window.location.reload();
+  }	
+
+</script>
+<!--上面tab Div-->
+<div id="top_div">
+	<div id="empty_div"></div>
+	<div id="tab_container">
+    	<span id="stream_1" onclick = "switch_stream(1)"><script>DW(GL("stream1"));</script></span>
+        <span id="stream_2" onclick = "switch_stream(2)"><script>DW(GL("stream2"));</script></span>
+        <span id="stream_3" onclick = "switch_stream(3)"><script>DW(GL("stream3"));</script></span>
+    </div>
+</div>
+<div id="main_div">
+	<div id="video_ocx_div">
+    	<script>
+		  WriteVideo();
+		</script>
+    </div>
+    <div id="image_config_div">
+    	<div id="config_div">
+            <ul id="accordion" class="accordion">
+                <li>
+                    <div class="link"><script>DW(GL("exposure"));</script><i class="fa fa-chevron-down"></i></div>
+                    <div class="submenu">
+                        <table width="100px" style="color:black;">
+                            <tr id="exposuremoudle">
+                                <td><script>DW(GL("exposure_moudle"));</script></td>
+                                <td>
+                                	<script>
+                                      WH("exposure_moudle");
+                                    </script>
+                                </td>
+							</tr>
+							<tr id ="shutterup">
+                                <td><script>DW(GL("shutter_up"));</script></td>
+                                 <td><script>
+                                      WH("shutter_up");
+                                    </script>
+                                </td>
+							</tr>
+							<tr id="shutterlow">
+                                <td><script>DW(GL("shutter_low"));</script></td>
+                                <td><script>
+                                      WH("shutter_low");
+                                    </script>
+                                </td>
+                             </tr>                          
+							 <tr id="gainup">	
+                                <td><script>DW(GL("gain_up"));</script></td>
+                                 <td><script>
+                                      WH("gain_up"); 
+                                    </script>
+                                </td>
+                             </tr>
+							<tr id="gainlow">	
+                                <td><script>DW(GL("gain_low"));</script></td>
+                                 <td><script>
+                                       WH("gain_low");
+                                    </script>
+                                </td>
+                             </tr>							
+							 <tr id = "gainset">	
+                                <td><script>DW(GL("gain_set"));</script></td>
+                                 <td><script>
+                                      WH("gain_set");   
+                                    </script>
+                                </td>
+                             </tr>
+							  <tr id="shutterset">	
+                                <td><script>DW(GL("shutter_set"));</script></td>
+                                 <td><script>
+                                     WH("shutter_set");
+                                    </script>
+                                </td>          
+                             </tr>
+                        </table>
+                    </div>
+                </li>
+                <li>
+                    <div class="link"><script>DW(GL("awb"));</script><i class="fa fa-chevron-down"></i></div>
+                    <div class="submenu"> 
+                        <table width="100px" style="color:black;">
+                            <tr id="exposuremoudle">
+                                <td><script>DW(GL("awb_module"));</script></td>
+                                <td>
+                                	<script>
+                                     WH("awbmodule");
+                                    </script>
+                                </td>
+							</tr>
+							<tr id="colortemp">
+                                <td><script>DW(GL("color_temp"));</script></td>
+                                <td><script>
+                                    WH("colortempture");
+                                    </script>
+                                </td>
+                             </tr>
+                             <tr id ="red_id">
+                                <td><script>DW(GL("red"));</script></td>
+                                 <td><script>
+                                      WH("red_awb");
+                                    </script>
+                                </td>
+							</tr>
+							<tr id = "green_id">
+                                <td><script>DW(GL("green"));</script></td>
+                                 <td><script>
+                                      WH("green_awb");
+                                    </script>
+                                </td>
+                             </tr>
+                              <tr id = "blue_id">
+                                <td><script>DW(GL("blue"));</script></td>
+                                 <td><script>
+                                      WH("blue_awb"); 
+                                    </script>
+                                </td>
+                             </tr>
+                        </table>                    
+                    </div>
+                </li>
+                <li>
+                    <div class="link"><script>DW(GL("day_night"));</script><i class="fa fa-chevron-down"></i></div>
+                    <div class="submenu"> 
+                        <table width="100px" style="color:black;">                            
+                              <tr>
+                                <td><script>DW(GL("d_n"));</script></td>
+                                 <td><script>
+                                       WH("daynight");
+                                    </script>
+                                </td>
+                                
+                             </tr>
+                        </table>                    
+                    </div>
+                </li>
+				<li>
+                    <div class="link"><script>DW(GL("dnr_set"));</script><i class="fa fa-chevron-down"></i></div>
+                    <div class="submenu"> 
+                        <table width="100px" style="color:black;">
+                            <tr>
+                                <td><script>DW(GL("dnr_switch"));</script></td>
+                                <td>
+                                	<script>
+                                      WH("tnfltctrl");
+                                    </script>
+                                </td>
+							</tr>
+							<tr id="d_module">
+                                <td><script>DW(GL("dnr_module"));</script></td>
+                                <td><script>
+                                     WH("nfltctrl");
+                                    </script>
+                                </td>
+                             </tr>                       
+                              <tr id="d_strength">
+                                <td><script>DW(GL("dnr_strength"));</script></td>
+                                 <td><script>
+                                      WH("maxexposuretime");
+                                    </script>
+                                </td>
+                                
+                             </tr>
+                        </table>                    
+                    </div>
+                </li>
+                <li>
+                    <div class="link"><script>DW(GL("advance_set"));</script><i class="fa fa-chevron-down"></i></div>
+                    <div class="submenu"> 
+                        <table width="100px" style="color:black;">
+                            <tr>
+                                <td style="width:70px;"><script>DW(GL("blc"))</script></td>
+                                <td>
+                                	<script>WH("c_blc");</script>
+                                </td>
+							</tr>
+							<tr>
+                                <td><script>DW(GL("brightness"))</script></td>
+                                <td>
+									<script>WH("c_brightness");DW(GL("satu_range"));</script>
+                                </td>
+                             </tr>
+                             <tr>
+                                <td><script>DW(GL("saturation"))</script></td>
+                                 <td>
+									<script>WH("c_saturation");DW(GL("satu_range"));</script>
+                                 </td>
+							</tr>
+							<tr>
+                               <td><script>DW(GL("contrast"))</script></td>
+                                 <td>
+									<script>WH("c_contrast");DW(GL("satu_range"));</script>
+								 </td>
+                            </tr>
+							<tr>
+								<td><script>DW(GL("sharpness"))</script></td>
+								<td>
+									<script>WH("c_sharpness");DW(GL("satu_range"));</script>
+								</td>
+							</tr>
+							<tr>
+								  <td><script>DW(GL("deffect"))</script></td>
+								  <td>
+									<script>WH("deffect");</script>
+								  </td>
+							</tr>
+                            <tr>
+                                <td><script>DW(GL("gamma"))</script></td>
+                                 <td>
+									<script>WH("c_gamma");DW(GL("gamma_range"));</script>
+                                </td>
+                            </tr>
+                            <tr id="flash_config_tr_1">
+                            	<td>补光灯控制</td>
+                                <td>
+                                	<input type="radio" name="lightconfig"  style="vertical-align:text-top;" onclick="flashLightSet(1)"/>开 
+                                    <input type="radio" name="lightconfig"  style="vertical-align:text-top;" onclick="flashLightSet(0)"/>关 
+                                    <input type="radio" name="lightconfig"  style="vertical-align:text-top;" onclick="flashLightSet(2)"/>智能 
+                                    <input type="radio" name="lightconfig"  style="vertical-align:text-top;" onclick="flashLightSet(3)"/>自定义 
+                                </td>
+                            </tr>
+                            <tr id="flash_config_tr" style="display:none; height:50px;">
+                            	<td colspan="2">
+                                	<div>
+                                    	选择省份
+                                        <select id="province" onchange="flashLightSet(3)">
+                                        </select>
+                                        
+                                        日出<label id="sunrise" style="font-weight:bold; text-decoration:underline; font-size:14px;"> 00:00 </label>
+                                        日落<label id="sunset"  style="font-weight:bold; text-decoration:underline;font-size:14px;"> 00:00 </label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                                           
+                    </div>
+                </li>
+            </ul>
+        </div>
+        
+        <div id="save_div">
+        	 <input type="button" id="submit" onclick="SaveCamPara()"style="margin-right:20px; margin-top:10px; padding:5px 15px;" />
+			   <script>
+				  document.getElementById("submit").value=GL("submit");    
+				  document.getElementById("submit").title=GL("Save_the_camera_parameters");         
+               </script>
+             <input type="button" id="restoredefaults" onclick="Restore_Defaults()" style="margin-right:20px; margin-top:10px; padding:5px 15px;" />
+				<script>
+				 document.getElementById("restoredefaults").value=GL("Restore_Defaults");  
+				 document.getElementById("restoredefaults").title=GL("restore_defaults_the_camera_parameters");
+			    </script>
+		</div>
+    </div>
+</div>
+    
+</body>

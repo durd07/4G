@@ -1,0 +1,464 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<META http-equiv="Cache-Control" content="no-cache, must-revalidate">
+<title>ptz_scheduler</title>
+<script src="jquery/jquery-1.9.1.js" language="javascript"></script>
+<style>
+*{
+	font-size:12px;
+}
+body
+{
+	width:100%;
+	height:100%;
+	background-color:#999;
+	margin-left:100px;
+	margin-top:10px;
+}
+table
+{
+	border:1px solid #333;
+	width:100%;
+	text-align:center;
+	vertical-align:middle;
+	border-collapse: collapse;
+	background-color:#eee;
+	
+}
+
+table th
+{
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #ccc;
+}
+table td
+{
+	border-width: 1px;
+	padding: 6px;
+	border-style: solid;
+	border-color: #666666;
+}
+.time_td  input
+{
+	width:25px;
+	text-align:center;
+}
+.buttons
+{	
+}
+select
+{
+	width:90px;
+}
+</style>
+<script>
+var defaultTaskString="0100000800002359,0200000800002359,0300000800002359,0400030800402359,0500640800502359,"+
+                   "0600000800002359,0700000800002359,0800000800002359,0900000800002359,1000000800002359";
+				   
+var getTaskString="0100000800002359,0200000800002359,0300000800002359,0400030800402359,0500640800502359,"+
+                   "0600000800002359,0700000800002359,0800000800002359,0900000800002359,1000000800002359";				   
+				
+var taskArray ;//= getTaskString.split(",");
+//定义任务以及关联的下级任务模式编号。
+var taskJson = {
+    "00": {
+        "name": "无动作",
+        "subCode": []
+    },
+    "01": {
+        "name": "回预置位",
+        "subCode": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,
+					25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,
+					46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64]
+    },
+    "02": {
+        "name": "线扫",
+        "subCode": []
+    },
+    "03": {
+        "name": "巡航",
+        "subCode": [1,2,3,4,5,6 ]
+    },
+    "04": {
+        "name": "自学习",
+        "subCode": [1, 2, 3]
+    }
+};
+
+
+$(document).ready(function(){
+	
+	$.ajax({	
+		async:false,
+		cache:false,	 
+		url:'/cgi-bin/ptz_schedule.cgi',                 		 
+		type:'GET',
+		data:"getTaskStr",				 		
+		success:function(result,statusText){
+			if(result == null || result== "")
+			{
+				getTaskString = defaultTaskString;
+			}
+			else
+			{
+				getTaskString = result;
+			}
+			//alert(getTaskString);
+			taskArray = getTaskString.split(",");
+			//去掉空格
+			trimBlockOfArray();
+			initTaskTable(taskArray);
+			
+		},
+		error:function(xhr,e1,e2){}
+	});
+/*	
+	$.get("/cgi-bin/ptz_schedule.cgi","getTaskStr",function(result){
+		if(result == null || result== "")
+		{
+			getTaskString = defaultTaskString;
+		}
+		else
+		{
+			getTaskString = result;
+		}
+		alert(getTaskString);
+		taskArray = getTaskString.split(",");
+		initTaskTable(taskArray);
+	});
+	*/
+	//这个代码是测试用的
+	//initTaskTable(getTaskString.split(","));
+	
+	//验证输入功能,可以输入数字和退格，del按键
+	$("table").find("input").bind("keypress",function(e){
+		var k = window.event ? e.keyCode : e.which;
+		if (((k >= 48) && (k <= 57)) || k == 8 || k == 0) {} 
+		else 
+		{
+			if (window.event) {
+				window.event.returnValue = false;
+			}
+			else 
+			{
+				e.preventDefault(); 
+			}
+		}
+	});	
+});
+
+function trimBlockOfArray()
+{
+	for( var i = 0; i < taskArray.length; i++ )
+	{
+		taskArray[i] = taskArray[i].replace(/\s+/g, "");
+	}
+}
+
+//检查输入项,并更新任务列表
+function checkInputonBlurAndUpdateTask(target,maxValue)
+{
+	var preVlaue = $(target).val();
+	var newValue = preVlaue;
+	if((preVlaue+"").length == 1)
+	{
+		newValue = "0"+preVlaue;
+	}	
+	else if(preVlaue > maxValue)
+	{
+		newValue = maxValue;
+	}
+	$(target).val(newValue);
+	
+	//更新任务数组以及隐藏列
+	var thisRow  = $(target).parent().parent();
+	var oldVO = $(thisRow).children('td:first').text();
+	var btime = $(thisRow).find('input').val() + $(thisRow).find('input:eq(1)').val();
+	var etime = $(thisRow).find('input:eq(2)').val() + $(thisRow).find('input:eq(3)').val();
+	
+	var newVo = oldVO.substr(0,8) + btime + etime;
+	
+	for(var i = 0; i<taskArray.length ; i++)
+	{
+		if(taskArray[i] == oldVO)
+		{
+			taskArray[i] = newVo;
+			$(thisRow).children('td:first').text(newVo);
+		}
+	}	
+}
+
+function initTaskTable(arr)
+{
+	$(".record_row").empty();
+	
+	var index = 1;
+	for(var i=0 ; i<arr.length; i++)
+	{
+		var vo = arr[i];
+		if(vo)
+		{
+			
+			var taskcode = vo.substr(2,2);
+			var targetcode = vo.substr(4,2);
+			var mode = vo.substr(6,2);
+			var stime = vo.substr(8,4);
+			var etime = vo.substr(12,4);
+			
+			addNewRecord(index,taskcode,targetcode,mode,stime,etime,vo);
+			index ++;
+		}
+	}
+}
+
+//添加一条空记录。
+function addEmptyRecord()
+{
+	var length = taskArray.length+1;
+	var emptyRecord = (length > 9 ? length : ("0"+length)) +"00000800002359";
+	taskArray.push(emptyRecord);
+	initTaskTable(taskArray);
+	
+}
+
+//删除记录行，并删除数组的内容
+function removeTr(target)
+{	
+	var removeTrObj  = $(target).parent();
+	var deleteVo = $(removeTrObj).children('td:first').text();
+	for(var i = 0 ; i<taskArray.length; i++)
+	{
+		if(taskArray[i]==deleteVo)
+		{
+			delete taskArray[i];
+		}
+	}
+	
+	$(removeTrObj).fadeOut("fast", function (){
+    	$(removeTrObj).remove();
+	});	
+	
+	initTaskTable(taskArray);
+}
+
+/*
+no:编号
+taskcode:任务代号
+targetcode：任务指向的编号。比如预置位64
+mode：模式，每天、周一、周二等。
+stime:开始时间   如11:00分
+etime:结束时间。格式同上。
+*/
+function addNewRecord(no,taskcode,targetcode,mode,stime,etime,vo)
+{
+	var style = "";
+	style = no%2 == 0 ? "" : "style='background-color:white;'";
+	var newRecordStr = "<tr class='record_row' "+style+"><td style='display:none'>"+vo+"</td><td style='width:60px;'>"+no+"</td>"+
+	                   "<td class='time_td' style='width:100px;'>"+
+					   "<input type='text' maxlength='2' value='"+stime.substr(0,2)+"' onblur='checkInputonBlurAndUpdateTask(this,23)'/>:"+
+					   "<input type='text' maxlength='2' value='"+stime.substr(2,2)+"' onblur='checkInputonBlurAndUpdateTask(this,59)'/>"+
+					   "</td> <td class='time_td'  style='width:100px;'>"+
+					   "<input type='text' maxlength='2' value='"+etime.substr(0,2)+"' onblur='checkInputonBlurAndUpdateTask(this,23)'/>:"+
+					   "<input type='text' maxlength='2' value='"+etime.substr(2,2)+"' onblur='checkInputonBlurAndUpdateTask(this,59)'/>"+
+					   "</td><td  style='width:130px;'>"+createSelectTag(taskcode,1)+"</td><td>"+createSelectTag(taskcode,2,targetcode)+"</td>"+
+					  // "<td class='deleteBtn'  style='color:red;cursor:pointer' onclick='removeTr(this)'>删除</td>"+  //不要删除
+					   "</tr>";
+	$("#task_table").append(newRecordStr);
+}
+
+/*
+创建select标签，并默认选中
+flag = 1:创建任务select
+flag = 2:创建目标subCode
+*/
+function createSelectTag(defaultValue,flag,subDefaultValue)
+{
+	if(taskJson == undefined)
+		return;
+	
+	var selectHtmlTag = "";
+	if(flag==1)
+	{
+		selectHtmlTag = "<select onchange='involveSubCode(this)'>";
+		//生成任务select，并默认选中defaultTask
+		$.each(taskJson, function(key,item){
+			if(key == defaultValue)
+				selectHtmlTag +="<option value='"+key+"' selected='selected'>"+item.name+"</option>";
+			else
+			{
+				selectHtmlTag +="<option value='"+key+"'>"+item.name+"</option>";
+			}	
+		 }); 
+		 selectHtmlTag += "</select>";
+	}
+	else
+	{
+		var subCodeArr = taskJson[defaultValue].subCode;
+		if(subCodeArr.length==0)
+			return selectHtmlTag;
+		selectHtmlTag = "<select onchange='updateTaskonSubChange(this)'>";
+		for(var i = 0; i<subCodeArr.length; i++)
+		{
+			if(subCodeArr[i]==subDefaultValue)
+			{
+				selectHtmlTag+="<option value='"+subCodeArr[i]+"' selected='selected'>"+subCodeArr[i]+"</option>";
+			}	
+			else
+			{
+				selectHtmlTag+="<option value='"+subCodeArr[i]+"'>"+subCodeArr[i]+"</option>";
+			}
+		}
+	}
+	return selectHtmlTag;
+	
+}
+
+//联动操作
+function involveSubCode(target)
+{
+	var value = $(target).val();
+	var oldVo = $(target).parent().parent().children("td:first").text();
+	
+	//1、删除子select标签的slelect。
+	$(target).parent().next().empty();
+	
+	//2、重新生成slelect，并添加。
+	var htmlStr = createSelectTag(value,2);
+	$(target).parent().next().append(htmlStr);
+	
+	var subCodeArr = taskJson[value].subCode;
+	var subCode;//任务模式默认选择第一个select。
+	if(subCodeArr.length==0)
+	{
+		subCode = "00";
+	}
+	else
+	{
+		subCode = "01";
+	}
+	
+	//更新数组元素的内容
+	for(var i = 0; i<taskArray.length; i++)
+	{
+		if(taskArray[i] == oldVo)
+		{
+			taskArray[i] = oldVo.substr(0,2) + value + subCode + oldVo.substr(6,16);
+			//隐藏赋值
+			 $(target).parent().parent().children("td:first").text(taskArray[i]);
+		}
+	}
+	
+	
+}
+
+function updateTaskonSubChange(target)
+{
+	var value = $(target).val();
+	value = value > 9 ? value : "0"+value;
+	var oldVo = $(target).parent().parent().children("td:first").text();
+	
+	var newVo = oldVo.substr(0,4) + value + oldVo.substr(6,10);
+	for(var i = 0; i<taskArray.length; i++)
+	{
+		if(taskArray[i] == oldVo)
+		{
+			taskArray[i] = newVo;
+			$(target).parent().parent().children("td:first").text(taskArray[i]);
+		}
+	}
+}
+
+//时间交集验证
+function validateDate()
+{	
+	var timeArray = [];
+	for(var i=0;i<taskArray.length; i++)
+	{
+		if(taskArray[i].substr(2,2)=="00")
+		{
+			continue;
+		}
+		timeArray.push(taskArray[i].substr(8,8));
+	}
+	
+	for(var j = 0; j< timeArray.length-1;j++)
+	{
+		var btime1 = parseInt(timeArray[j].substr(0,4),10);
+		var etime1 = parseInt(timeArray[j].substr(4,4),10);
+		
+		for(var k = j+1; k< timeArray.length; k++)
+		{
+			var compare_next = timeArray[k];
+			var btime2 = parseInt(compare_next.substr(0,4),10);
+			var etime2 = parseInt(compare_next.substr(4,4),10);
+			if(etime1 > btime1 && etime2 > btime2 && (btime2 > etime1 || btime1 > etime2))
+			{
+				//alert("结束时间1 > 起始时间1  并且 结束时间2 > 起始时间2 \n btime2 > etime1 : "+btime2+" > " + etime1+"?\n  btime1 > etime2"+btime1+" > " + etime2+"?");
+				continue;
+			}
+			else
+			{
+				//alert("结束时间1 > 起始时间1  并且 结束时间2 > 起始时间2 \n btime2 > etime1 : "+btime2+" > " + etime1+"?\n  btime1 > etime2"+btime1+" > " + etime2+"?");
+				return false;
+			}
+		}
+	}	
+	return true;
+}
+
+//提交到cgi
+function saveTask()
+{
+	if(taskArray.length==0)
+	{
+		alert('无记录。');
+		return;
+	}
+	//验证时间,暂时不做
+	if(!validateDate())
+	{
+		alert('任务有冲突。');
+		return;
+	}
+
+	var setStr="";
+	for (var i=0; i<taskArray.length; i++)
+	{
+		setStr+= taskArray[i]+",";
+	}
+	setStr = setStr.substr(0,setStr.length-1);
+	$.get("/cgi-bin/ptz_schedule.cgi","setTaskStr,"+setStr,function(result){
+		if(result.indexOf("OK") >-1)
+		{
+			alert("保存成功");
+			window.location.reload();//Refesh web page
+		}
+	});
+}
+</script>
+</head>
+
+<body>
+
+<div style=" width:600px; height:500px;">
+    <table id="task_table">
+    	<tr>
+        	<td colspan="6" style="height:30px; background-color:#666; font-weight:bold; font-size:13px;">PTZ 定时任务</td>
+        </tr>
+        <tr>
+            <!--th style=""></th><th>序号</th><th>开始时间</th><th>结束时间</th><th>任务</th><th>任务模式</th><th>操作</th-->
+            <th>序号</th><th>开始时间</th><th>结束时间</th><th>任务</th><th>任务模式</th>
+        </tr>
+    </table>
+<div>
+<div style="width:600px; padding-top:10px; ">
+	<!--input type="button" value="新增" onclick="addEmptyRecord();"/-->
+    <input type="button" value="保存" onclick="saveTask();" style=" float:right; padding:5px 15px 5px 15px;"/>
+</div>
+</body>
+</html>

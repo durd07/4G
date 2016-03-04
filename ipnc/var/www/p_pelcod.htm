@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script language="javascript" src="ptzctrl.js"></script>
+        <script>
+            CreatePTZHeader();
+            PTZ_PROD_NAME = PTZ_PROD_PELCOD;
+            CMD_STOP = new Array("stop");
+            CMD_ZOOM_IN = new Array("zoomin");
+            CMD_ZOOM_OUT = new Array("zoomout");
+            CMD_TILT_UP = new Array("up");
+            CMD_TILT_DOWN = new Array("down");
+            CMD_PAN_LEFT = new Array("left");
+            CMD_PAN_RIGHT = new Array("right");
+
+            function GetPTZCmd(cmds) {
+                return cmds[0];
+            }
+        </script>
+        <script>
+            CreatePTZBottom();
+        </script>

@@ -1,0 +1,9 @@
+updates/drivers/net/wireless/wl12xx/wl12xx_sdio.ko:
+updates/drivers/net/wireless/wl12xx/wl12xx_spi.ko:
+updates/drivers/net/wireless/wl12xx/wl12xx.ko: updates/net/mac80211/mac80211.ko updates/net/wireless/cfg80211.ko updates/compat/compat.ko
+updates/drivers/net/wireless/wl1251/wl1251.ko: updates/net/mac80211/mac80211.ko updates/compat/compat.ko updates/net/wireless/cfg80211.ko
+updates/drivers/net/wireless/wl1251/wl1251_spi.ko: updates/drivers/net/wireless/wl1251/wl1251.ko updates/net/mac80211/mac80211.ko updates/compat/compat.ko updates/net/wireless/cfg80211.ko
+updates/drivers/net/wireless/wl1251/wl1251_sdio.ko: updates/drivers/net/wireless/wl1251/wl1251.ko updates/net/mac80211/mac80211.ko updates/compat/compat.ko updates/net/wireless/cfg80211.ko
+updates/net/mac80211/mac80211.ko: updates/compat/compat.ko updates/net/wireless/cfg80211.ko
+updates/net/wireless/cfg80211.ko:
+updates/compat/compat.ko:

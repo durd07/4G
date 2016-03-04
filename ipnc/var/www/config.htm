@@ -1,0 +1,44 @@
+<html>
+	<head>
+		<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+		<script type="text/javascript" src="var.js"></script>
+		<script type="text/javascript" src="common.js"></script>
+		<script language="javascript" src="jquery/jquery-1.9.1.min.js"></script>
+		<script>
+            InitLoad();
+        </script>
+		<link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+		<title>
+			Audio/Video Config
+		</title>
+	</head>
+	<body style="overflow:hidden" onload="MY_ONLOAD()">
+		<script>
+		function MY_ONLOAD()
+		{
+			g_lockLink = false;
+			var ou = document.getElementById("cfgmenutab");
+			var ol = ou.childNodes;
+			var oa;
+			for (i=0; i<ol.length; i++)
+			{ 
+			    if(ol[i].getElementsByTagName("ul").length > 0)
+			    { 
+			      oa = ol[i].firstChild;
+			      oa.onclick = change; 
+			    } 
+			}
+		}
+
+		</script>
+
+		<script>
+			WriteCfg();			
+		</script>
+		<div id="cfgright">
+			<iframe src="sysinfo.htm" id="WebContent" name="cfgcontent" marginheight="0" marginwidth="0" scrolling="both" frameborder="0">
+			</iframe>
+		</div>
+	</div>
+	</body>
+</html>

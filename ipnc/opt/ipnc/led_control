@@ -1,0 +1,114 @@
+#!/bin/sh
+
+#cmd=${QUERY_STRING//%20/ }
+#cmd=$1
+#cat << EOF
+#Content-type: text/plain
+#Cache-control: no-cache
+
+#EOF
+########################################################
+if [ -d /sys/class/gpio/gpio28/ ]
+then
+	echo "" >/dev/null
+else   
+	echo "Create GPIOS for light."
+
+	echo 28 > /sys/class/gpio/export           
+	echo out > /sys/class/gpio/gpio28/direction
+	echo 0 > /sys/class/gpio/gpio28/value
+
+	echo 72 > /sys/class/gpio/export                                                
+	echo out > /sys/class/gpio/gpio72/direction                                     
+	echo 0 > /sys/class/gpio/gpio72/value
+
+	echo 73 > /sys/class/gpio/export                                                
+	echo out > /sys/class/gpio/gpio73/direction                                     
+	echo 0 > /sys/class/gpio/gpio73/value
+
+	echo 99 > /sys/class/gpio/export                                                
+	echo out > /sys/class/gpio/gpio99/direction                                     
+	echo 0 > /sys/class/gpio/gpio99/value
+
+	echo 85 > /sys/class/gpio/export                                                
+	echo out > /sys/class/gpio/gpio85/direction                                     
+	echo 0 > /sys/class/gpio/gpio85/value
+fi
+#########################################################
+		
+case $1 in
+    "vi") echo "Can not vi now."
+        cmd=cat
+        ;;
+    "top" ) echo "Can not top now."
+        exit 0
+        ;;
+    "sed" ) echo "Can not sed now."
+        exit 0
+        ;;
+		
+	"ropen" ) echo "Red light open."
+		echo 1 > /sys/class/gpio/gpio28/value
+		echo 1 > /sys/class/gpio/gpio99/value
+        exit 0
+        ;;
+	"rclose" ) echo "Red light close."
+		echo 1 > /sys/class/gpio/gpio28/value
+		echo 0 > /sys/class/gpio/gpio99/value
+        exit 0
+        ;;
+	"bopen" ) echo "Blue light open."
+		echo 1 > /sys/class/gpio/gpio28/value
+		echo 1 > /sys/class/gpio/gpio72/value
+        exit 0
+        ;;
+	"bclose" ) echo "Blue light close."
+		echo 1 > /sys/class/gpio/gpio28/value
+		echo 0 > /sys/class/gpio/gpio72/value
+        exit 0
+        ;;
+	"gopen" ) echo "Green light open."
+		echo 1 > /sys/class/gpio/gpio28/value
+		echo 1 > /sys/class/gpio/gpio73/value
+        exit 0
+        ;;
+	"gclose" ) echo "Green light close."
+		echo 1 > /sys/class/gpio/gpio28/value
+		echo 0 > /sys/class/gpio/gpio73/value
+        exit 0
+        ;;
+	"wopen" ) echo "White light open."
+		echo 1 > /sys/class/gpio/gpio28/value
+		echo 1 > /sys/class/gpio/gpio85/value
+        exit 0
+        ;;
+	"wclose" ) echo "White light close."
+		echo 1 > /sys/class/gpio/gpio28/value
+		echo 0 > /sys/class/gpio/gpio85/value
+        exit 0
+        ;;
+	"allopen" ) echo "All light open."
+		echo 1 > /sys/class/gpio/gpio28/value
+		echo 1 > /sys/class/gpio/gpio72/value
+		echo 1 > /sys/class/gpio/gpio73/value
+		echo 1 > /sys/class/gpio/gpio99/value
+		echo 1 > /sys/class/gpio/gpio85/value
+        exit 0
+        ;;
+	"allclose" ) echo "All light close."
+		echo 0 > /sys/class/gpio/gpio28/value
+		echo 0 > /sys/class/gpio/gpio72/value
+		echo 0 > /sys/class/gpio/gpio73/value
+		echo 0 > /sys/class/gpio/gpio99/value
+		echo 0 > /sys/class/gpio/gpio85/value
+        exit 0
+        ;;
+esac
+
+#env
+#echo $cmd
+#$cmd <<EOF
+
+#q
+#EOF
+

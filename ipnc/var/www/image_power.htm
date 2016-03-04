@@ -1,0 +1,1294 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<title>image config</title>
+<link rel="stylesheet" type="text/css" href="css/image.css"/>
+<!--link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"-->
+<script src="js/jquery-1.10.2.js"></script>
+<script src="js/image.js"></script>
+<script language="javascript" src="var.js"></script>
+<script language="javascript" src="common.js"></script>
+<script type="text/javascript" src="js/json2.js"></script>
+<script language="javascript" src="js/image_power.js"></script>
+<script>
+      InitLoad();
+	  var TDPosition = PowerViewGetDPosition();
+</script>
+</head>
+
+<body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+<script>
+var emoudlelist = GL("manul") + ";" + GL("auto") + ";" + GL("shutter_priority")+";"+GL("aperture_priority"); 
+var aperturelist = "F1.4;F1.6;F2.0;F2.4;F2.8;F3.4;F4.0;F4.8;F5.6;F6.8;F8.0;F9.6;F11;F14;F16;" + GL("iris_close");
+var gainsetlist =GL("n3db")+";"+GL("0db")+";"+GL("p2db")+";"+GL("p4db")+";"+GL("p6db")+";"+GL("p8db")+";"+GL("p10db")+";"+GL("p12db")+";"+GL("p14db")+";"+GL("p16db")+";"+GL("p18db")+";"+GL("p20db")+";"+GL("p22db")+";"+GL("p24db")+";"+GL("p26db")+";"+GL("p28db");
+var gainlist ="n3db;0db;2db;4db;6db;8db;10db;12db;14db;16db;18db;20db;22db;24db;26db;28db";
+var shuttersetlist = "1/1;1/2;1/3;1/6;1/12;1/25;1/50;1/75;1/100;1/120;1/150;1/215;1/300;1/425;1/600;1/1000;1/1250;1/1750;1/2500;1/3500;1/6000;1/10000";
+//======================================================================================================================================
+var focus_modelist = GL("auto") + ";" + GL("manul") + ";" + GL("onekey_focus"); 
+var s_focus_modelist = "Auto;Manul;A_key_focus"; 
+var focus_extremeslist  = GL("infinity")+";"+"25m;11m;7m;4.9m;3.7m;2.9m;2.3m;1.85m;1.5m;1.23m;1m";
+var white_balancelist = GL("auto")+";"+GL("a_key_trigger")+";"+GL("manul")+";"+GL("indoor")+";"+GL("outdoor")+";"+GL("outdoor_automatic")+";"+GL("atw");
+var s_white_balancelist = "Auto;A_key_Trigger;Manul;Indoor;Outdoor;Outdoor_Automatic;ATW";
+//======================================================================================================================================
+var daynightlist = GL("day") + ";" + GL("night")+ ";" + GL("auto") ;
+//=====================================================================
+var denoisinglist = GL("off") + ";" +"1;2;3;4;5";
+var deffectlist =GL("off") + ";" + GL("mirror") + ";" + GL("v_flip") + ";" + GL("h_flip");
+var blclist = GL("off") + ";" + GL("on");
+
+CTRLARY = { 	
+	//exposure_moudle: new Ctrl_Select("exposure_moudle",emoudlelist,PowerViewGetExposure_Moudle(),"exposure_moudle=","Change_exposure_moudle()"),//曝光模式
+	exposure_moudle: new Ctrl_Select("exposure_moudle",emoudlelist,0,"exposure_moudle=","Change_exposure_moudle()"),//曝光模式
+	//shutter_set: new Ctrl_Select("shutter_set",shuttersetlist,PowerViewGetShutter_Moudle(),"shutter_set=","Change_shutter_set()"),//快门
+	shutter_set: new Ctrl_Select("shutter_set",shuttersetlist,0,"shutter_set=","Change_shutter_set()"),//快门
+	//gain_set: new Ctrl_Select("gain_set",gainsetlist,PowerViewGetGain_Moudle(),"gain_set","Change_gain_set()"),//增益手动设置
+	gain_set: new Ctrl_Select("gain_set",gainsetlist,0,"gain_set","Change_gain_set()"),//增益手动设置
+	//aperture: new Ctrl_Select("aperture",aperturelist,PowerViewGetAperture_Moudle(),"aperture=","Change_aperture()"),//光圈
+	aperture: new Ctrl_Select("aperture",aperturelist,0,"aperture=","Change_aperture()"),//光圈
+	//focus_mode: new Ctrl_Select("focus_mode",focus_modelist,PowerViewGetFocus_Mode(),"focus_mode=","Change_Focus_Mode()"),//聚焦模式
+	focus_mode: new Ctrl_Select("focus_mode",focus_modelist,0,"focus_mode=","Change_Focus_Mode()"),//聚焦模式
+	//focus_extremes: new Ctrl_Select("focus_extremes",focus_extremeslist,PowerViewGetFocus_Extremes(),"focus_extremes=","Change_Focus_Extremes()"),//聚焦极值
+	focus_extremes: new Ctrl_Select("focus_extremes",focus_extremeslist,0,"focus_extremes=","Change_Focus_Extremes()"),//聚焦极值
+	//white_balance: new Ctrl_Select("white_balance",white_balancelist,PowerViewGetWhite_Balance(),"white_balance=","Change_White_Balance()"),//白平衡
+	white_balance: new Ctrl_Select("white_balance",white_balancelist,0,"white_balance=","Change_White_Balance()"),//白平衡
+	//red_gain: new Ctrl_Text("red_gain", 3, 3, PowerViewGetRed_Gain(), "red_gain=", null, false, "ChangeRed_Gain()"),//红增益
+	red_gain: new Ctrl_Text("red_gain", 3, 3,0, "red_gain=", null, false, "ChangeRed_Gain()"),//红增益
+	//blue_gain: new Ctrl_Text("blue_gain", 3, 3, PowerViewGetBlue_Gain(), "blue_gain=", null, false, "ChangeBlue_Gain()"),//蓝增溢
+	blue_gain: new Ctrl_Text("blue_gain", 3, 3,0, "blue_gain=", null, false, "ChangeBlue_Gain()"),//蓝增溢
+	//daynight: new Ctrl_Select("daynight", daynightlist, PowerViewGetDay_Night(),"daynight=", "ChangeDN()"),//日夜模式
+	daynight: new Ctrl_Select("daynight", daynightlist, 0,"daynight=", "ChangeDN()"),//日夜模式
+	//dnsensitivity: new Ctrl_Text("dnsensitivity", 3, 3, PowerViewGetDNSensitivity(), "dnsensitivity=", null, false, "ChangeDNSensitivity()"),//日夜转换灵敏度
+	dnsensitivity: new Ctrl_Text("dnsensitivity", 3, 3, 0, "dnsensitivity=", null, false, "ChangeDNSensitivity()"),//日夜转换灵敏度
+	// gamma: new Ctrl_Text("gamma", 3, 1, PowerViewGetGamma(), "gamma=", null, false, "ChangeGamma()"),//Gmma
+	gamma: new Ctrl_Text("gamma", 3, 1, 0, "gamma=", null, false, "ChangeGamma()"),//Gmma
+	//blc: new Ctrl_Select("blc", blclist, PowerViewGetBlc(), "blc=", "ChangeBlc()"),//背光补偿
+	blc: new Ctrl_Select("blc", blclist, 0, "blc=", "ChangeBlc()"),//背光补偿
+	// denoising: new Ctrl_Select("denoising", denoisinglist, PowerViewGetDenoise(), "denoising=", "ChangeDenoising()"),//降噪
+	denoising: new Ctrl_Select("denoising", denoisinglist, 0, "denoising=", "ChangeDenoising()"),//降噪
+	// tbrightness: new Ctrl_Text("tbrightness", 3, 3, PowerViewTBrightness(), "tbrightness=", null, false, "ChangeBrightness()"),//目标亮度
+	tbrightness: new Ctrl_Text("tbrightness", 3, 3, 0, "tbrightness=", null, false, "ChangeBrightness()"),//目标亮度
+	//sharpness: new Ctrl_Text("sharpness", 3, 3, PowerViewGetSharpness(), "sharpness=", null, false, "ChangeSharpness()"),//锐度 
+	sharpness: new Ctrl_Text("sharpness", 3, 3, 0, "sharpness=", null, false, "ChangeSharpness()"),//锐度 
+	// saturation: new Ctrl_Text("saturation", 3, 3, PowerViewGetSaturation(), "saturation=", null, false, "ChangeSaturation()"),//饱和度
+	saturation: new Ctrl_Text("saturation", 3, 3, 0, "saturation=", null, false, "ChangeSaturation()"),//饱和度
+	// contrast: new Ctrl_Text("contrast", 3, 3, PowerViewGetContrast(), "contrast=", null, false, "ChangeContrast()"),//对比度
+	contrast: new Ctrl_Text("contrast", 3, 3, 0, "contrast=", null, false, "ChangeContrast()"),//对比度
+	// deffect: new Ctrl_Select("deffect", deffectlist, PowerViewDeffect(), "deffect=", "ChangeDeffect()"), //数字特效  
+	deffect: new Ctrl_Select("deffect", deffectlist, 0, "deffect=", "ChangeDeffect()"), //数字特效
+	//fogpenetration: new Ctrl_Check("fogpenetration", PowerViewGetFogPenetration(), "fogpenetration=", "ChangeFogPenetration()"),//透雾
+	fogpenetration: new Ctrl_Check("fogpenetration",0, "fogpenetration=", "ChangeFogPenetration()"),//透雾 
+	// freeze: new Ctrl_Check("freeze", PowerViewGetFreeze(), "freeze=", "ChangeFreeze()"),//冻结
+	freeze: new Ctrl_Check("freeze", 0, "freeze=", "ChangeFreeze()"),//冻结 
+	//stronghibition: new Ctrl_Check("stronghibition", PowerViewGetStrongHibition(), "stronghibition=", "ChangeStrongHibition()"),//强光抑制
+	stronghibition: new Ctrl_Check("stronghibition", 0, "stronghibition=", "ChangeStrongHibition()"),//强光抑制
+	//zoommag: new Ctrl_Check("zoommag", PowerViewGetZoomMag(), "zoommag=", "ChangeZoommag()"),//变倍标识
+	zoommag: new Ctrl_Check("zoommag", 0, "zoommag=", "ChangeZoommag()"),//变倍标识
+/* 
+
+ threedposition: new Ctrl_Check("threedposition", PowerViewGetDPosition(), "threedposition=", "ChangePositioning()")//3D定位开关 
+*/
+};
+
+</script>
+<script>
+$(document).ready(function(){
+	$(window).resize(function() {
+		setTimeout(function(){adaptionComponent("ocx_object","vlc",16/9,0);},10);
+	});
+	
+	// 曝光
+	initExposure();
+	// 快门
+	initShutterMoudle();
+	//增益
+	initGainMoudle();
+	//光圈
+	initApertureMoudle();
+	//聚焦模式
+	initFocus_Mode();
+	//聚焦距离
+	initFocus_Extremes();
+	//白平衡
+	initWhite_Balance();
+	//红增益
+	initRed_Gain();
+	//蓝增益
+	initBlue_Gain();
+	//日夜模式
+	initDay_Night();
+	//日夜转换，敏感度
+    initDNSensitivity();
+	//高级设置部分。
+	initGamma();
+	initBlc();
+	initDenoise();
+	initTBrightness();
+	initSharpness();
+	initSaturation();
+	initContrast();
+	initDeffect();
+	initFogPenetration();
+	initFreeze();
+	initStrongHibition();
+	initZoomMag();
+	
+});
+
+function switch_stream(index)
+{
+	VideoActiveXControl.videoPlay(index,TDPosition,300);
+}
+/*
+function switch_stream1(){
+	StopV();
+	if(TDPosition == 1){
+		StartV(0, 0, Get9001FirstCodec(), 5, null); //stream 1	
+	}
+	else{
+		StartVwithoutTDP(0, 0, Get9001FirstCodec(), 5, null); //stream 1	without 3D
+	}
+}
+function switch_stream2(){	
+	StopV();
+	if(TDPosition == 1){
+		StartV(0, 0, Get9001FirstCodec(), 6, null); //stream 2	
+	}
+	else{
+		StartVwithoutTDP(0, 0, Get9001FirstCodec(), 6, null); //stream 2	
+	}
+}
+function switch_stream3(){	
+    StopV();
+	if(TDPosition == 1){
+		StartV(0, 0, Get9001FirstCodec(), 1, null); //stream 3
+	}
+	else{
+		StartVwithoutTDP(0, 0, Get9001FirstCodec(), 1, null); //stream 3
+	}
+	
+}
+*/
+//===================================================================================================
+ function Fixexpose()
+{
+	var moudle = document.getElementById("exposure_moudle").selectedIndex;
+	//alert(moudle);
+	switch (moudle)
+	{
+		case 0://手動			
+			document.getElementById("shutter").style.display = "";			
+			document.getElementById("gainset").style.display = "";
+			document.getElementById("apertureset").style.display = "";
+			break;
+		case 1://自動
+			document.getElementById("shutter").style.display = "none";			
+			document.getElementById("gainset").style.display = "none";
+			document.getElementById("apertureset").style.display = "none";
+			break;
+		case 2://快门优先
+			document.getElementById("shutter").style.display = "";			
+			document.getElementById("gainset").style.display = "none";
+			document.getElementById("apertureset").style.display = "none";
+			break;
+		case 3://光圈优先
+			document.getElementById("shutter").style.display = "none";			
+			document.getElementById("gainset").style.display = "none";
+			document.getElementById("apertureset").style.display = "";
+			break;
+	}
+}
+
+function Change_exposure_moudle()
+{
+  Fixexpose(); 
+  
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Exposure_Mode",
+			  "Param":"5"
+			  };	
+	var i = document.getElementById("exposure_moudle").selectedIndex;
+	switch (i){
+		case 0:
+			ctrljson.Param = "Manul";			
+			break;
+		case 1:
+			ctrljson.Param = "Auto";			
+			break;
+		case 2:
+			ctrljson.Param = "Shutter_Priority";
+			break;
+		case 3:
+			ctrljson.Param = "Aperture_Priority";
+			break;
+		default:
+			break;		
+	}
+	
+	ctrl = JSON.stringify(ctrljson);
+	//alert(ctrl);
+SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	
+}
+
+function Change_gain_set()
+{ 
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Gain",
+			  "Param":"5"
+			  };
+	var array = gainlist.split(";");
+	var i = document.getElementById("gain_set").selectedIndex;
+	ctrljson.Param = array[i];
+	ctrl = JSON.stringify(ctrljson);
+	//alert(ctrl);
+	SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	 
+}
+function Change_aperture()
+{ 
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Aperture",
+			  "Param":"5"
+			  };	
+  			  
+	
+	var i = document.getElementById("aperture").selectedIndex;
+	var array = aperturelist.split(";");
+	if(i<15){
+		ctrljson.Param = array[i];
+	}
+	else if(i==15)
+	{
+		ctrljson.Param = "Close";
+	}
+	ctrl = JSON.stringify(ctrljson);
+	//alert(ctrl);
+	
+SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	 
+}
+function Change_shutter_set()
+{ 
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Shutter",
+			  "Param":"5"
+			  };
+	var array = shuttersetlist.split(";");
+	var i = document.getElementById("shutter_set").selectedIndex;
+	ctrljson.Param = array[i];
+	ctrl = JSON.stringify(ctrljson);
+	//alert(ctrl);	
+	SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	
+}
+//-----------------------------------------------------------------------------------------------------
+function Fixawb()
+  {
+	var moudle = document.getElementById("white_balance").selectedIndex;
+	//alert(moudle);
+		if (moudle==2)//手动
+		{					
+			document.getElementById("red_id").style.display = "";
+			document.getElementById("blue_id").style.display = "";			
+			
+		}
+		else 
+		{			
+			document.getElementById("red_id").style.display = "none";
+			document.getElementById("blue_id").style.display = "none";
+			
+		}	
+			
+}
+function CheckRedgain(min, max)
+{
+  var value = document.getElementById("red_gain").value;
+  if (value.length == 0)
+  {
+    alert(GL("rgain_empty"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation1"), false, SaturationCallBack);
+    document.getElementById("red_gain").value = PowerViewGetRed_Gain();
+	document.getElementById("red_gain").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("rgain_inv"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation1"), false, SaturationCallBack);
+     document.getElementById("red_gain").value = PowerViewGetRed_Gain();
+    document.getElementById("red_gain").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("rgain_num"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation1"), false, SaturationCallBack);
+      document.getElementById("red_gain").value = PowerViewGetRed_Gain();
+    document.getElementById("red_gain").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckBluegain(min, max)
+{
+  var value = document.getElementById("blue_gain").value;
+  if (value.length == 0)
+  {
+    alert(GL("bgain_empty"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation1"), false, SaturationCallBack);
+    document.getElementById("blue_gain").value = PowerViewGetBlue_Gain();
+	document.getElementById("blue_gain").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("bgain_inv"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation1"), false, SaturationCallBack);
+     document.getElementById("blue_gain").value = PowerViewGetBlue_Gain();
+    document.getElementById("blue_gain").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("bgain_num"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation1"), false, SaturationCallBack);
+      document.getElementById("blue_gain").value = PowerViewGetBlue_Gain();
+    document.getElementById("blue_gain").focus();
+    return false;
+  }
+  return true;
+}
+
+function Change_Focus_Mode()
+{
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Focus_Mode",
+			  "Param":"5"
+			  };
+	var array = s_focus_modelist.split(";");
+	var i = document.getElementById("focus_mode").selectedIndex;
+	ctrljson.Param = array[i];
+	ctrl = JSON.stringify(ctrljson);
+	//alert(ctrl);	
+	SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	
+}
+function Change_Focus_Extremes()
+{ 
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Focus_Extremes",
+			  "Param":"5"
+			  };
+ var array = focus_extremeslist.split(";");
+ var i = document.getElementById("focus_extremes").selectedIndex;
+ if(i==0){
+	ctrljson.Param = "Infinity";
+ }
+ if(i > 0){
+    ctrljson.Param = array[i];
+ }
+ 
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);	
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	
+}
+
+function Change_White_Balance()
+{
+  Fixawb();
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"White_Balance",
+			  "Param":"5"
+			  };
+ var array = s_white_balancelist.split(";");
+ var i = document.getElementById("white_balance").selectedIndex;
+ 
+ ctrljson.Param = array[i];  
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);	
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	
+ 
+}
+
+function ChangeRed_Gain()
+{ 
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Red_Gain",
+			  "Param":"5"
+			  };
+
+ 
+ ctrljson.Param = GetCCV("red_gain");  
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);	
+  if (CheckRedgain(0, 255) == false)
+    return ;
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	
+}  
+
+function ChangeBlue_Gain()
+{ 
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Blue_Gain",
+			  "Param":"5"
+			  };
+
+ 
+ ctrljson.Param = GetCCV("blue_gain");  
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);	
+  if (CheckBluegain(0, 255) == false)
+    return ;
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	
+
+}
+
+
+//-----------------------------------------------------------------------------------------------------
+function CheckDNSensitive(min, max)
+{
+  var value = document.getElementById("dnsensitivity").value;
+  if (value.length == 0)
+  {
+    alert(GL("dnsensitive_empty"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation1"), false, SaturationCallBack);
+    document.getElementById("dnsensitivity").value = PowerViewGetDNSensitivity();
+	document.getElementById("dnsensitivity").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("dnsensitive_inv"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation1"), false, SaturationCallBack);
+     document.getElementById("dnsensitivity").value = PowerViewGetDNSensitivity();
+    document.getElementById("dnsensitivity").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("dnsensitive_num"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation1"), false, SaturationCallBack);
+      document.getElementById("dnsensitivity").value = PowerViewGetDNSensitivity();
+    document.getElementById("dnsensitivity").focus();
+    return false;
+  }
+  return true;
+}
+
+
+
+function ChangeDN()
+{
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Day_Night_Mode",
+			  "Param":"5"
+			  }; 
+var i = document.getElementById("daynight").selectedIndex;
+	switch (i){
+		case 0:
+			ctrljson.Param = "Day";			
+			break;
+		case 1:
+			ctrljson.Param = "Night";			
+			break;
+		case 2:
+			ctrljson.Param = "Auto";
+			break;		
+		default:
+			break;		
+	} 
+ ctrl = JSON.stringify(ctrljson);
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	 
+}
+function ChangeDNSensitivity()
+{ 
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Day_Night_Sensitivity",
+			  "Param":"5"
+			  };
+
+ 
+ ctrljson.Param = GetCCV("dnsensitivity");  
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);	
+  if (CheckDNSensitive(0, 255) == false)
+    return ;
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	
+
+}
+//---------------------------------------------------------------------------------------------------------------------
+function CheckContrast(min, max)
+{
+  var value = document.getElementById("contrast").value;
+  if (value.length == 0||value==" ")
+  {
+    alert(GL("con_empty"));
+    document.getElementById("contrast").value = PowerViewGetContrast();
+    document.getElementById("contrast").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("con_inv"));
+    document.getElementById("contrast").value = PowerViewGetContrast();
+    document.getElementById("contrast").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("pcon_num"));
+    document.getElementById("contrast").value = PowerViewGetContrast();
+    document.getElementById("contrast").focus();
+    return false;
+  }
+  return true;
+}
+function ChangeBlc()
+{
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"BLC",
+			  "Param":"5"
+			  }; 
+var i = document.getElementById("blc").selectedIndex;
+	switch (i){
+		case 0:
+			ctrljson.Param = "Off";			
+			break;
+		case 1:
+			ctrljson.Param = "On";			
+		
+		default:
+			break;		
+	} 
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	 
+}
+function ChangeDenoising()
+{
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Denoising",
+			  "Param":"5"
+			  };
+ ctrljson.Param = GetCCV("denoising");  
+ ctrl = JSON.stringify(ctrljson); 
+
+ //alert(ctrl);	
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	
+ 
+}
+
+function CheckSat(min, max)
+{
+  var value = document.getElementById("c_saturation").value;
+  if (value.length == 0||value==" ")
+  {
+    alert(GL("sat_empty"));
+	 document.getElementById("c_saturation").value = "<%c_saturation%>";
+    document.getElementById("c_saturation").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("sat_inv"));
+    document.getElementById("c_saturation").value = "<%c_saturation%>";
+    document.getElementById("c_saturation").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("sat_num"));
+    document.getElementById("c_saturation").value = "<%c_saturation%>";
+    document.getElementById("c_saturation").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckBri(min, max)
+{
+  var value = document.getElementById("c_brightness").value;
+  if (value.length == 0||value==" ")
+  {
+    alert(GL("lum_empty"));
+	document.getElementById("c_brightness").value = "<%c_brightness%>";
+    document.getElementById("c_brightness").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("lum_inv"));
+    document.getElementById("c_brightness").value = "<%c_brightness%>";
+    document.getElementById("c_brightness").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("lum_num"));
+    document.getElementById("c_brightness").value = "<%c_brightness%>";
+    document.getElementById("c_brightness").focus();
+    return false;
+  }
+  return true;
+}
+function CheckTB(min, max)
+{
+  var value = document.getElementById("tbrightness").value;
+  if (value.length == 0||value==" ")
+  {
+    alert(GL("lu_empty"));
+    document.getElementById("tbrightness").focus();
+    document.getElementById("tbrightness").value = PowerViewTBrightness();
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("lu_inv"));
+    document.getElementById("tbrightness").focus();
+    document.getElementById("tbrightness").value = PowerViewTBrightness();
+    return false;
+  }
+
+  if ((value < min) || (value > max))
+  {
+    alert(GL("plu_num"));
+    document.getElementById("tbrightness").focus();
+    document.getElementById("tbrightness").value = PowerViewTBrightness();
+    return false;
+  }
+  return true;
+}
+
+function ChangeBrightness()
+{
+var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Target_Brightness",
+			  "Param":"5"
+			  }; 
+ ctrljson.Param = GetCCV("tbrightness");  
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);	
+ if (CheckTB(0, 15) == false)
+    return ;
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	  
+  
+}
+function ChangeZoommag()
+{
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Zoom_Logo",
+			  "Param":"5"
+			  }; 
+var i = GetCCV("zoommag");
+	switch (i){
+		case 0:
+			ctrljson.Param = "Off";			
+			break;
+		case 1:
+			ctrljson.Param = "On";			
+		
+		default:
+			break;		
+	} 
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	
+  
+}
+function ChangeFogPenetration()
+{
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Fog_Penetration",
+			  "Param":"5"
+			  }; 
+var i = GetCCV("fogpenetration");
+	switch (i){
+		case 0:
+			ctrljson.Param = "Off";			
+			break;
+		case 1:
+			ctrljson.Param = "On";			
+		
+		default:
+			break;		
+	} 
+ ctrl = JSON.stringify(ctrljson);
+// alert(ctrl);
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	
+}
+function ChangeFreeze()
+{
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Freeze",
+			  "Param":"5"
+			  }; 
+var i = GetCCV("freeze");
+	switch (i){
+		case 0:
+			ctrljson.Param = "Off";			
+			break;
+		case 1:
+			ctrljson.Param = "On";			
+		
+		default:
+			break;		
+	} 
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	
+}
+function ChangeStrongHibition()
+{
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Strong_Hibition",
+			  "Param":"5"
+			  }; 
+var i = GetCCV("stronghibition");
+	switch (i){
+		case 0:
+			ctrljson.Param = "Off";			
+			break;
+		case 1:
+			ctrljson.Param = "On";			
+		
+		default:
+			break;		
+	} 
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	
+}
+function ChangePositioning()
+{
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"3D_Positioning",
+			  "Param":"5"
+			  }; 
+var i = GetCCV("threedposition");
+//alert(i);
+	switch (i){
+		case 0:
+			ctrljson.Param = "Off";			
+			break;
+		case 1:
+			ctrljson.Param = "On";			
+		
+		default:
+			break;		
+	} 
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	
+ window.location.reload();
+}
+
+function CheckSha(min, max)
+{
+  var value = document.getElementById("sharpness").value;
+  if (value.length == 0||value==" ")
+  {
+    alert(GL("sha_empty"));
+    document.getElementById("sharpness").focus();
+    document.getElementById("sharpness").value = PowerViewGetSharpness();
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("sha_inv"));
+    document.getElementById("sharpness").focus();
+    document.getElementById("sharpness").value = PowerViewGetSharpness();
+    return false;
+  }
+
+  if ((value < min) || (value > max))
+  {
+    alert(GL("psha_num"));
+    document.getElementById("sharpness").focus();
+    document.getElementById("sharpness").value = PowerViewGetSharpness();
+    return false;
+  }
+  return true;
+}
+
+function CheckSta(min, max)
+{
+  var value = document.getElementById("saturation").value;
+  if (value.length == 0||value==" ")
+  {
+    alert(GL("sat_empty"));
+    document.getElementById("saturation").focus();
+    document.getElementById("saturation").value = PowerViewGetSaturation();
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("sat_inv"));
+    document.getElementById("saturation").focus();
+    document.getElementById("saturation").value = PowerViewGetSaturation();
+    return false;
+  }
+
+  if ((value < min) || (value > max))
+  {
+    alert(GL("psat_num"));
+    document.getElementById("saturation").focus();
+    document.getElementById("saturation").value = PowerViewGetSaturation();
+    return false;
+  }
+  return true;
+}
+
+function CheckGamma(min, max)
+{
+  var value = document.getElementById("gamma").value;
+  if (value.length == 0||value==" ")
+  {
+    alert(GL("gamma_empty"));
+    document.getElementById("gamma").focus();
+    document.getElementById("gamma").value = PowerViewGetGamma();
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("gamma_inv"));
+    document.getElementById("gamma").focus();
+    document.getElementById("gamma").value = PowerViewGetGamma();
+    return false;
+  }
+
+  if ((value < min) || (value > max))
+  {
+    alert(GL("pgamma_num"));
+    document.getElementById("gamma").focus();
+    document.getElementById("gamma").value = PowerViewGetGamma();
+    return false;
+  }
+  return true;
+}
+
+function ChangeSharpness()
+{
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Sharpness",
+			  "Param":"5"
+			  }; 
+ ctrljson.Param = GetCCV("sharpness");  
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);	
+ if (CheckSha(0, 15) == false)
+    return ;
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	   
+}
+
+function ChangeSaturation()
+{
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Saturation",
+			  "Param":"5"
+			  }; 
+ ctrljson.Param = GetCCV("saturation");  
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);	
+ if (CheckSta(0, 14) == false)
+    return ;
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	   
+}
+function ChangeContrast()
+{
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Contrast",
+			  "Param":"5"
+			  }; 
+ ctrljson.Param = GetCCV("contrast");  
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);	
+ if (CheckContrast(0, 15) == false)
+    return ;
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	   
+}
+
+
+function ChangeGamma()
+{  
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Gamma",
+			  "Param":"5"
+			  }; 
+ ctrljson.Param = GetCCV("gamma");  
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);	
+ if (CheckGamma(0, 4) == false)
+    return ;
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	 
+}
+
+function ChangeDeffect()
+{
+  var ctrl = null;
+  var ctrljson = {"Factory":"POWER_VIEW",
+			  "Type":"PV8340-F2",
+			  "Action_Item":"Digital_Effects",
+			  "Param":"5"
+			  }; 
+var i = document.getElementById("deffect").selectedIndex;
+	switch (i){
+		case 0:
+			ctrljson.Param = "Off";			
+			break;
+		case 1:
+			ctrljson.Param = "180_Flip";
+			break;
+		case 2:
+			ctrljson.Param = "Flip_Vertical";	
+			break;
+		case 3:
+			ctrljson.Param = "Flip_Horizontal";			
+			break;
+		default:
+			break;		
+	} 
+ ctrl = JSON.stringify(ctrljson);
+ //alert(ctrl);
+ SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);	 
+  
+}
+//----------------------------------------------------------------------------------------------------------------------------------------------
+function MY_ONLOAD(){
+	setTimeout(function(){adaptionComponent("ocx_object","vlc",16/9,0);},10);
+	//switch_stream1();
+	switch_stream(1);
+	//Fixexpose(); 
+	//Fixawb();
+	
+	g_lockLink = false;
+	
+}
+
+
+function MY_ONUNLOAD() {  
+	VideoActiveXControl.videoStop();
+	//StopActiveX();
+}
+ function SaveCamPara()
+  {
+	SendHttp(c_iniUrl + GetSetterCmdKV("image_save", 1), false,SendImgCallBack);
+	alert(GL("save_ok"));
+  }
+  function Restore_Defaults()
+  {
+	SendHttp(c_iniUrl + GetSetterCmdKV("image_advancedefault", 1), false,SendImgCallBack);
+	alert(GL("set_ok"));
+	window.location.reload();
+  }	
+
+</script>
+<script language="JavaScript" event="OnDrawRect(x1, y1, x2, y2)" for="vlc">  
+	//var r = VLC1.SetRange(index, x1, y1, x2, y2, 0x00FF0000);//=====add by jackie for 3D
+			//if (r == 0) {
+			path =  "d:\\bit\\v\\2.txt";
+			var wid = x2-x1;
+			var hig = y2-y1;			
+			var neirong = x1+','+ y1 +','+wid+','+hig;
+			//if((wid>=0)&&(hig>=0)){
+				SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_contral", neirong), false);
+			//}			
+			//alert(neirong);
+			//writeFile(path,i);			
+</script>
+<!--上面tab Div-->
+<div id="top_div">
+	<div id="empty_div"></div>
+	<div id="tab_container">
+    	<span id="stream_1" onclick = "switch_stream(1)"><script>DW(GL("stream1"));</script></span>
+        <span id="stream_2" onclick = "switch_stream(2)"><script>DW(GL("stream2"));</script></span>
+        <span id="stream_3" onclick = "switch_stream(3)"><script>DW(GL("stream3"));</script></span>
+    </div>
+</div>
+<div id="main_div">
+	<div id="video_ocx_div">
+    	<script>
+		  WriteVideo();
+		</script>
+    </div>
+    <div id="image_config_div">
+    	<div id="config_div">
+            <ul id="accordion" class="accordion">
+                <li>
+                    <div class="link"><script>DW(GL("exposure"));</script><i class="fa fa-chevron-down"></i></div>
+                    <div class="submenu">
+                        <table width="100px" style="color:black;">
+                            <tr>
+                                <td><script>DW(GL("exposure_moudle"));</script></td>
+                                <td  id="exposuremoudle">
+                                	<!--script>
+                                      WH("exposure_moudle");
+                                    </script-->
+                                </td>
+							</tr>
+							<tr id ="shutter">
+                                <td><script>DW(GL("shutter"));</script></td>
+                                 <td id="shutter_container">
+								 	<!--script>
+                                      WH("shutter_set");
+                                    </script-->
+                                </td>
+							</tr>	                         
+												
+							 <tr id = "gainset">	
+                                <td><script>DW(GL("gain"));</script></td>
+                                 <td id="gain_set_container"><!--script>
+                                      WH("gain_set");   
+                                    </script-->
+                                </td>
+                             </tr>
+							  <tr id="apertureset">	
+                                <td><script>DW(GL("aperture"));</script></td>
+                                 <td id="aperture_container"><!--script>
+                                     WH("aperture");
+                                    </script-->
+                                </td>                             					  
+                                
+                             </tr>
+                        </table>
+                    </div>
+                </li>
+                <li>
+                    <div class="link"><script>DW(GL("awb"));</script><i class="fa fa-chevron-down"></i></div>
+                    <div class="submenu"> 
+                        <table width="100px" style="color:black;">
+                            
+							 <tr id = "awb_id">
+                                <td><script>DW(GL("awb"));</script></td>
+                                 <td id="white_balance_container"><!--script>
+                                      WH("white_balance");
+                                    </script-->
+                                </td>
+                             </tr>
+                             <tr id ="red_id">
+                                <td><script>DW(GL("red_gain"));</script></td>
+                                 <td id="red_gain_container"><script>
+                                      //WH("red_gain");
+									  DW(GL("gain_range")); 
+                                    </script>
+                                </td>
+							</tr>							
+                             <tr id = "blue_id">
+                                <td><script>DW(GL("blue_gain"));</script></td>
+                                 <td id="blue_gain_container"><script>
+                                      //WH("blue_gain");
+									  DW(GL("gain_range")); 
+                                    </script>
+                                </td>
+                                
+                            </tr>
+                        </table>                    
+                    </div>
+                </li>
+                <li>
+                    <div class="link"><script>DW(GL("day_night"));</script><i class="fa fa-chevron-down"></i></div>
+                    <div class="submenu"> 
+                        <table width="100px" style="color:black;">                            
+                              <tr>
+                                <td><script>DW(GL("day_night"));</script></td>
+                                 <td id="daynight_container"><!--script>
+                                       WH("daynight");
+                                    </script-->
+                                </td>
+							 </tr>
+							 <tr> 
+							 <td><script>DW(GL("dnlevel"));</script></td>
+                                <td id="dnsensitivity_container"><script>
+                                       //WH("dnsensitivity");
+									   DW(GL("gain_range")); 
+                                    </script>
+                                </td>								
+                                
+                             </tr>
+                        </table>                    
+                    </div>
+                </li>
+                <li>
+                    <div class="link"><script>DW(GL("focus_mode"));</script><i class="fa fa-chevron-down"></i></div>
+                    <div class="submenu"> 
+                        <table width="100px" style="color:black;">                            
+                             
+							 <tr id="focusmode">
+                                <td><script>DW(GL("focus_mode"));</script></td>
+                                <td id="focus_mode_container">
+                                	<!--script>
+                                     WH("focus_mode");
+                                    </script-->
+                                </td>
+							</tr>
+							<tr id="focusextremes">
+                                <td><script>DW(GL("focus_dist"));</script></td>
+                                <td id="focus_extremes_container"><!--script>
+                                    WH("focus_extremes");
+                                    </script-->
+                                </td>
+                             </tr>
+                        </table>                    
+                    </div>
+                </li>                				
+                <li>
+                    <div class="link"><script>DW(GL("advance_set"));</script><i class="fa fa-chevron-down"></i></div>
+                    <div class="submenu"> 
+                        <table width="100px" style="color:black;">
+                            <tr>
+                                <td><script>DW(GL("gamma"))</script></td>
+                                <td id="gamma_container">
+                                	<script>
+									//WH("gamma");
+									DW(GL("pgamma_range"));
+                                    </script>
+                                </td>
+							</tr>
+							<tr>
+                                <td><script>DW(GL("blc"))</script></td>
+                                <td id="blc_container">
+									<!--script>WH("blc");</script-->
+                                </td>
+                             </tr>
+                             <tr>
+                                <td><script>DW(GL("denoise"))</script></td>
+                                 <td id="denoising_container">
+									<!--script>WH("denoising");</script-->
+                                 </td>
+							</tr>
+							<tr>
+                               <td><script>DW(GL("luminance"))</script></td>
+                                 <td id="tbrightness_container">
+									<script>//WH("tbrightness");
+									DW(GL("plum_range"));</script>
+								 </td>
+                            </tr>
+							<tr>
+								<td><script>DW(GL("sharpness"))</script></td>
+								<td id="sharpness_container">
+									<script>//WH("sharpness");
+									DW(GL("psharpness_range"));</script>
+								</td>
+							</tr>
+							<tr>
+								<td><script>DW(GL("saturation"))</script></td>
+								<td id="saturation_container">
+									<script>//WH("saturation");
+									DW(GL("psaturation_range"));</script>
+								</td>
+							</tr>
+							<tr>
+								<td><script>DW(GL("contrast"))</script></td>
+								<td id="contrast_container">
+									<script>//WH("contrast");
+									DW(GL("pcons_range"));</script>
+								</td>
+							</tr>
+							<tr>
+								  <td><script>DW(GL("deffect"))</script></td>
+								  <td id="deffect_container">
+									<!--script>WH("deffect");</script-->
+								  </td>
+							</tr>
+							<tr>
+								  <td><script>DW(GL("fog_penetration"))</script></td>
+								  <td id="fogpenetration_container">
+									<!--script>WH("fogpenetration");</script-->
+								  </td>
+							</tr>
+							<tr>
+								  <td><script>DW(GL("freeze"))</script></td>
+								  <td id="freeze_container">
+									<!--script>WH("freeze");</script-->
+								  </td>
+							</tr>
+							<tr>
+								  <td><script>DW(GL("strong_hibition"))</script></td>
+								  <td id="stronghibition_container">
+									<!--script>WH("stronghibition");</script-->
+								  </td>
+							</tr>
+							<!--tr>
+								  <td><script>DW(GL("three_dposition"))</script></td>
+								  <td>
+									<script>WH("threedposition");</script>
+								  </td>
+							</tr-->
+                              <tr>
+                                <td><script>DW(GL("zoom_mag"))</script></td>
+                                 <td id="zoommag_container">
+									<!--script>WH("zoommag");</script-->
+                                </td>
+                                
+                             </tr>
+                        </table>                    
+                    </div>
+                </li>
+            </ul>
+        </div>
+        
+        <div id="save_div">
+        	 <input type="button" id="submit" onclick="SaveCamPara()"style="margin-right:20px; margin-top:10px; padding:5px 15px;" />
+			   <script>
+				  document.getElementById("submit").value=GL("submit");    
+				  document.getElementById("submit").title=GL("Save_the_camera_parameters");         
+               </script>
+             <input type="button" id="restoredefaults" onclick="Restore_Defaults()" style="margin-right:20px; margin-top:10px; padding:5px 15px;" />
+				<script>
+				 document.getElementById("restoredefaults").value=GL("Restore_Defaults");  
+				 document.getElementById("restoredefaults").title=GL("restore_defaults_the_camera_parameters");
+			    </script>
+		</div>
+    </div>
+</div>
+    
+</body>

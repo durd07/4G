@@ -1,0 +1,107 @@
+<html>
+    <head>
+		<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+		<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+
+        <script>
+            InitLoad();
+        </script>
+        <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+    </head>
+<body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+    <script>
+    var timerID, reloadCount;
+    function SendHttpRestart(url, isAsync, callBack)
+    {
+      isAsync = new Boolean(isAsync);
+      g_SubmitHttp = null;
+      g_SubmitHttp = InitXHttp();
+
+     if (callBack != null)
+      {
+        g_SubmitHttp.onreadystatechange = callBack;
+      }
+      else
+      {
+        g_SubmitHttp.onreadystatechange = PowerCallBack;
+      }
+
+      try
+      {
+        g_SubmitHttp.open("GET", url, isAsync);
+        g_SubmitHttp.setRequestHeader("If-Modified-Since", "0");
+        g_SubmitHttp.send(null);
+        WS(GL("sending_"));
+      }
+      catch (e)
+      {};
+
+    };
+
+    function PowerCallBack()
+    {
+        // alert("PowerCallBack");
+        g_httpOK = true;
+        WS(GL("ok_"));
+    }
+
+    function MY_ONLOAD()
+    {
+        g_lockLink = false;
+        reloadCount = 60;
+        document.getElementById('waitinfo').innerHTML = GL("wait_msg");
+        document.getElementById('ipchangeinfo').innerHTML = GL("ipchange_msg");
+        var uri=window.location.href;
+        var msglist = uri.split('?');
+        var msg = msglist[1];
+        if (msg == "reset")
+        {
+            SendHttp(c_iniUrl + GetSetterCmdKV("resetipcam"), false);
+            SendHttp(c_iniUrl + GetSetterCmdKV("ipcamrestartcmd", "1"), false);
+        }
+        else if (msg == "powerdown")
+        {
+            SendHttpRestart(c_iniUrl + GetSetterCmdKV("powerdown", 1), false);
+        }
+        else if (msg == "restart")
+        {
+            SendHttpRestart(c_iniUrl + GetSetterCmdKV("ipcamrestartcmd", 1), false);
+        }
+        Wait();
+    }
+
+  function MY_ONUNLOAD() {  
+    clearTimeout(timerID);
+  }
+
+    function Wait()
+    {
+        g_lockLink = true;
+        reloadCount--;
+        // alert(reloadCount);
+        if (reloadCount > 0)
+        {
+            timerID = setTimeout("Wait()", 1100);
+        }          
+        else
+        {
+            g_lockLink = false;
+            window.location.reload("login.htm");
+        }
+    }
+
+    </script>
+    <div id="wait">
+        <img src="../images/waiting.gif">
+        <div id="waitinfo">
+        </div>
+        <div id="ipchangeinfo">
+        </div>
+    </div>
+
+</body>
+</html>

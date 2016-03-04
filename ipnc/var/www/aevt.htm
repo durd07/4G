@@ -1,0 +1,426 @@
+<html>
+    <head>
+		<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+		<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script language="javascript" src="My97DatePicker/WdatePicker.js"></script>
+        <script>
+            InitLoad();
+         </script>
+        <title>
+            
+        </title>
+    <style type="text/css">
+	body {
+			margin: 0;
+			padding:0;
+			height:100%;
+			min-width:1200px;
+			min-height:580px;
+			font-size:16px;
+			color: white;
+			background:#999;
+		}
+    td {
+      font-size: 16px;
+    }
+    </style>
+
+    </head>
+<body onLoad="MY_ONLOAD()">
+<script>
+    var eventLocation = parseInt("<%eventlocation%>");
+    var eventPerPage = 10;
+    var PageNum = parseInt("<%pagenum%>");
+    var lockThis = false;
+    var eventList = new Array("<%event.1%>", "<%event.2%>", "<%event.3%>", "<%event.4%>", "<%event.5%>", "<%event.6%>", "<%event.7%>", "<%event.8%>", "<%event.9%>", "<%event.10%>");
+
+    var mydate = new Date("<%time%>");  // camera time
+
+    // var mydate = new Date();
+
+    var year = mydate.getFullYear().toString();
+    var mon = (mydate.getMonth() + 1).toString();
+    var day = mydate.getDate().toString();
+    var hours = mydate.getHours().toString();
+    var mins = mydate.getMinutes().toString();
+
+    var allevent = "<%allevent%>";
+    if (mon.length == 1)
+        mon = "0" + mon;
+
+    if(day.length == 1)
+        day = "0" + day;
+    /*  Go Page Num     */
+    function GoPage(sid) {
+        // alert(sid);
+        if (lockThis) return;
+        lockThis = true;
+        SendHttp(c_iniUrl + GetSetterCmdKV("eventstart", sid));
+        lockThis = false;
+        return true;
+    }
+
+    /*  Go to first page    */
+    function GoFirst() {
+        GoPage(0);
+    }
+
+    /*  Page Up */
+    function PageUp() {
+        var newLoc = 0;
+        PageNumCheck();
+        if (eventLocation > eventPerPage) {
+            newLoc = eventLocation - eventPerPage;
+        }
+        GoPage(newLoc);
+
+        BtnCheck();
+    }
+
+    /*  Page Down   */
+    function PageDown() {
+        PageNumCheck();
+        if (eventList[eventPerPage - 1] != "") {
+            GoPage(eventLocation + eventPerPage);
+        }
+
+        BtnCheck();
+    }
+
+    /*  Write Log  */
+    function WriteEventList() {
+        for (var i = 0; i < eventPerPage; i++) {
+            if (eventList[i] != "") {
+                DW("<tr>");
+                //DW("<td align='center' class='fixsize' >" + (eventLocation + i + 1) + ".</td>");
+                DW("<td align='left' class='fixsize' >&nbsp;&nbsp;" + eventList[i].substring(0, 19) + "&nbsp;&nbsp;</td>");
+                DW("<td align='left' class='fixsize' >" + eventList[i].substring(20) + "</td>");
+                DW("</tr>");
+            }
+        }
+    }
+
+    function WriteAllEventList() {
+        for (var i = 0; i < eventPerPage * PageNum; i++) {
+            if (alleventList[i] != "") {
+                DW("<tr>");
+                //DW("<td align='center' class='fixsize' >" + (eventLocation + i + 1) + ".</td>");
+                DW("<td align='left' class='fixsize' >&nbsp;&nbsp;" + alleventList[i].substring(0, 19) + "&nbsp;&nbsp;</td>");
+                DW("<td align='left' class='fixsize' >" + alleventList[i].substring(20) + "</td>");
+                DW("</tr>");
+            }
+        }
+    }
+    function WEBtn(tid, onClick) {
+        DW('<input type="button" id=' + tid + ' value="' + GL(tid) + '" class="m1" onClick="' + onClick + '">&nbsp;&nbsp;');
+    }
+
+    /*  Following add by zdy, 2013-3-6  */
+    /*  Log File Export     */
+    // export this log page 
+    function PageLogExport(){
+        //SendHttp(c_iniUrl + GetSetterCmdKV("exportlog", "1"), false);
+        // alert(parseInt(document.getElementById("tPageNum").value));
+        var logfile = document.getElementById("log");
+        logfile.document.execCommand('Saveas', false, 'c:\\ipnc_Log_' + location.hostname.replace(/\./g, '_') + '_' +  parseInt(document.getElementById("tPageNum").value) + '.txt');
+        // ChangeContent();
+    }
+
+// all log export
+function LogExport()
+{
+    var o = "/ipnc_Log_" + location.hostname.replace(/\./g, '_') + ".log";
+    window.location.href = o;
+  //   SendHttp(c_iniUrl + GetSetterCmdKV("exportlog", "1"), false);
+  // count = 1;
+  // Wait();  
+}
+
+// function Wait()
+// {
+//   if (count > 0)
+//   {
+//     count --;
+//     timerID = setTimeout("Wait()", 1000);
+//   }
+//   else
+//   {
+//     window.location.href = "/HisenseNVCLog.log";
+//   }
+// }
+
+
+    /*  Check Button Pageup and Pagedown status */
+    function BtnCheck()
+    {
+        var pageval = document.getElementById("tPageNum").value;
+        if (eventLocation == 0) {
+            document.getElementById("pageup").disabled = true;
+        }
+        if (eventList[eventPerPage - 1] == "" || pageval == PageNum)
+        {
+            document.getElementById("pagedown").disabled = true;
+        }
+        return true;
+    }
+
+    /*  Synchronize Page Text Value    */
+    function PageNumCheck()
+    {
+        var page;
+        if (eventLocation % eventPerPage == 0) {
+            page = parseInt(eventLocation / eventPerPage + 1);//document.getElementById("tPageNum").value = parseInt(eventLocation / eventPerPage + 1);
+        }
+        else
+           page = parseInt(eventLocation / eventPerPage + 2);// document.getElementById("tPageNum").value = parseInt(eventLocation / eventPerPage + 2);
+       return page;
+    }
+
+    /*  Check Page Num is Legal or Not  */
+    function CheckPage(page)
+    {
+        if(page == 0 || page > PageNum)
+        {
+            alert(GL("page_err"));
+            return false;
+        }
+        return true;
+    }
+
+    // time check
+    var tsstr = new Array(3);
+    var testr = new Array(3);
+    function time_check()
+    {
+        var obj1=document.getElementById("shi1").value;
+        var exp=/^(\d{1}|1\d|2[0-3])$/; // Hour:[1-23]
+        var reg1 = obj1.match(exp);
+        var obj2=document.getElementById("fen1").value;
+        var exp1=/^(\d{1}|[1-5][0-9])$/; // Minute:[1-59]
+        var reg2 = obj2.match(exp1);
+        var obj3=document.getElementById("shi2").value;
+        var reg3 = obj3.match(exp);
+        var obj4=document.getElementById("fen2").value;
+        var reg4 = obj4.match(exp1);
+
+        if(reg1==null || reg2==null || reg3==null || reg4==null)
+        {
+            alert(GL("verr_time"));
+            return false;
+        }
+
+        var Tstr = document.getElementById("Tstart").value;
+        var Sstr = document.getElementById("Tend").value;
+
+        charslice(Tstr,tsstr);
+        charslice(Sstr,testr);
+
+        // if (testr[0] > year || testr[1] > mon || testr[2] > day || obj3 > hours || obj4 > mins) {
+        //     alert(GL("ttime_great"));
+        //     return false;
+        // }
+
+        var newdates = new Date(tsstr[0], --tsstr[1], tsstr[2], obj1, obj2);
+        var newdatee = new Date(testr[0], --testr[1], testr[2], obj3, obj4);
+
+        if(newdates > newdatee)
+        {
+            alert(GL("terr_time"));
+            return false;
+        }
+
+        return true;
+    }
+
+    // 
+    function charslice(str,array)
+    {
+        var flg = 0;
+        var dest = 0;
+        for (var t=0; t < str.length; t++){
+            if(str.charAt(t) == "-"){
+                array[dest] = str.substring(flg,t);
+                dest++;
+                flg = t++;
+                flg++;
+            }
+            continue;
+        }
+        array[2] = str.substring(flg,t);
+    }
+    /*  Query Log   */
+    function TimeQuery()
+    {
+        if (!time_check())
+            return false;
+        var obj1 = FixNum(document.getElementById("shi1").value, 2) + ':';
+        var obj2 = FixNum(document.getElementById("fen1").value, 2);
+        var obj3 = FixNum(document.getElementById("shi2").value, 2) + ':';
+        var obj4 = FixNum(document.getElementById("fen2").value, 2);
+        var Tstr = document.getElementById("Tstart").value;
+        var Sstr = document.getElementById("Tend").value;
+
+        var o = Tstr + '_' + obj1 + obj2 + '_' + Sstr + '_' + obj3 + obj4;
+        // o = "2013-08-06_08:00_2013-08-07_08:00";
+        SendHttp(c_iniUrl + GetSetterCmdKV("timequery", o), true);
+    }
+
+    function Query()
+    {
+        var page = parseInt(document.getElementById("tPageNum").value);
+
+        if(!CheckPage(page))
+        {
+            document.getElementById("tPageNum").value = PageNumCheck();
+            return false;
+        }
+        
+        var newLoc = (page -1) * eventPerPage;
+        if (eventLocation != newLoc)
+        {
+            GoPage(newLoc);
+            BtnCheck();
+        }       
+        return true;
+    }
+
+    function TypeChange()
+    {
+        document.getElementById("tPageNum").value = 1;
+    }
+    /*
+    function GetCurrentDate()
+    {
+        var mydate = new Date();
+        var year = mydate.getFullYear().toString();
+        var mon = mydate.getMonth().toString();
+        var day = mydate.getDay().toString();
+        var hour = mydate.getHours().toString();
+        var min = mydate.getMinutes().toString();
+
+    }
+    */
+    function MY_ONLOAD()
+    {
+        g_lockLink = false;
+        // document.getElementById("tPageNum").value = 1;
+        // GoFirst();
+        // document.getElementById("tPageNum").value = PageNumCheck();
+        // BtnCheck();
+        //typechange();
+        // GetEventList();
+        // TimeQuery();
+    }
+
+</script>
+
+<script>
+    DW('<div id="logdiv1">');
+</script>
+
+<!-- <center> -->
+<table>
+    <tr >
+        <!-- <td width="80px">
+        <script>
+            // DW(GL("start_time"));
+        </script>
+    
+        </td> -->
+        <td>
+            <script>
+            DW('<input style="font-family:  Arial,sans-serif;" name="Tstart" id="Tstart1" type="text" readonly="1" value=' + year + '-' + mon + '-' + day + ' onClick="WdatePicker()" size="10" maxlength="10"/>');
+            </script>
+            <img onClick="WdatePicker({el:$dp.$('Tstart1')})" src="My97DatePicker/skin/datePicker.gif" width="16" height="22" align="absmiddle">
+        </td>
+        <td>
+            <input style="font-family:  Arial,sans-serif;" type="text" name="shi1" id="hour1" size="1" maxlength="2" value="0">
+                    <script>
+                        DW(GL("hour"));
+                    </script>
+
+            <input style="font-family:  Arial,sans-serif;" type="text" name="fen1" id="minute1" size="1" maxlength="2" value="0">
+                    <script>
+                        DW(GL("min"));
+
+                        DW("&nbsp;&nbsp;&nbsp;" + GL("to") + "&nbsp;&nbsp;&nbsp;");
+                    </script>
+        </td>
+<!--     </tr >
+    <tr > --> 
+        <!-- <td width="35px" align="center" vlign="bottom">
+            <script>
+                // DW(GL("end_time"));
+                DW(GL("to"));
+            </script>
+        </td> -->
+        <td>
+            <script>
+            DW('<input style="font-family:  Arial,sans-serif;" name="Tend" id="Tend1" type="text" readonly="1" value=' + year + '-' + mon + '-' + day + ' onClick="WdatePicker()" size="10" maxlength="10"/>');
+            </script>
+            <img onClick="WdatePicker({el:$dp.$('Tend1')})" src="My97DatePicker/skin/datePicker.gif" width="16" height="22" align="absmiddle">
+        </td>
+        <td>
+            <script>
+            DW('<input style="font-family:  Arial,sans-serif;" type="text" name="shi2" id="hour2" size="1" maxlength="2" value="' + hours + '">&nbsp;' + GL("hour"));
+            
+            DW('&nbsp;&nbsp;<input style="font-family:  Arial,sans-serif;" type="text" name="fen2" id="minute2" size="1" maxlength="2" value="' + mins + '">&nbsp;' + GL("min"));
+            </script>
+        </td>
+    </tr>
+</table>
+
+<script>
+
+    TimeQuery();
+
+    DW("<table align='center' width=730 border=0 cellPadding=0 cellSpacing=0>");
+
+    // DW('<tr><td height=30 colspan=4><div text-align="left">');
+    // DW('<table><tr><td width="80px">' + GL('log_type') + '</td>');
+
+    // DW('<td><SELECT style="FONT-FAMILY: Arial,sans-serif" name="ntype" id="type">');
+
+    // DW('<OPTION value="all" selected>' + GL("all") + '</OPTION>');
+
+    // DW('</SELECT>');
+    // DW('</td></tr></table>');
+    // DW('</div></td>');
+
+    // DW("<td colspan=2 align='right' height=30><div text-align='right'>");
+    // DW('<table><tr><td align=right height=30>');
+    // WEBtn("pageup", "PageUp()");
+    // DW('</td><td align=right height=30>');
+    // DW('<input type="text" id="tPageNum" size=5 maxlength=3 onchange="Query()">');
+    // DW('</td><td align=right height=30>');
+    // DW('<label id=lPageNum>/<%timeeventcount%></label>');
+    // DW('</td><td align=right height=30>');
+    // WEBtn("pagedown", "PageDown()");
+    // DW('</td></tr></table></div></td></tr>');
+    // DW("</td></tr>");
+    
+
+    DW('<tr><td colspan=6 style="vertical-align:text-top;">');
+    DW('<div name="log" id="log" height="400px">'); 
+     
+    // WriteEventList();
+    </script>
+    <div id="tabs-aevt" class="content" width="800" height="400">
+      <iframe width="800" height="400" src="aevttime.htm" id="aevtframe" name="content1" marginheight="0" marginwidth="0" scrolling="no" frameborder="0">
+      </iframe>
+    </div>
+
+    <script>
+    DW('</div>');
+    DW('</table></div>');
+
+</script>
+<script>
+    ALC();
+</script>
+    </body>
+</html>

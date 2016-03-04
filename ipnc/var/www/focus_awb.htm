@@ -1,0 +1,515 @@
+<!DOCTYPE HTML>
+<html>
+  
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script language="javascript" src="var.js"></script>
+    <script language="javascript" src="common.js"></script>
+    <script language="javascript" src="js/panasonic.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <title>
+    </title>
+    <style type="text/css">
+      td { font-size:12px; }
+    </style>
+  </head>
+
+  <body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()" onkeydown="On_Keydown(event)">
+<script>
+
+var focusmodelist = GL("auto") + ";" + GL("manual");
+var focusdistlist = GL("d50cm") + ";" + GL("d1m") + ";" + GL("d3m") + ";" + GL("d5m");
+var zoomstartlist = "X1;X2;X3;X4;X5;X6;X7;X8;X9;X10;X11;X12;X13;X14;X15;X16;X17;X18;X19;X20;X21;X22;X23;X24;X25;X26;X27;X28;X29";
+
+var zoomendlist = "X2;X3;X4;X5;X6;X7;X8;X9;X10;X11;X12;X13;X14;X15;X16;X17;X18;X19;X20;X21;X22;X23;X24;X25;X26;X27;X28;X29;X30";
+
+var awblist = GL("auto") + ";AWC;" + GL("manual") + ";" + GL("indoor") + ";" + GL("outdoor") + ";FLUO";
+
+CTRLARY = {
+  // focus 
+  focusmode: new Ctrl_Select("focusmode", focusmodelist, panasonicGetFocusMode(), "focusmode=", "ChangeFocusMode()"),
+  focusdist: new Ctrl_Select("focusdist", focusdistlist, "<%focusdist%>", "focusdist=", "ChangeFocusDist()"),
+  zoomstart: new Ctrl_Select("zoomstart", zoomstartlist, panasonicGetZoomStart(), "zoomstart=", "ChangeZoomStart()"),
+  zoomend: new Ctrl_Select("zoomend", zoomendlist, panasonicGetZoomEnd(), "zoomend=", "ChangeZoomEnd()"),
+  // white balance 
+  awb: new Ctrl_Select("awb", awblist, panasonicGetWBmode(), "awb=", "ChangeAWB()"),
+  rgain: new Ctrl_Text("rgain", "3", "3", panasonicGetRgain(), "rgain=", null, false, "ChangeRgain()"),
+  bgain: new Ctrl_Text("bgain", "3", "3", panasonicGetBgain(), "bgain=", null, false, "ChangeBgain()")
+}
+</script>
+
+<script>
+function On_Keydown(event)
+{
+  if (event.keyCode == 13) // enter key
+  {
+    var act = document.activeElement.id;
+    // alert(act);
+    if (act == "rgain")
+      ChangeRgain();
+    else if (act == "bgain")
+      ChangeBgain();
+  }
+}
+
+function ChangeFocusMode()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicFocusModeCmd(GetCCV("focusmode"))), false, SendImgCallBack);
+}
+
+function ChangeFocusDist()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("focusdist", GetCCV("focusdist")), false, SendImgCallBack);
+}
+
+function ChangeZoomStart()
+{
+  if (CheckZoomS() == false)
+  {
+    document.getElementById("zoomstart").selectedIndex = panasonicGetZoomStart();
+    return;
+  }
+  var wideLimiter = document.getElementById("zoomstart").selectedIndex + 1;
+  var teleLimiter = document.getElementById("zoomend").selectedIndex + 2;
+  var cmd = panasonicZoomOpticalLimitterCmd(wideLimiter, teleLimiter);
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", cmd), false, SendImgCallBack);
+}
+function ChangeZoomEnd()
+{
+  if (CheckZoomE() == false)
+  {
+    document.getElementById("zoomend").selectedIndex = panasonicGetZoomEnd();
+    return;
+  }
+  var wideLimiter = document.getElementById("zoomstart").selectedIndex + 1;
+  var teleLimiter = document.getElementById("zoomend").selectedIndex + 2;
+  var cmd = panasonicZoomOpticalLimitterCmd(wideLimiter, teleLimiter);
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", cmd), false, SendImgCallBack);
+}
+function ChangeAWB()
+{
+  FixAwb();
+  SendHttp(c_iniUrl + GetSetterCmdKV("awb", GetCCV("awb")), false, SendImgCallBack);
+}
+function ChangeRgain()
+{
+ //alert(1);
+ if (CheckRgain(0, 255) == false)
+    return;	
+ //alert(2);	
+  //alert(panasonicSetATWredCmd(GetCCV("rgain")));
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetATWredCmd(GetCCV("rgain"))), false, SendImgCallBack);
+}
+function ChangeBgain()
+{
+  if (CheckBgain(0, 255) == false)
+    return;
+  SendHttp(c_iniUrl + GetSetterCmdKV("panasonic_camera_set", panasonicSetATWblueCmd(GetCCV("bgain"))), false, SendImgCallBack);
+}
+function ChangeColorTemp()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("colortemp", GetCCV("colortemp")), false, SendImgCallBack);
+}
+
+function ParaCheck()
+{
+  var flag = false;
+
+  var focusmode = GetCCV("focusmode");
+  if (focusmode == "<%focusmode%>")
+  {
+    CTRLARY["focusmode"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var focusdist = GetCCV("focusdist");
+  if (focusdist == "<%focusdist%>")
+  {
+    CTRLARY["focusdist"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var zoomstart = GetCCV("zoomstart");
+  if (zoomstart == "<%zoomstart%>")
+  {
+    CTRLARY["zoomstart"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var zoomend = GetCCV("zoomend");
+  if (zoomend == "<%zoomend%>")
+  {
+    CTRLARY["zoomend"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var awb = GetCCV("awb");
+    if (awb == "<%awb%>")
+    {
+      CTRLARY["awb"].active = 0;
+    }
+    else if (flag == false)
+      flag = true;
+
+  if (GetCCV("awb") == 2)
+  {
+    var rgain = GetCCV("rgain");
+    if (rgain == "<%rgain%>")
+    {
+      CTRLARY["rgain"].active = 0;
+    }
+    else if (flag == false)
+      flag = true;
+
+    var bgain = GetCCV("bgain");
+    if (bgain == "<%bgain%>")
+    {
+      CTRLARY["bgain"].active = 0;
+    } 
+    else if (flag == false)
+      flag = true;
+
+    var colortemp = GetCCV("colortemp");
+    if (colortemp == "<%colortemp%>")
+    {
+      CTRLARY["colortemp"].active = 0;
+    } 
+    else if (flag == false)
+      flag = true;
+
+  }
+
+  return flag;
+}
+// if awb == auto || awb == ATW; rgain , bgain and colortemp.disabled == true
+  function FixAwb(){
+    // alert(document.getElementById("awb").selectedIndex);
+    if (document.getElementById("awb").selectedIndex == 2)
+    {
+      CTRLARY["rgain"].Disable(0);
+      CTRLARY["bgain"].Disable(0);
+    }
+    else
+    {
+      CTRLARY["rgain"].Disable(1);
+      CTRLARY["bgain"].Disable(1);
+    }
+  }
+
+function RgainCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      var sysinfolist = txt.split('=');
+      document.getElementById("rgain").value = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+    } 
+  } 
+}
+
+
+function CheckRgain(min, max)
+{
+  var value = document.getElementById("rgain").value;
+  var ch = value.charAt(0);
+
+  if (value.length == 0)
+  {
+    alert(GL("rgain_empty"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getrgain"), false, RgainCallBack);
+
+    document.getElementById("rgain").focus();
+    return false;
+  }
+  
+  if (!(IsNumeric(value)))
+  {
+    if(ch == '-')
+    {
+      var temp1 = value.substring(value.indexOf('-')+1, value.length);
+      // alert(temp1);
+      if (!(IsNumeric(temp1)))
+      {
+        alert(GL("rgain_inv"));
+        SendHttp(c_iniUrl + GetSetterCmdKV("getrgain"), false, RgainCallBack);
+        // document.getElementById("rgain").value = "";
+        document.getElementById("rgain").focus();
+        return false;
+      }     
+    }
+    else
+    {
+      alert(GL("rgain_inv"));
+      SendHttp(c_iniUrl + GetSetterCmdKV("getrgain"), false, RgainCallBack);
+      // document.getElementById("rgain").value = "";
+      document.getElementById("rgain").focus();
+      return false;
+    }
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("rgain_num"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getrgain"), false, RgainCallBack);
+    // document.getElementById("rgain").value = "";
+    document.getElementById("rgain").focus();
+    return false;  
+  }
+  
+  return true;
+}
+
+function BgainCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      var sysinfolist = txt.split('=');
+      document.getElementById("bgain").value = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+    } 
+  } 
+}
+
+
+function CheckBgain(min, max)
+{
+  var value = document.getElementById("bgain").value;
+  var ch = value.charAt(0);
+  if (value.length == 0)
+  {
+    alert(GL("bgain_empty"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getbgain"), false, BgainCallBack);
+    document.getElementById("bgain").focus();
+    return false;
+  }
+
+  if (!(IsNumeric(value)))
+  {
+    if(ch == '-')
+    {
+      var temp1 = value.substring(value.indexOf('-')+1, value.length);
+      // alert(temp1);
+      if (!(IsNumeric(temp1)))
+      {
+        alert(GL("bgain_inv"));
+        SendHttp(c_iniUrl + GetSetterCmdKV("getbgain"), false, BgainCallBack);
+        // document.getElementById("bgain").value = "";
+        document.getElementById("bgain").focus();
+        return false;
+      }     
+    }
+    else
+    {
+      alert(GL("bgain_inv"));
+      SendHttp(c_iniUrl + GetSetterCmdKV("getbgain"), false, BgainCallBack);
+      // document.getElementById("bgain").value = "";
+      document.getElementById("bgain").focus();
+      return false;
+    }
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("bgain_num"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getbgain"), false, BgainCallBack);
+    // document.getElementById("bgain").value = "";
+    document.getElementById("bgain").focus();
+    return false;
+  }
+
+  return true;
+}
+function MY_ONUNLOAD() {  
+    // StopActiveX();
+  }
+
+function MY_ONLOAD() {
+  g_lockLink = false;
+
+  // StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+  FixAwb();
+}
+
+function CheckZoomS(){
+  var res = false;
+  var sidx = document.getElementById("zoomstart").selectedIndex;
+  var eidx = document.getElementById("zoomend").selectedIndex;
+  if (eidx < sidx )
+  {
+    alert(GL("zoomstart_end"));
+    return res;
+  }
+  return true;
+};
+
+function CheckZoomE () {
+  var res = false;
+  var sidx = document.getElementById("zoomstart").selectedIndex;
+  var eidx = document.getElementById("zoomend").selectedIndex;
+  if (eidx < sidx )
+  {
+    alert(GL("zoomstart_end"));
+    return res;
+  }
+  return true;
+}
+  function MY_BEFORE_SUBMIT() {
+    if (ParaCheck() == false)
+    {
+      alert(GL("para_not_change"));
+      return false;
+    }
+    
+
+    if (GetCCV("awb") == 2)
+    {
+      if (CheckRgain(-100, 100) == false)
+        return false;
+      if (CheckBgain(-100, 100) == false)
+        return false;
+    }
+    
+    if (CheckZoom() == false)
+      return false;
+    return true;
+  }
+
+  function MY_SUBMIT_OK() {
+    // alert(GL("submit_success"));
+    // window.location.reload();
+  }
+
+
+function FocusAwbDefault()
+{
+  var o = '';
+  o += c_iniUrl;
+  o += GetSetterCmdKV("focusawbdefault");
+  SendHttp(o, false, DefaultCallBack);
+}
+
+function DefaultCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      if (txt.indexOf("NG") >= 0 || txt.indexOf("UW") >= 0)
+      {
+        alert(GL("submit_fail"));
+        WS(GL("fail_"));
+      }
+      else
+      {
+        alert(GL("submit_success"));
+        WS(GL("ok_"));
+        window.location.reload();
+      }
+    }
+  }
+}
+</script>
+
+    <div id="focusdiv">
+      <table>
+        <tr>
+          <td style="vertical-align:text-top;">
+            <div class="layout" id="tabs-1" >
+              <table>
+                <tr>
+                  <td colspan=2>
+                    <script>DW(GL("focus_mode"));</script>:
+                  </td>
+                  <td>
+                    <script>WH("focusmode");</script>
+                  </td>
+                </tr>
+                <!--
+                <tr>
+                  <td colspan=2>
+                    <script>DW(GL("focus_dist"));</script>:
+                  </td>
+                  <td>
+                    <script>WH("focusdist");</script>
+                  </td>
+                </tr>
+                -->
+              </table>
+            </div>
+          </td>
+          <td width="20px"></td>
+          <td style="vertical-align:text-top;">
+            <div class="layout" id="tabs-2" >
+              <table>
+                <tr>
+                  <td colspan=2>
+                    <script>DW(GL("zoom_start"));</script>:
+                  </td>
+                  <td>
+                    <script>WH("zoomstart");</script>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan=2>
+                    <script>DW(GL("zoom_end"));</script>:
+                  </td>
+                  <td>
+                    <script>WH("zoomend");</script>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td width="20px"></td>
+          <td style="vertical-align:text-top;">
+            <div class="layout" id="tabs-3" >
+              <table>
+                <tr>
+                  <td colspan=2>
+                    <script>DW(GL("awb"));</script>:
+                  </td>
+                  <td>
+                    <script>WH("awb");</script>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td width="20px"></td>
+          <td style="vertical-align:text-top;">
+            <div class="layout" id="tabs-4" >
+              <table>
+                <tr>
+                  <td colspan=2>
+                    <script>DW(GL("red_gain"));</script>:
+                  </td>
+                  <td>
+                    <script>WH("rgain");DW(GL("gain_range"));</script>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan=2>
+                    <script>DW(GL("blue_gain"));</script>:
+                  </td>
+                  <td>
+                    <script>WH("bgain");DW(GL("gain_range"));</script>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <!--
+    <input id="default" type="button" style="width:80px;height:20px" onclick="FocusAwbDefault()">
+    <script>document.getElementById("default").value=GL("_default");</script>
+    -->
+  </body>
+</html>

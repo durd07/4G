@@ -1,0 +1,31 @@
+<script>
+    var v_aviduration = parseInt("<%aviduration%>");
+    CTRLARY = {
+        aviDuration: new Ctrl_Select("aviDuration", "<%avidurationname.all%>", "<%aviduration%>", "aviduration="),        
+        aviFormat: new Ctrl_Select("aviFormat", "<%aviformatname.all%>", "<%aviformat%>", "aviformat=")
+    };
+
+    function WIP3(ctx) {
+        DW("<tr><td colspan=3 class=m1 height=30 >");
+        DW(ctx);
+        DW("</td></tr>");
+    }
+    function WIP2(tid, ctx) {
+        DW("<tr><td width=20>&nbsp;</td><td class=b1 width=150 height=30 >");
+        DW(GL(tid) + ":</td><td>" + ctx + "</td></tr>");
+    }
+    function MY_SUBMIT_OK() {
+        alert(GL("submit_success"));
+        ChangeContent(null, true);
+    }
+
+    WriteAppPH("video_file");
+    WriteGroup("video_file");
+    WTablePH();
+    WIP2("aviduration", WH_("aviDuration"));// + "&nbsp;" + GL("dur_time")); //zdy
+    WIP2("aviformat", WH_("aviFormat"));    
+    WIP3("<br><center>" + CreateSubmitButton_());
+    WTablePB();
+    WriteAppPB();
+    ALC();
+</script>

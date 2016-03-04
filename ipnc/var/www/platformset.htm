@@ -1,0 +1,780 @@
+<html>
+  <head>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+	<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+     <style type="text/css">
+		td {font-size:12px}
+ 	</style>
+    <title>
+      PT Setting
+    </title>
+     <style type="text/css">
+		body {
+			margin: 0;
+			padding:0;
+			height:100%;
+			min-width:1200px;
+			min-height:580px;
+			font-size:16px;
+			color: white;
+			background:#999;
+		}
+    tr {
+      font-size: 16px;
+    }
+    td, form, div {
+        font-size:16px; 
+    }
+    div.headline {
+		height:20px;
+		color: black;
+    	font-size: 17px;
+    	background-color:#F0F0F0;
+    	font-weight:bold;
+    	margin-top:10px;
+        /*margin-left: 10px;*/
+    }
+    </style>
+
+  </head>
+
+  <body onload="MY_ONLOAD()">
+
+<script>
+  var agreementlist = GL("netposa") + ";" + GL("dahua");
+  var agreementfacelist = GL("netposa");
+  var agreementcrklist = GL("bitcom");
+  var agreement_illegally_park_list = GL("uniview");
+  var agreement_park_list = GL("zehin");
+  CTRLARY = {
+	vehicleplatform: new Ctrl_Check("vehicleplatform", "<%vehicleplatform%>", "vehicleplatform=","Change_vehicle()"),
+    agreementype: new Ctrl_Select("agreementtype", agreementlist, "<%agreementtype%>", "agreementtype=", "Changeagreetype()"),//协议厂家
+	devid: new Ctrl_Text("devid", "25", "25", "<%devid%>", "devid=","Changedevid()"),
+    serverip: new Ctrl_Text("serverip", "25", "25", "<%serverip%>", "serverip=","Changeserip()"), 
+	serverport: new Ctrl_Text("serverport", "25", "5", "<%serverport%>", "serverport=","Changesport()"),
+	
+	faceplatform: new Ctrl_Check("faceplatform", "<%faceplatform%>", "faceplatform=","Change_faceplatform()"),
+	agreementype_face: new Ctrl_Select("agreementype_face", agreementfacelist, "<%agreementype_face%>", "agreementype_face=", "Changeagreetype()"),//人脸协议厂家
+	devid_face: new Ctrl_Text("devid_face", "25", "25", "<%devid_face%>", "devid_face=","Changedevid()"),
+    serverip_face: new Ctrl_Text("serverip_face", "25", "25", "<%serverip_face%>", "serverip_face=","Changeserip()"), 
+	serverport_face: new Ctrl_Text("serverport_face", "25", "5", "<%serverport_face%>", "serverport_face=","Changesport()"),
+	
+	getwayplatform: new Ctrl_Check("getwayplatform", "<%getwayplatform%>", "getwayplatform=","Change_getwayplatform()"),
+	agreementype_getway: new Ctrl_Select("agreementype_getway", agreementcrklist, "<%agreementype_getway%>", "agreementype_getway=", "Changeagreetype()"),//出入口协议厂家
+	devid_getway: new Ctrl_Text("devid_getway", "25", "25", "<%devid_getway%>", "devid_getway=","Changedevid()"),
+    serverip_getway: new Ctrl_Text("serverip_getway", "25", "25", "<%serverip_getway%>", "serverip_getway=","Changeserip()"), 
+	serverport_getway: new Ctrl_Text("serverport_getway", "25", "5", "<%serverport_getway%>", "serverport_getway=","Changesport()"),
+
+	illegally_park_platform: new Ctrl_Check("illegally_park_platform:", "<%illegally_park_platform%>", "illegally_park_platform=","Change_illegally_park_platform()"),
+	agreementype_illegally_park: new Ctrl_Select("agreementype_illegally_park:", agreement_illegally_park_list, "<%agreementype_illegally_park%>", "agreementype_illegally_park=", "Changeagreetype()"),//illegally park协议厂家
+	devid_illegally_park: new Ctrl_Text("devid_illegally_park:", "25", "25", "<%devid_illegally_park%>", "devid_illegally_park=","Changedevid()"),
+    serverip_illegally_park: new Ctrl_Text("serverip_illegally_park", "25", "25", "<%serverip_illegally_park%>", "serverip_illegally_park=","Changeserip()"), 
+	serverport_illegally_park: new Ctrl_Text("serverport_illegally_park", "25", "5", "<%serverport_illegally_park%>", "serverport_illegally_park=","Changesport()"),
+
+	park_platform: new Ctrl_Check("park_platform", "<%park_platform%>", "park_platform=","Change_park_platform()"),
+	agreementype_park: new Ctrl_Select("agreementype_park", agreement_park_list, "<%agreementype_park%>", "agreementype_park=", "Changeagreetype()"),//park协议厂家
+	devid_park: new Ctrl_Text("devid_park", "25", "25", "<%devid_park%>", "devid_getway=","Changedevid()"),
+    centerip_park: new Ctrl_Text("centerip_park", "25", "25", "<%centerip_park%>", "centerip_park=","Changeserip()"), 
+	cmdport_park: new Ctrl_Text("cmdport_park", "25", "5", "<%cmdport_park%>", "cmdport_park=","Changesport()"),
+	hbport_park: new Ctrl_Text("hbport_park", "25", "5", "<%hbport_park%>", "hbport_park=","Changesport()"),
+    sfip_park: new Ctrl_Text("sfip_park", "25", "25", "<%sfip_park%>", "sfip_park=","Changeserip()"), 
+	sfport_park: new Ctrl_Text("sfport_park", "25", "5", "<%sfport_park%>", "sfport_park=","Changesport()")
+  };
+</script>
+<script> 
+    function MY_ONLOAD() {
+		vehicleplatformfix();
+		faceplatformfix();
+		getwayplatformfix();
+        illegally_park_platformfix();
+        park_platformfix();
+        g_lockLink = false;        
+    }
+
+    function CheckSntpIp() {
+        var value = document.getElementById("serverip").value;
+        var res = false;    
+        var ipary = value.split(".");     
+        var num = ipary.length;
+        if (value.length == 0)
+        {
+            alert(GL("serverip_empty"));
+            document.getElementById("serverip").value = "<%serverip%>";
+            document.getElementById("serverip").focus();
+            return false;
+        }
+
+        if(num != 4)
+        {
+            alert(GL("serverip_err"));
+            document.getElementById("serverip").value = "<%serverip%>";
+            document.getElementById("serverip").focus();
+            return false;
+        }
+        else
+        {
+            var i = 0;
+            if (ipary[0] <= 0 || !(IsNumeric(ipary[0])))
+            {
+                alert(GL("serverip_err"));
+                document.getElementById("serverip").value = "<%serverip%>";
+                document.getElementById("serverip").focus();
+                return false; 
+            } 
+
+            for (i = 1; i<num;i++)
+            {
+                if(ipary[i] < 0 || ipary[i] >255 || !(IsNumeric(ipary[i])) || ipary[i] == '')
+                {
+                    alert(GL("serverip_err"));  
+                    document.getElementById("serverip").value = "<%serverip%>";          
+                    document.getElementById("serverip").focus();
+                    return false; 
+                }
+            }
+        }
+        return true;
+    }
+
+    function CheckSIp_face() {
+        var value = document.getElementById("serverip_face").value;
+        var res = false;    
+        var ipary = value.split(".");     
+        var num = ipary.length;
+        if (value.length == 0)
+        {
+            alert(GL("serverip_empty"));
+            document.getElementById("serverip_face").value = "<%serverip_face%>";
+            document.getElementById("serverip_face").focus();
+            return false;
+        }
+        if(num != 4)
+        {
+            alert(GL("serverip_err"));
+            document.getElementById("serverip_face").value = "<%serverip_face%>";
+            document.getElementById("serverip_face").focus();
+            return false;
+        }
+        else
+        {
+            var i = 0;
+            if (ipary[0] <= 0 || !(IsNumeric(ipary[0])))
+            {
+                alert(GL("serverip_err"));
+                document.getElementById("serverip_face").value = "<%serverip_face%>";
+                document.getElementById("serverip_face").focus();
+                return false; 
+            } 
+
+            for (i = 1; i<num;i++)
+            {
+                if(ipary[i] < 0 || ipary[i] >255 || !(IsNumeric(ipary[i])) || ipary[i] == '')
+                {
+                    alert(GL("serverip_err"));  
+                    document.getElementById("serverip_face").value = "<%serverip_face%>";          
+                    document.getElementById("serverip_face").focus();
+                    return false; 
+                }
+            }
+        }
+        return true;
+    }
+
+    function CheckSIp_getway() {
+        var value = document.getElementById("serverip_getway").value;
+        var res = false;    
+        var ipary = value.split(".");     
+        var num = ipary.length;
+        if (value.length == 0)
+        {
+            alert(GL("serverip_empty"));
+            document.getElementById("serverip_getway").value = "<%serverip_getway%>";
+            document.getElementById("serverip_getway").focus();
+            return false;
+        }
+        if(num != 4)
+        {
+            alert(GL("serverip_err"));
+            document.getElementById("serverip_getway").value = "<%serverip_getway%>";
+            document.getElementById("serverip_getway").focus();
+            return false;
+        }
+        else
+        {
+            var i = 0;
+            if (ipary[0] <= 0 || !(IsNumeric(ipary[0])))
+            {
+                alert(GL("serverip_err"));
+                document.getElementById("serverip_getway").value = "<%serverip_getway%>";
+                document.getElementById("serverip_getway").focus();
+                return false; 
+            } 
+
+            for (i = 1; i<num;i++)
+            {
+                if(ipary[i] < 0 || ipary[i] >255 || !(IsNumeric(ipary[i])) || ipary[i] == '')
+                {
+                    alert(GL("serverip_err"));  
+                    document.getElementById("serverip_getway").value = "<%serverip_getway%>";          
+                    document.getElementById("serverip_getway").focus();
+                    return false; 
+                }
+            }
+        }
+        return true;
+    }
+
+    function CheckSIp_illegally_park() {
+        var value = document.getElementById("serverip_illegally_park").value;
+        var res = false;    
+        var ipary = value.split(".");     
+        var num = ipary.length;
+        if (value.length == 0)
+        {
+            alert(GL("serverip_empty"));
+            document.getElementById("serverip_illegally_park").value = "<%serverip_illegally_park%>";
+            document.getElementById("serverip_illegally_park").focus();
+            return false;
+        }
+        if(num != 4)
+        {
+            alert(GL("serverip_err"));
+            document.getElementById("serverip_illegally_park").value = "<%serverip_illegally_park%>";
+            document.getElementById("serverip_illegally_park").focus();
+            return false;
+        }
+        else
+        {
+            var i = 0;
+            if (ipary[0] <= 0 || !(IsNumeric(ipary[0])))
+            {
+                alert(GL("serverip_err"));
+                document.getElementById("serverip_illegally_park").value = "<%serverip_illegally_park%>";
+                document.getElementById("serverip_illegally_park").focus();
+                return false; 
+            } 
+
+            for (i = 1; i<num;i++)
+            {
+                if(ipary[i] < 0 || ipary[i] >255 || !(IsNumeric(ipary[i])) || ipary[i] == '')
+                {
+                    alert(GL("serverip_err"));  
+                    document.getElementById("serverip_illegally_park").value = "<%serverip_illegally_park%>";          
+                    document.getElementById("serverip_illegally_park").focus();
+                    return false; 
+                }
+            }
+        }
+        return true;
+    }
+
+    function CheckSIp_park() {
+        var value = document.getElementById("centerip_park").value;
+        var res = false;    
+        var ipary = value.split(".");     
+        var num = ipary.length;
+        if (value.length == 0)
+        {
+            alert(GL("centerip_empty"));
+            document.getElementById("centerip_park").value = "<%centerip_park%>";
+            document.getElementById("centerip_park").focus();
+            return false;
+        }
+        if(num != 4)
+        {
+            alert(GL("centerip_err"));
+            document.getElementById("centerip_park").value = "<%centerip_park%>";
+            document.getElementById("centerip_park").focus();
+            return false;
+        }
+        else
+        {
+            var i = 0;
+            if (ipary[0] <= 0 || !(IsNumeric(ipary[0])))
+            {
+                alert(GL("centerip_err"));
+                document.getElementById("centerip_park").value = "<%centerip_park%>";
+                document.getElementById("centerip_park").focus();
+                return false; 
+            } 
+
+            for (i = 1; i<num;i++)
+            {
+                if(ipary[i] < 0 || ipary[i] >255 || !(IsNumeric(ipary[i])) || ipary[i] == '')
+                {
+                    alert(GL("centerip_err"));  
+                    document.getElementById("centerip_park").value = "<%centerip_park%>";          
+                    document.getElementById("centerip_park").focus();
+                    return false; 
+                }
+            }
+        }
+        return true;
+    }
+
+    function vehicleplatformfix()
+    {
+        var vnum = GetCCV("vehicleplatform");
+        //alert(vnum);
+        if (vnum==0)
+        {
+            //document.getElementById("vechile_agreetype").style.display = "none";	//未选		
+            //document.getElementById("vehicleip").style.display = "none";
+            //document.getElementById("vehile_port").style.display = "none";			
+            //document.getElementById("vehicle_id").style.display = "none";
+            //document.getElementById("save").style.display = "none";
+            CTRLARY["agreementype"].Disable(1);
+            CTRLARY["serverip"].Disable(1);
+            CTRLARY["serverport"].Disable(1);
+            CTRLARY["devid"].Disable(1);
+
+        }
+        if (vnum==1)
+        {
+            //document.getElementById("vechile_agreetype").style.display = "";	//选	
+            //document.getElementById("vehicleip").style.display = "";
+            //document.getElementById("vehile_port").style.display = "";			
+            //document.getElementById("vehicle_id").style.display = "";
+            //document.getElementById("save").style.display = "";
+            CTRLARY["agreementype"].Disable(0);
+            CTRLARY["serverip"].Disable(0);
+            CTRLARY["serverport"].Disable(0);
+            CTRLARY["devid"].Disable(0);
+        }	
+    } 
+
+    function faceplatformfix()
+    {
+        var vnum = GetCCV("faceplatform");
+        //alert(vnum);
+        if (vnum==0)
+        {
+            //document.getElementById("face_agreetype").style.display = "none";	//未选		
+            //document.getElementById("face_ip").style.display = "none";
+            //document.getElementById("face_port").style.display = "none";			
+            //document.getElementById("face_id").style.display = "none";
+            //document.getElementById("save_face").style.display = "none";
+            CTRLARY["agreementype_face"].Disable(1);
+            CTRLARY["serverip_face"].Disable(1);
+            CTRLARY["serverport_face"].Disable(1);
+            CTRLARY["devid_face"].Disable(1);
+        }
+        if (vnum==1)
+        {
+            //document.getElementById("face_agreetype").style.display = "";	//选	
+            //document.getElementById("face_ip").style.display = "";
+            //document.getElementById("face_port").style.display = "";			
+            //document.getElementById("face_id").style.display = "";
+            //document.getElementById("save_face").style.display = "";
+            CTRLARY["agreementype_face"].Disable(0);
+            CTRLARY["serverip_face"].Disable(0);
+            CTRLARY["serverport_face"].Disable(0);
+            CTRLARY["devid_face"].Disable(0);
+        }	
+    }
+
+    function getwayplatformfix()
+    {
+        var vnum = GetCCV("getwayplatform");
+        //alert(vnum);
+        if (vnum==0)
+        {
+            //document.getElementById("face_agreetype").style.display = "none";	//未选		
+            //document.getElementById("face_ip").style.display = "none";
+            //document.getElementById("face_port").style.display = "none";			
+            //document.getElementById("face_id").style.display = "none";
+            //document.getElementById("save_face").style.display = "none";
+            CTRLARY["agreementype_getway"].Disable(1);
+            CTRLARY["serverip_getway"].Disable(1);
+            CTRLARY["serverport_getway"].Disable(1);
+            CTRLARY["devid_getway"].Disable(1);
+        }
+        if (vnum==1)
+        {
+            //document.getElementById("face_agreetype").style.display = "";	//选	
+            //document.getElementById("face_ip").style.display = "";
+            //document.getElementById("face_port").style.display = "";			
+            //document.getElementById("face_id").style.display = "";
+            //document.getElementById("save_face").style.display = "";
+            CTRLARY["agreementype_getway"].Disable(0);
+            CTRLARY["serverip_getway"].Disable(0);
+            CTRLARY["serverport_getway"].Disable(0);
+            CTRLARY["devid_getway"].Disable(0);
+        }	
+    }
+
+    function illegally_park_platformfix()
+    {
+        var vnum = GetCCV("illegally_park_platform");
+        //alert(vnum);
+        if (vnum==0)
+        {
+            //document.getElementById("face_agreetype").style.display = "none";	//未选		
+            //document.getElementById("face_ip").style.display = "none";
+            //document.getElementById("face_port").style.display = "none";			
+            //document.getElementById("face_id").style.display = "none";
+            //document.getElementById("save_face").style.display = "none";
+            CTRLARY["agreementype_illegally_park"].Disable(1);
+            CTRLARY["serverip_illegally_park"].Disable(1);
+            CTRLARY["serverport_illegally_park"].Disable(1);
+            CTRLARY["devid_illegally_park"].Disable(1);
+        }
+        if (vnum==1)
+        {
+            //document.getElementById("face_agreetype").style.display = "";	//选	
+            //document.getElementById("face_ip").style.display = "";
+            //document.getElementById("face_port").style.display = "";			
+            //document.getElementById("face_id").style.display = "";
+            //document.getElementById("save_face").style.display = "";
+            CTRLARY["agreementype_illegally_park"].Disable(0);
+            CTRLARY["serverip_illegally_park"].Disable(0);
+            CTRLARY["serverport_illegally_park"].Disable(0);
+            CTRLARY["devid_illegally_park"].Disable(0);
+        }	
+    }
+
+    function park_platformfix()
+    {
+        var vnum = GetCCV("park_platform");
+        //alert(vnum);
+        if (vnum==0)
+        {
+            //document.getElementById("face_agreetype").style.display = "none";	//未选		
+            //document.getElementById("face_ip").style.display = "none";
+            //document.getElementById("face_port").style.display = "none";			
+            //document.getElementById("face_id").style.display = "none";
+            //document.getElementById("save_face").style.display = "none";
+            CTRLARY["agreementype_park"].Disable(1);
+            CTRLARY["centerip_park"].Disable(1);
+            CTRLARY["cmdport_park"].Disable(1);
+            CTRLARY["hbport_park"].Disable(1);
+            CTRLARY["sfip_park"].Disable(1);
+            CTRLARY["sfport_park"].Disable(1);
+            CTRLARY["devid_park"].Disable(1);
+        }
+        if (vnum==1)
+        {
+            //document.getElementById("face_agreetype").style.display = "";	//选	
+            //document.getElementById("face_ip").style.display = "";
+            //document.getElementById("face_port").style.display = "";			
+            //document.getElementById("face_id").style.display = "";
+            //document.getElementById("save_face").style.display = "";
+            CTRLARY["agreementype_park"].Disable(0);
+            CTRLARY["centerip_park"].Disable(0);
+            CTRLARY["cmdport_park"].Disable(0);
+            CTRLARY["hbport_park"].Disable(0);
+            CTRLARY["sfip_park"].Disable(0);
+            CTRLARY["sfport_park"].Disable(0);
+            CTRLARY["devid_park"].Disable(0);
+        }	
+    }
+
+    function ParaCheck()
+    {
+        var flag = false;
+
+        var serverip = GetCCV("serverip");
+        if (serverip == "<%serverip%>")
+        {
+            CTRLARY["serverip"].active = 0;
+        }
+        else if (flag == false)
+            flag = true;
+
+        var sdevid = GetCCV("devid");
+        if (sdevid == "<%devid%>")
+        {
+            CTRLARY["devid"].active = 0;
+        }
+        else if (flag == false)
+            flag = true;
+
+        return flag;
+    }
+
+    function MY_BEFORE_SUBMIT() {
+        if(CheckSntpIp() == false)
+            return false;
+
+        if(CheckSntpInterval(15,3600) == false)
+            return false;
+
+        if (ParaCheck() == false)
+        {
+            alert(GL("para_not_change"));
+            ChangeActive();
+            return false;
+        }
+
+        return true;
+    }
+
+    function Change_vehicle(){
+        //alert(123);
+        vehicleplatformfix();
+    }
+
+    function Change_faceplatform(){
+        //alert(123);
+        faceplatformfix();
+    }
+
+    function Change_getwayplatform(){
+        //alert(123);
+        getwayplatformfix();
+    }
+
+    function Change_illegally_park_platform(){
+        //alert(123);
+        illegally_park_platformfix();
+    }
+
+    function Change_park_platform(){
+        //alert(123);
+        park_platformfix();
+    }
+
+    function Changeagreetype(){
+        //SendHttp(c_iniUrl + GetSetterCmdKV("agreetype_change", GetCCV("agreementype")), false, SendImgCallBack);
+        //alert(GetCCV("agreementype"));
+    }
+
+    function Changedevid(){
+        //SendHttp(c_iniUrl + GetSetterCmdKV("devid_change", GetCCV("devid")), false, SendImgCallBack);
+        //alert(GetCCV("devid"));
+    }
+
+    function Changeserip(){
+
+    }
+
+    function Changesport(){
+        //SendHttp(c_iniUrl + GetSetterCmdKV("serport_change", GetCCV("serverport")), false, SendImgCallBack);
+        //alert(GetCCV("serverport"));
+    }
+    function  SaveAllSet(){
+        if(CheckSntpIp() == false)
+            return false;
+        var ser_str='0'+','+GetCCV("vehicleplatform")+','+GetCCV("agreementype")+','+GetCCV("serverip")+','+GetCCV("serverport")+','+GetCCV("devid");
+        //alert(ser_str);
+        SendHttp(c_iniUrl + GetSetterCmdKV("pt_set_save", ser_str), false,SendImgCallBack);
+
+    }
+
+    function  SaveAll_face_Set(){
+        if(CheckSIp_face() == false)
+            return false;
+        var ser_str='1'+','+GetCCV("faceplatform")+','+GetCCV("agreementype_face")+','+GetCCV("serverip_face")+','+GetCCV("serverport_face")+','+GetCCV("devid_face");
+        //alert(ser_str);
+        SendHttp(c_iniUrl + GetSetterCmdKV("pt_set_save", ser_str), false,SendImgCallBack);
+
+    }
+
+    function  SaveAll_getway_Set(){
+        if(CheckSIp_getway() == false)
+            return false;
+        var ser_str='2'+','+GetCCV("getwayplatform")+','+GetCCV("agreementype_getway")+','+GetCCV("serverip_getway")+','+GetCCV("serverport_getway")+','+GetCCV("devid_getway");
+        //alert(ser_str);
+        SendHttp(c_iniUrl + GetSetterCmdKV("pt_set_save", ser_str), false,SendImgCallBack);
+    }
+
+    function  SaveAll_illegally_park_Set(){
+        if(CheckSIp_illegally_park() == false)
+            return false;
+        var ser_str='3'+','+GetCCV("illegally_park_platform")+','+GetCCV("agreementype_illegally_park")+','+GetCCV("serverip_illegally_park")+','+GetCCV("serverport_illegally_park")+','+GetCCV("devid_illegally_park");
+        //alert(ser_str);
+        SendHttp(c_iniUrl + GetSetterCmdKV("pt_set_save", ser_str), false,SendImgCallBack);
+    }
+
+    function  SaveAll_park_Set(){
+        if(CheckSIp_park() == false)
+            return false;
+        var ser_str='4'+','+GetCCV("park_platform")+','+GetCCV("agreementype_park")+','+GetCCV("centerip_park")+','+GetCCV("cmdport_park")+','+GetCCV("hbport_park")+','+GetCCV("sfip_park")+','+GetCCV("sfport_park")+','+GetCCV("devid_park");
+        //alert(ser_str);
+        SendHttp(c_iniUrl + GetSetterCmdKV("pt_set_save", ser_str), false,SendImgCallBack);
+    }
+
+    function MY_SUBMIT_OK() {
+        alert(GL("submit_success"));
+        // ChangeContent(null, false);
+        window.location.reload();
+    }
+  
+    function WIPXGain(tid, ctx, numrange)
+    {
+        DW('<tr><td height="30" >');
+        DW(GL(tid) + ':</td><td height=30>' + ctx + GL(numrange)+ '</td></tr>');  
+    };
+    function WIPGain(tid, id, numrange)
+    {
+        WIPXGain(tid, WH_(id), numrange)
+    }
+</script>
+
+<script>
+  var softversion = "<%softwarever%>";
+  DW('<table>');
+  if(softversion.indexOf("VM") >= 0)
+  {
+    DW('<tr><td width="750px">');
+    DW('<div class="headline">' + GL("vehicle_platform") + '</div>');	
+    DW('<table>');
+    DW('<tr><td >' + GL("vehicle_platform") + '</td><td>');
+    WH("vehicleplatform");
+    DW('</td></tr>');
+    DW('<tr id="vechile_agreetype"><td >' + GL("agreementtype") + ': </td><td>');
+    WH("agreementype");
+    DW('</td></tr>');
+    DW('<tr id="vehicleip"><td>'+ GL("server_ip") + ': </td><td>');
+    WH("serverip");
+    DW('</td></tr>');
+    DW('<tr id = "vehile_port"><td>'+ GL("server_port") + ': </td><td>');
+    WH("serverport");
+    DW('</td></tr>');
+    //WIPGain("sntp_interval", "devid", "ntpin_range");
+    DW('<tr id="vehicle_id"><td>'+ GL("dev_id") + ': </td><td>');
+    WH("devid");
+    DW('</td></tr>');
+    
+    DW('<tr><td>');
+    DW('<input type="button" id="save" onclick="SaveAllSet()" style="height:30px;width:80px;">');
+    document.getElementById("save").value=GL("save_set");    
+    document.getElementById("save").title=GL("Save_the_pingtai_set"); 
+    DW('</td></tr>'); 
+    DW('</table>');
+    DW('</td></tr>'); 
+  }
+  if(softversion.indexOf("VM") >= 0)
+  {
+    DW('<tr><td width="750px">');
+    DW('<table>');
+    DW('<div class="headline">' + GL("face_platform") + '</div>');	
+    DW('<tr><td >' + GL("face_platform") + '</td><td>');
+    WH("faceplatform");
+    DW('</td></tr>');
+    DW('<tr id="face_agreetype"><td >' + GL("face_agreementtype") + ': </td><td>');
+    WH("agreementype_face");
+    DW('</td></tr>');
+    DW('<tr id="face_ip"><td>'+ GL("face_server_ip") + ': </td><td>');
+    WH("serverip_face");
+    DW('</td></tr>');
+    DW('<tr id="face_port"><td>'+ GL("face_server_port") + ': </td><td>');
+    WH("serverport_face");
+    DW('</td></tr>');
+    DW('<tr id="face_id"><td>'+ GL("dev_id_face") + ': </td><td>');
+    WH("devid_face");
+    DW('</td></tr>');  
+    DW('<tr><td>');
+    DW('<input type="button" id="save_face" onclick="SaveAll_face_Set()" style="height:30px;width:100px;">');
+    document.getElementById("save_face").value=GL("save_face_set");    
+    document.getElementById("save_face").title=GL("Save_the_face_pingtai_set"); 
+    DW('</td></tr>'); 
+    DW('</table>');
+    DW('</td></tr>');  
+  }
+  if(softversion.indexOf("VE") >= 0)
+  {
+    DW('<tr><td width="750px">');
+    DW('<table>');
+    DW('<div class="headline">' + GL("crk_platform") + '</div>');	
+    DW('<tr><td >' + GL("crk_platform") + '</td><td>');
+    WH("getwayplatform");
+    DW('</td></tr>');
+    DW('<tr id="getway_agreetype"><td >' + GL("getway_agreementtype") + ': </td><td>');
+    WH("agreementype_getway");
+    DW('</td></tr>');
+    DW('<tr id="face_ip"><td>'+ GL("getway_server_ip") + ': </td><td>');
+    WH("serverip_getway");
+    DW('</td></tr>');
+    DW('<tr id="face_port"><td>'+ GL("getway_server_port") + ': </td><td>');
+    WH("serverport_getway");
+    DW('</td></tr>');
+    DW('<tr id="face_id"><td>'+ GL("dev_id_getway") + ': </td><td>');
+    WH("devid_getway");
+    DW('</td></tr>');  
+    DW('<tr><td>');
+    DW('<input type="button" id="save_getway" onclick="SaveAll_getway_Set()" style="height:30px;width:100px;">');
+    document.getElementById("save_getway").value=GL("save_getway_set");    
+    document.getElementById("save_getway").title=GL("Save_the_getway_pingtai_set"); 
+    DW('</td></tr>'); 
+    DW('</table>');
+    DW('</td></tr>');
+  }
+
+  if(softversion.indexOf("VP") >= 0)
+  {
+    DW('<tr><td width="750px">');
+    DW('<table>');
+    DW('<div class="headline">' + GL("illegally_park_platform") + '</div>');	
+    DW('<tr><td >' + GL("illegally_park_platform") + '</td><td>');
+    WH("illegally_park_platform");
+    DW('</td></tr>');
+    DW('<tr id="illegally_park_agreetype"><td >' + GL("illegally_park_agreementtype") + ': </td><td>');
+    WH("agreementype_illegally_park");
+    DW('</td></tr>');
+    DW('<tr id="illegally_park_server_ip"><td>'+ GL("illegally_park_server_ip") + ': </td><td>');
+    WH("serverip_illegally_park");
+    DW('</td></tr>');
+    DW('<tr id="illegally_park_server_port"><td>'+ GL("illegally_park_server_port") + ': </td><td>');
+    WH("serverport_illegally_park");
+    DW('</td></tr>');
+    DW('<tr id="illegally_park_devid"><td>'+ GL("dev_id_illegally_park") + ': </td><td>');
+    WH("devid_illegally_park");
+    DW('</td></tr>');  
+    DW('<tr><td>');
+    DW('<input type="button" id="save_illegally_park" onclick="SaveAll_illegally_park_Set()" style="height:30px;width:100px;">');
+    document.getElementById("save_illegally_park").value=GL("save_illegally_park_set");    
+    document.getElementById("save_illegally_park").title=GL("Save_the_illegally_park_pingtai_set"); 
+    DW('</td></tr>'); 
+    DW('</table>');
+    DW('</td></tr>');
+  }
+  if(softversion.indexOf("PARK") >= 0)
+  {
+    DW('<tr><td width="750px">');
+    DW('<table>');
+    DW('<div class="headline">' + GL("park_platform") + '</div>');	
+    DW('<tr><td >' + GL("park_platform") + '</td><td>');
+    WH("park_platform");
+    DW('</td></tr>');
+    DW('<tr id="park_agreetype"><td >' + GL("park_agreementtype") + ': </td><td>');
+    WH("agreementype_park");
+    DW('</td></tr>');
+    DW('<tr id="park_center_ip"><td>'+ GL("park_center_ip") + ': </td><td>');
+    WH("centerip_park");
+    DW('</td></tr>');
+    DW('<tr id="park_cmd_port"><td>'+ GL("park_cmd_port") + ': </td><td>');
+    WH("cmdport_park");
+    DW('</td></tr>');
+    DW('<tr id="park_heartbeat_port"><td>'+ GL("park_heartbeat_port") + ': </td><td>');
+    WH("hbport_park");
+    DW('</td></tr>');
+    DW('<tr id="park_sf_ip"><td>'+ GL("park_sf_ip") + ': </td><td>');
+    WH("sfip_park");
+    DW('</td></tr>');
+    DW('<tr id="park_sf_port"><td>'+ GL("park_sf_port") + ': </td><td>');
+    WH("sfport_park");
+    DW('</td></tr>');
+    DW('<tr id="park_dev_id"><td>'+ GL("dev_id_park") + ': </td><td>');
+    WH("devid_park");
+    DW('</td></tr>');  
+    DW('<tr><td>');
+    DW('<input type="button" id="save_park" onclick="SaveAll_park_Set()" style="height:30px;width:100px;">');
+    document.getElementById("save_park").value=GL("save_park_set");    
+    document.getElementById("save_park").title=GL("Save_the_park_pingtai_set"); 
+    DW('</td></tr>'); 
+    DW('</table>');
+    DW('</td></tr>');
+  }
+  DW('</table>');
+</script>
+</body>
+</html>

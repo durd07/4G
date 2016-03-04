@@ -1,0 +1,1464 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+		<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+		<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+		<script language="javascript" src="var.js"></script>
+		<script language="javascript" src="common.js"></script>
+		<script>
+            InitLoad();
+		</script>
+		<title></title>
+		<style type="text/css">
+			td {
+				font-size: 12px;
+			}
+			#rightDiv {
+				position: absolute;
+				left: 500px;
+				top: 0px;
+			}
+			.floatDiv {
+				position: absolute;
+				border: 1px solid #999;
+				filter: alpha(opacity=0);
+			}
+
+			div.headline {
+				font-size: 13px;
+				background-color: #F0F0F0;
+				font-weight: bold;
+				margin-top: 10px;
+				/*margin-left: 10px;*/
+			}
+
+		</style>
+
+	</head>
+	<body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+		<script>
+            var runFlag = true;
+            var initflag = 1;
+            // dmenable, 0:off, 2:on
+            var v_MotionEnable = "<%dmvacfgctdimdsmostzoc%>";
+
+            if (v_MotionEnable == 2)
+                v_MotionEnable = 1;
+
+            // alert(v_MotionEnable);
+            // motion display option, bit2=1, full screen detect; else area detect
+            var dv_Mdisplayoption = "<%dmvadisplayoptions%>";
+            var v_Mdisplayoption = 0;
+            if (dv_Mdisplayoption == 7)
+                v_Mdisplayoption = 1;
+            else {
+                v_Mdisplayoption = (dv_Mdisplayoption >> 2) & 0x01;
+                if (v_Mdisplayoption == 0)
+                    v_Mdisplayoption = 0;
+                else
+                    v_Mdisplayoption = 1;
+            }
+
+            // dm zone enable
+            var dm_areaenable = "<%dmvaimdzoneenable%>";
+
+            var motionenable1 = dm_areaenable & 0x01;
+            var motionenable2 = (dm_areaenable >> 1) & 0x01;
+
+            var v_MotionLevel = "<%dmvaimdsensitivity%>";
+            var supportmotion = 2;
+            //parseInt("<%supportmotion%>")
+            var s_Motion = (supportmotion >= 1) && (g_isSupS2 || g_isSupS3 || g_isSupS5 || g_isSupS6);
+
+            var bgImage = "D:\\HisenseOSDbackgroundImage.png";
+            var sleepTimer;
+            var index = -1;
+
+            var motion_ulx = ["<%dmvaimdzone1_x01%>", "<%dmvaimdzone2_x01%>"];
+            var motion_uly = ["<%dmvaimdzone1_y01%>", "<%dmvaimdzone2_y01%>"];
+            var motion_urx = ["<%dmvaimdzone1_x02%>", "<%dmvaimdzone2_x02%>"];
+            var motion_ury = ["<%dmvaimdzone1_y02%>", "<%dmvaimdzone2_y02%>"];
+            var motion_llx = ["<%dmvaimdzone1_x03%>", "<%dmvaimdzone2_x03%>"];
+            var motion_lly = ["<%dmvaimdzone1_y03%>", "<%dmvaimdzone2_y03%>"];
+            var motion_lrx = ["<%dmvaimdzone1_x04%>", "<%dmvaimdzone2_x04%>"];
+            var motion_lry = ["<%dmvaimdzone1_y04%>", "<%dmvaimdzone2_y04%>"];
+
+            var width1 = Math.round((motion_urx[0] - motion_ulx[0]) * 1920 / 100);
+            var height1 = Math.round((motion_lly[0] - motion_uly[0]) * 1080 / 100);
+            var width2 = Math.round((motion_urx[1] - motion_ulx[1]) * 1920 / 100);
+            var height2 = Math.round((motion_lly[1] - motion_uly[1]) * 1080 / 100);
+
+            var x1 = Math.round(motion_ulx[0] * 1920 / 100);
+            var x2 = Math.round(motion_ulx[1] * 1920 / 100);
+            var y1 = Math.round(motion_uly[0] * 1080 / 100);
+            var y2 = Math.round(motion_uly[1] * 1080 / 100);
+            var motion_x = [x1, x2];
+            var motion_y = [y1, y2];
+            var motion_w = [width1, width2];
+            var motion_h = [height1, height2];
+
+            var sensLevellist = GL("low") + ";" + GL("low_to_moderate") + ";" + GL("moderate") + ";" + GL("moderate_to_high") + ";" + GL("high");
+
+            var dislist = GL("full_screen") + ";" + GL("area_detect");
+            var bgImage = "D:\\HisenseOSDbackgroundImage.png";
+            var sleepTimer;
+            var malarmlist = GL("no_alarm") + ";" + GL("ir_white_alarm") + ";" + GL("ir_alarm");
+
+            CTRLARY = {
+                motionEn : new Ctrl_Radio("motionEn", v_MotionEnable, "", "FixStatus()"),
+                displayoptions : new Ctrl_Select("displayoptions", dislist, v_Mdisplayoption, ""),
+                sensLevel : new Ctrl_Select("sensLevel", sensLevellist, v_MotionLevel, "dmvaimdsensitivity"),
+                motionalarm : new Ctrl_Select("motionalarm", malarmlist, "<%motiondec%>", "motiondec="),
+
+                motionenable1 : new Ctrl_Check("motionenable1", motionenable1, "", "FixMotion1()"),
+                motionenable2 : new Ctrl_Check("motionenable2", motionenable2, "", "FixMotion2()"),
+                motionx11 : new Ctrl_Text("motionx11", 3, 3, "<%dmvaimdzone1_x01%>", "dmvaimdzone1_x01"),
+                motiony11 : new Ctrl_Text("motiony11", 3, 3, "<%dmvaimdzone1_y01%>", "dmvaimdzone1_y01"),
+                motionx12 : new Ctrl_Text("motionx12", 3, 3, "<%dmvaimdzone1_x02%>", "dmvaimdzone1_x02"),
+                motiony12 : new Ctrl_Text("motiony12", 3, 3, "<%dmvaimdzone1_y02%>", "dmvaimdzone1_y02"),
+                motionx13 : new Ctrl_Text("motionx13", 3, 3, "<%dmvaimdzone1_x03%>", "dmvaimdzone1_x03"),
+                motiony13 : new Ctrl_Text("motiony13", 3, 3, "<%dmvaimdzone1_y03%>", "dmvaimdzone1_y03"),
+                motionx14 : new Ctrl_Text("motionx14", 3, 3, "<%dmvaimdzone1_x04%>", "dmvaimdzone1_x04"),
+                motiony14 : new Ctrl_Text("motiony14", 3, 3, "<%dmvaimdzone1_y04%>", "dmvaimdzone1_y04"),
+
+                motionx21 : new Ctrl_Text("motionx21", 3, 3, "<%dmvaimdzone2_x01%>", "dmvaimdzone2_x01"),
+                motiony21 : new Ctrl_Text("motiony21", 3, 3, "<%dmvaimdzone2_y01%>", "dmvaimdzone2_y01"),
+                motionx22 : new Ctrl_Text("motionx22", 3, 3, "<%dmvaimdzone2_x02%>", "dmvaimdzone2_x02"),
+                motiony22 : new Ctrl_Text("motiony22", 3, 3, "<%dmvaimdzone2_y02%>", "dmvaimdzone2_y02"),
+                motionx23 : new Ctrl_Text("motionx23", 3, 3, "<%dmvaimdzone2_x03%>", "dmvaimdzone2_x03"),
+                motiony23 : new Ctrl_Text("motiony23", 3, 3, "<%dmvaimdzone2_y03%>", "dmvaimdzone2_y03"),
+                motionx24 : new Ctrl_Text("motionx24", 3, 3, "<%dmvaimdzone2_x04%>", "dmvaimdzone2_x04"),
+                motiony24 : new Ctrl_Text("motiony24", 3, 3, "<%dmvaimdzone2_y04%>", "dmvaimdzone2_y04"),
+
+                personminw : new Ctrl_Text("personminw", 2, 2, "<%dmvaimdpersonminwidth%>", "dmvaimdpersonminwidth=", null, false, "CheckPersonWidth1()"),
+                personmaxw : new Ctrl_Text("personmaxw", 2, 2, "<%dmvaimdpersonmaxwidth%>", "dmvaimdpersonmaxwidth=", null, false, "CheckPersonWidth2()"),
+                personminh : new Ctrl_Text("personminh", 2, 2, "<%dmvaimdpersonminheight%>", "dmvaimdpersonminheight=", null, false, "CheckPersonHeight1()"),
+                personmaxh : new Ctrl_Text("personmaxh", 2, 2, "<%dmvaimdpersonmaxheight%>", "dmvaimdpersonmaxheight=", null, false, "CheckPersonHeight2()"),
+
+                vehicleminw : new Ctrl_Text("vehicleminw", 2, 2, "<%dmvaimdvehicleminwidth%>", "dmvaimdvehicleminwidth=", null, false, "CheckVehicleWidth1()"),
+                vehiclemaxw : new Ctrl_Text("vehiclemaxw", 2, 2, "<%dmvaimdvehiclemaxwidth%>", "dmvaimdvehiclemaxwidth=", null, false, "CheckVehicleWidth2()"),
+                vehicleminh : new Ctrl_Text("vehicleminh", 2, 2, "<%dmvaimdvehicleminheight%>", "dmvaimdvehicleminheight=", null, false, "CheckVehicleHeight1()"),
+                vehiclemaxh : new Ctrl_Text("vehiclemaxh", 2, 2, "<%dmvaimdvehiclemaxheight%>", "dmvaimdvehiclemaxheight=", null, false, "CheckVehicleHeight2()")
+            };
+            function FixMotion1() {
+                if (GetCCV("motionenable1") == 0)
+                    document.getElementById("clear_1").disabled = 1;
+                else
+                    document.getElementById("clear_1").disabled = 0;
+            }
+
+            function FixMotion2() {
+                if (GetCCV("motionenable2") == 0)
+                    document.getElementById("clear_2").disabled = 1;
+                else
+                    document.getElementById("clear_2").disabled = 0;
+            }
+
+            function DisableMotion() {
+                document.getElementById("motionx11").disabled = 1;
+                document.getElementById("motiony11").disabled = 1;
+                document.getElementById("motionx12").disabled = 1;
+                document.getElementById("motiony12").disabled = 1;
+                document.getElementById("motionx13").disabled = 1;
+                document.getElementById("motiony13").disabled = 1;
+                document.getElementById("motionx14").disabled = 1;
+                document.getElementById("motiony14").disabled = 1;
+
+                document.getElementById("motionx21").disabled = 1;
+                document.getElementById("motiony21").disabled = 1;
+                document.getElementById("motionx22").disabled = 1;
+                document.getElementById("motiony22").disabled = 1;
+                document.getElementById("motionx23").disabled = 1;
+                document.getElementById("motiony23").disabled = 1;
+                document.getElementById("motionx24").disabled = 1;
+                document.getElementById("motiony24").disabled = 1;
+            }
+
+            function MY_ONUNLOAD() {
+                StopActiveX();
+            }
+
+            function MY_ONLOAD() {
+                g_lockLink = false;
+                StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+                DisableMotion();
+                // FixDisplayOptions();
+                initflag = 1;
+                sleepTimer = setTimeout(showMotionArea, 1500);
+                FixStatus();
+            }
+
+            function FixDisplayOptions() {
+                if (GetCCV("displayoptions") == 0) {
+                    // clearMotionArea(1);
+                    // clearMotionArea(2);
+                    DisableObjs(new Array("motionenable1", "motionenable2"), true);
+                    document.getElementById("clear_1").disabled = 1;
+                    document.getElementById("clear_2").disabled = 1;
+
+                    document.getElementById("tabs-motion").style.display = "none";
+                } else {
+                    document.getElementById("tabs-motion").style.display = "";
+
+                    DisableObjs(new Array("motionenable1", "motionenable2"), false);
+                    FixMotion1();
+                    FixMotion2();
+                }
+            }
+
+            function MotionRangeSplit() {
+                var motionrange = MotionRange();
+                var motionrange1 = motionrange.split('|');
+                var motionrange = motionrange1[0];
+                // alert(motionrange);
+                var motionrange1 = motionrange.split('&');
+                // alert(motionrange1);
+                document.getElementById("motionx").value = motionrange1[1];
+                document.getElementById("motiony").value = motionrange1[2];
+                document.getElementById("motionw").value = motionrange1[3];
+                document.getElementById("motionh").value = motionrange1[4];
+
+            }
+
+            function CheckMotionRange() {
+                var motionx1 = GetCCV("motionx1");
+                var motiony1 = GetCCV("motiony1");
+                var motionw1 = GetCCV("motionw1");
+                var motionh1 = GetCCV("motionh1");
+                var motionx2 = GetCCV("motionx2");
+                var motiony2 = GetCCV("motiony2");
+                var motionw2 = GetCCV("motionw2");
+                var motionh2 = GetCCV("motionh2");
+
+                var motion2x1 = parseInt(100 * (parseInt(motionx1)) / 1920);
+                var motion2y1 = parseInt(100 * (parseInt(motiony1)) / 1080);
+                var motion2w1 = parseInt(100 * (parseInt(motionw1)) / 1920);
+                var motion2h1 = parseInt(100 * (parseInt(motionh1)) / 1080);
+
+                var motion2x2 = parseInt(100 * (parseInt(motionx2)) / 1920);
+                var motion2y2 = parseInt(100 * (parseInt(motiony2)) / 1080);
+                var motion2w2 = parseInt(100 * (parseInt(motionw2)) / 1920);
+                var motion2h2 = parseInt(100 * (parseInt(motionh2)) / 1080);
+
+                var o = '';
+                o += c_iniUrl;
+                o += GetSetterCmdKV("str2x1", motion2x1);
+                o += GetSetterCmdKV("str2y1", motion2y1);
+                o += GetSetterCmdKV("str2w1", motion2w1);
+                o += GetSetterCmdKV("str2h1", motion2h1);
+                o += GetSetterCmdKV("str2x2", motion2x2);
+                o += GetSetterCmdKV("str2y2", motion2y2);
+                o += GetSetterCmdKV("str2w2", motion2w2);
+                o += GetSetterCmdKV("str2h2", motion2h2);
+                o += GetSetterCmdKV("str2x3", motion2x3);
+                o += GetSetterCmdKV("str2y3", motion2y3);
+                o += GetSetterCmdKV("str2w3", motion2w3);
+                o += GetSetterCmdKV("str2h3", motion2h3);
+
+                SendHttp(o, false);
+
+            }
+
+            function MotionClear1() {
+                if (GetCCV("motionenable1") == 1) {
+                    document.getElementById("motionx11").value = 0;
+                    document.getElementById("motiony11").value = 0;
+                    document.getElementById("motionx12").value = 0;
+                    document.getElementById("motiony12").value = 0;
+                    document.getElementById("motionx13").value = 0;
+                    document.getElementById("motiony13").value = 0;
+                    document.getElementById("motionx14").value = 0;
+                    document.getElementById("motiony14").value = 0;
+                    clearMotionArea(1);
+                }
+            }
+
+            function MotionClear2() {
+                if (GetCCV("motionenable2") == 1) {
+                    document.getElementById("motionx21").value = 0;
+                    document.getElementById("motiony21").value = 0;
+                    document.getElementById("motionx22").value = 0;
+                    document.getElementById("motiony22").value = 0;
+                    document.getElementById("motionx23").value = 0;
+                    document.getElementById("motiony23").value = 0;
+                    document.getElementById("motionx24").value = 0;
+                    document.getElementById("motiony24").value = 0;
+                    clearMotionArea(2);
+                }
+            }
+
+            function showMotionArea() {
+                convertNum();
+                vlcTakeSnap();
+                setBackground();
+                if (GetCCV("displayoptions") == 1)
+                    initMotionArea();
+            }
+
+            function convertNum() {
+                for (var i = 0; i < 2; i++) {
+                    motion_x[i] = serverXToLocal(motion_x[i]);
+                    motion_y[i] = serverYToLocal(motion_y[i]);
+                    motion_w[i] = serverWToLocal(motion_w[i]);
+                    motion_h[i] = serverHToLocal(motion_h[i]);
+                }
+            }
+
+            function vlcTakeSnap() {
+                clearTimeout(sleepTimer);
+                var obj = GE(AxID);
+                if (obj != null) {
+                    try {
+                        obj.takeSnapshot(bgImage);
+                    } catch (e) {
+                        alert("Take Snap Error!");
+                    }
+                }
+            }
+
+            function setBackground() {
+                document.getElementById("Area").style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + bgImage + "',sizingMethod='scale')";
+                document.getElementById("Area").onmousedown = mouseDown;
+                document.getElementById("Area").onmouseup = mouseUp;
+            }
+
+            function initMotionArea() {
+                var i = 0;
+                for ( i = 0; i < 2; i++) {
+                    if (document.getElementById("motionenable" + (i + 1)).checked == true) {
+                        //alert(i + "checked;x=" + motion_x[i]+";y="+motion_y[i]+";w="+motion_w[i]+";h="+motion_h[i]);
+                        //if (GetCCV("motionenable" + (i+1)) == 1)) {
+                        //document.getElementById('div' + i).className = "selected";
+                        document.getElementById('div' + i).style.left = motion_x[i];
+                        document.getElementById('div' + i).style.top = motion_y[i];
+                        document.getElementById('div' + i).style.width = motion_w[i];
+                        document.getElementById('div' + i).style.height = motion_h[i];
+                        document.getElementById('div' + i).style.filter = "alpha(opacity=50)";
+                    }
+
+                }
+            }
+
+            function clearMotionArea(val) {
+                if (val == 1) {
+                    if (document.getElementById("motionenable1").checked == true) {
+                        document.getElementById('div0').style.left = 0;
+                        document.getElementById('div0').style.top = 0;
+                        document.getElementById('div0').style.width = 0;
+                        document.getElementById('div0').style.height = 0;
+                        document.getElementById('div0').style.filter = "alpha(opacity=0)";
+                        motion_x[0] = motion_y[0] = motion_w[0] = motion_h[0] = 0;
+                        //selectArea(document.getElementById("div0"));
+                        index = 0;
+                    }
+                } else if (val == 2) {
+                    if (document.getElementById("motionenable2").checked == true) {
+                        document.getElementById('div1').style.left = 0;
+                        document.getElementById('div1').style.top = 0;
+                        document.getElementById('div1').style.width = 0;
+                        document.getElementById('div1').style.height = 0;
+                        document.getElementById('div1').style.filter = "alpha(opacity=0)";
+                        motion_x[1] = motion_y[1] = motion_w[1] = motion_h[1] = 0;
+                        //selectArea(document.getElementById("div1"));
+                        index = 1;
+                    }
+                }
+
+            }
+
+            function mouseDown(ev) {
+                if (index == -1)
+                    return;
+                ev = ev || window.event;
+                var mousePos = mousePosition(ev);
+                motion_x[index] = mousePos.x;
+                motion_y[index] = mousePos.y;
+                // document.getElementById("motionx" + (1+index) + "1").value = Math.round(100*localXToServer(motion_x[index]) / 1920);
+                // document.getElementById("motiony" + (1+index) + "1").value = Math.round(100*localYToServer(motion_y[index]) / 1080);
+                document.onmousemove = mouseMove;
+            }
+
+            function mouseUp(ev) {
+                if (index == -1)
+                    return;
+                ev = ev || window.event;
+                var mousePos = mousePosition(ev);
+                motion_w[index] = mousePos.x - motion_x[index];
+                motion_h[index] = mousePos.y - motion_y[index];
+                document.onmousemove = '';
+                GetMotionXY(index);
+                //alert("x00=" + x00 +";y00=" + y00 + ";x01=" + x01 + ";y01=" + y01);
+            }
+
+            function mouseMove(ev) {
+                if (index == -1)
+                    return;
+                ev = ev || window.event;
+                var mousePos = mousePosition(ev);
+                //xxx document.getElementById('div1').value = mousePos.x;
+                //xxx document.getElementById('div2').value = mousePos.y;
+
+                /* add by dsl, 2013-12-2 */
+                /* FIXME: this size should be the same to the size of #Area*/
+                if (mousePos.x > 500 || mousePos.y > 281) {
+                    document.onmousemove = '';
+                    motion_x[index] = 0;
+                    motion_y[index] = 0;
+                    motion_w[index] = 0;
+                    motion_h[index] = 0;
+                    document.getElementById("motionx" + (1 + index) + "1").value = 0;
+                    document.getElementById("motiony" + (1 + index) + "1").value = 0;
+                    document.getElementById("motionx" + (1 + index) + "2").value = 0;
+                    document.getElementById("motiony" + (1 + index) + "2").value = 0;
+                    document.getElementById("motionx" + (1 + index) + "3").value = 0;
+                    document.getElementById("motiony" + (1 + index) + "3").value = 0;
+                    document.getElementById("motionx" + (1 + index) + "4").value = 0;
+                    document.getElementById("motiony" + (1 + index) + "4").value = 0;
+                    alert(GL("mouse_out_of_range"));
+                    return;
+                }
+
+                /* end added, dsl, 2013-12-2 */
+                if (mousePos.y < motion_y[index] || mousePos.x < motion_x[index]) {
+                    document.onmousemove = '';
+                    motion_x[index] = 0;
+                    motion_y[index] = 0;
+                    motion_w[index] = 0;
+                    motion_h[index] = 0;
+                    document.getElementById("motionx" + (1 + index) + "1").value = 0;
+                    document.getElementById("motiony" + (1 + index) + "1").value = 0;
+                    document.getElementById("motionx" + (1 + index) + "2").value = 0;
+                    document.getElementById("motiony" + (1 + index) + "2").value = 0;
+                    document.getElementById("motionx" + (1 + index) + "3").value = 0;
+                    document.getElementById("motiony" + (1 + index) + "3").value = 0;
+                    document.getElementById("motionx" + (1 + index) + "4").value = 0;
+                    document.getElementById("motiony" + (1 + index) + "4").value = 0;
+                    alert(GL("mouse_range"));
+                    return;
+                }
+                document.getElementById('div' + index).style.top = motion_y[index];
+                document.getElementById('div' + index).style.left = motion_x[index];
+                motion_w[index] = mousePos.x - motion_x[index];
+                motion_h[index] = mousePos.y - motion_y[index];
+                document.getElementById('div' + index).style.height = motion_h[index];
+                document.getElementById('div' + index).style.width = motion_w[index];
+                document.getElementById('div' + index).style.filter = "alpha(opacity=50)";
+
+                //document.getElementById("motionw" + (1+index)).value = localWToServer(motion_w[index]);
+                //document.getElementById("motionh" +(1+index)).value = localHToServer(motion_h[index]);
+            }
+
+            function mousePosition(ev) {
+                if (ev.pageX || ev.pageY) {
+                    return {
+                        x : ev.pageX,
+                        y : ev.pageY
+                    };
+                }
+                return {
+                    x : ev.clientX + document.body.scrollLeft - document.body.clientLeft,
+                    y : ev.clientY + document.body.scrollTop - document.body.clientTop
+                };
+            }
+
+            function checkStateChanged(id) {
+                if (id == document.getElementById("motionenable1")) {
+                    index = 0;
+                } else if (id == document.getElementById("motionenable2")) {
+                    index = 1;
+                }
+                if (id.checked == true) {
+                    showArea();
+                } else {
+                    hideArea();
+                    index = -1;
+                }
+
+                if (id == document.getElementById("motionenable1")) {
+                    var value = GetCCV("motionenable1");
+                    if (value == 1)
+                        document.getElementById("clear_1").disabled = 0;
+                    else
+                        document.getElementById("clear_1").disabled = 1;
+                }
+
+                if (id == document.getElementById("motionenable2")) {
+                    var value = GetCCV("motionenable2");
+                    if (value == 1)
+                        document.getElementById("clear_2").disabled = 0;
+                    else
+                        document.getElementById("clear_2").disabled = 1;
+                }
+
+            }
+
+            function ChangeMotionZone1(id) {
+                if (id == document.getElementById("motionEn")) {
+                    if (GetCCV("motionEn") == 0) {
+                        hideAllArea();
+                    } else {
+                        showAllArea();
+                    }
+                    FixStatus();
+                }
+            }
+
+            function ChangeMotionZone2(id) {
+                if (id == document.getElementById("displayoptions")) {
+                    if (GetCCV("displayoptions") == 0) {
+                        hideAllArea();
+                    } else {
+                        showAllArea();
+                    }
+                    FixDisplayOptions();
+                }
+            }
+
+            function showAllArea() {
+                for (var index = 0; index < 2; index++) {
+                    document.getElementById('div' + index).style.top = motion_y[index];
+                    document.getElementById('div' + index).style.left = motion_x[index];
+                    document.getElementById('div' + index).style.height = motion_h[index];
+                    document.getElementById('div' + index).style.width = motion_w[index];
+                    document.getElementById('div' + index).style.filter = "alpha(opacity=50)";
+                };
+            }
+
+            function hideAllArea() {
+                for (var index = 0; index < 2; index++) {
+                    document.getElementById('div' + index).style.filter = "alpha(opacity=0)";
+                }
+            }
+
+            function showArea() {
+                document.getElementById('div' + index).style.top = motion_y[index];
+                document.getElementById('div' + index).style.left = motion_x[index];
+                document.getElementById('div' + index).style.height = motion_h[index];
+                document.getElementById('div' + index).style.width = motion_w[index];
+                document.getElementById('div' + index).style.filter = "alpha(opacity=50)";
+            }
+
+            function hideArea() {
+                document.getElementById('div' + index).style.filter = "alpha(opacity=0)";
+            }
+
+            function selectArea(id) {
+                var mIndex = -1;
+                for (var i = 0; i < 2; i++) {
+                    if (id == document.getElementById("div" + i)) {
+                        if (document.getElementById('motionenable' + (i + 1)).checked == true) {
+                            index = i;
+                            return;
+                        } else {
+                            mIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                for (var i = 0; i < mIndex; i++) {
+                    if (document.getElementById('motionenable' + (i + 1)).checked == true) {
+                        if (motion_x[i] == motion_x[mIndex] && motion_y[i] == motion_y[mIndex] && motion_w[i] == motion_w[mIndex] && motion_h[i] == motion_h[mIndex]) {
+                            index = i;
+                            return;
+                        }
+                    }
+                }
+
+                index = -1;
+            }
+
+            function localXToServer(localx) {
+                return Math.round(1920 * localx / 448);
+            }
+
+            function localYToServer(localy) {
+                return Math.round(1080 * localy / 252);
+            }
+
+            function localWToServer(localw) {
+                return Math.round(1920 * localw / 448);
+            }
+
+            function localHToServer(localh) {
+                return Math.round(1080 * localh / 252);
+            }
+
+            function serverXToLocal(serverx) {
+                return Math.round(448 * serverx / 1920);
+            }
+
+            function serverYToLocal(servery) {
+                return Math.round(252 * servery / 1080);
+            }
+
+            function serverWToLocal(serverw) {
+                return Math.round(448 * serverw / 1920);
+            }
+
+            function serverHToLocal(serverh) {
+                return Math.round(252 * serverh / 1080);
+            }
+
+            function FixStatus() {
+                if (GetCCV("motionEn") == 0) {
+                    DisableObjs(new Array("sensValEn", "sensLevel", "displayoptions", "motionalarm"), true);
+                    DisableObjs(new Array("motionenable1", "motionenable2", "personminw", "personmaxw", "personminh", "personmaxh", "vehicleminw", "vehiclemaxw", "vehicleminh", "vehiclemaxh"), true);
+                    document.getElementById("clear_1").disabled = 1;
+                    document.getElementById("clear_2").disabled = 1;
+                    // clearMotionArea(1);
+                    // clearMotionArea(2);
+                    if (GetCCV("displayoptions") == 0)
+                        document.getElementById("tabs-motion").style.display = "none";
+                    else
+                        document.getElementById("tabs-motion").style.display = "";
+
+                    hideAllArea();
+                } else {
+                    FixDisplayOptions();
+                    if (initflag == 0 && GetCCV("displayoptions") == 1)
+                        showAllArea();
+                    initflag = 0;
+                    DisableObjs(new Array("sensValEn", "sensLevel", "displayoptions", "motionalarm"), false);
+                    DisableObjs(new Array("personminw", "personmaxw", "personminh", "personmaxh", "vehicleminw", "vehiclemaxw", "vehicleminh", "vehiclemaxh"), false);
+
+                    // initMotionArea();
+                }
+            }
+
+            function MY_BEFORE_SUBMIT() {
+                /* add by dsl, 2013-12-2 */
+                var uA = navigator.userAgent;
+                if (uA.indexOf("MSIE 6.0") > -1) {
+                    if (!CheckPersonWidth1() || !CheckPersonWidth2() || !CheckPersonHeight1() || !CheckPersonHeight2() || !CheckVehicleWidth1() || !CheckVehicleWidth2() || !CheckVehicleHeight1() || !CheckVehicleHeight2())
+                        return false;
+                }
+                /* end added, dsl, 2013-12-2 */
+
+                if (CheckPersonMinWidth(2, 50) == false)
+                    return false;
+                if (CheckPersonMaxWidth(7, 50) == false)
+                    return false;
+                if (CheckPersonMinHeight(2, 50) == false)
+                    return false;
+                if (CheckPersonMaxHeight(7, 50) == false)
+                    return false;
+                if (CheckVehicleMinWidth(4, 50) == false)
+                    return false;
+                if (CheckVehicleMaxWidth(4, 50) == false)
+                    return false;
+                if (CheckVehicleMinHeight(4, 50) == false)
+                    return false;
+                if (CheckVehicleMaxHeight(4, 50) == false)
+                    return false;
+
+                if (ParaCheck() == false) {
+                    alert(GL("para_not_change"));
+                    ChangeActive();
+                    return false;
+                }
+
+                var o = '';
+                o += c_iniUrl;
+                if (CTRLARY["motionEn"].active) {
+                    var motionenable = GetCCV("motionEn");
+                    if (motionenable == 1) {
+                        o += GetSetterCmdKV("dmvacfgctdimdsmostzoc", 2);
+                    } else {
+                        o += GetSetterCmdKV("dmvacfgctdimdsmostzoc", 0);
+                    }
+                }
+
+                // alert(CTRLARY["displayoptions"].active);
+                if (CTRLARY["displayoptions"].active) {
+                    var displayoption = GetCCV("displayoptions");
+                    // alert(displayoption);
+                    if (displayoption == 0)
+                        o += GetSetterCmdKV("dmvadisplayoptions", 3);
+                    else
+                        o += GetSetterCmdKV("dmvadisplayoptions", 7);
+                }
+
+                if (CTRLARY["motionenable1"].active || CTRLARY["motionenable2"].active) {
+                    var zones1 = GetCCV("motionenable1");
+                    var zones2 = GetCCV("motionenable2");
+
+                    var zones = (zones2 << 1) | zones1 & 0x0F;
+                    // alert(zones);
+                    o += GetSetterCmdKV("dmvaimdzoneenable", zones);
+                }
+
+                // alert(motion_x[0]);
+                // alert(motion_y[0]);
+                //     alert(motion_w[0]);
+                // alert(motion_h[0]);
+                // alert(o);
+                SendHttp(o, false);
+
+                return true;
+            }
+
+            function MY_SUBMIT_OK() {
+
+                alert(GL("submit_success"));
+                reloadcount = 2;
+                wait();
+                // window.location.reload();
+            }
+
+            function wait() {
+                reloadcount--;
+                if (reloadcount > 0) {
+                    timerID = setTimeout("wait()", 1000);
+                } else {
+                    window.location.reload();
+                }
+            }
+
+            function MotionSendOnePack() {
+                if (MY_BEFORE_SUBMIT() == false)
+                    return false;
+
+                var str = '';
+                for (var key in CTRLARY) {
+                    var obj = CTRLARY[key];
+                    if (obj.active) {
+                        if (obj.setcmd != "")
+                            str += GetSetterCmd(obj, GetCtrlValue(CTRLARY, key));
+                    }
+                }
+                // alert(str);
+                SendHttp(c_iniUrl + str, false);
+                MY_SUBMIT_OK();
+            }
+
+            function CheckPersonMinWidth(min, max) {
+                var value = document.getElementById("personminw").value;
+                if (value.length == 0) {
+                    alert(GL("personminw_empty"));
+                    document.getElementById("personminw").value = "<%dmvaimdpersonminwidth%>";
+                    document.getElementById("personminw").focus();
+                    return false;
+                }
+                if (!(IsNumeric(value))) {
+                    alert(GL("personminw_inv"));
+                    document.getElementById("personminw").value = "<%dmvaimdpersonminwidth%>";
+                    document.getElementById("personminw").focus();
+                    return false;
+                }
+
+                if (!((value >= min && value <= max))) {
+                    alert(GL("personminw_num"));
+                    document.getElementById("personminw").value = "<%dmvaimdpersonminwidth%>";
+                    document.getElementById("personminw").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckPersonMaxWidth(min, max) {
+                var value = document.getElementById("personmaxw").value;
+                if (value.length == 0) {
+                    alert(GL("personmaxw_empty"));
+                    document.getElementById("personmaxw").value = "<%dmvaimdpersonmaxwidth%>";
+                    document.getElementById("personmaxw").focus();
+                    return false;
+                }
+                if (!(IsNumeric(value))) {
+                    alert(GL("personmaxw_inv"));
+                    document.getElementById("personmaxw").value = "<%dmvaimdpersonmaxwidth%>";
+                    document.getElementById("personmaxw").focus();
+                    return false;
+                }
+
+                if (!((value >= min && value <= max))) {
+                    alert(GL("personmaxw_num"));
+                    document.getElementById("personmaxw").value = "<%dmvaimdpersonmaxwidth%>";
+                    document.getElementById("personmaxw").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckPersonMinHeight(min, max) {
+                var value = document.getElementById("personminh").value;
+                if (value.length == 0) {
+                    alert(GL("personminh_empty"));
+                    document.getElementById("personminh").value = "<%dmvaimdpersonminheight%>";
+                    document.getElementById("personminh").focus();
+                    return false;
+                }
+                if (!(IsNumeric(value))) {
+                    alert(GL("personminh_inv"));
+                    document.getElementById("personminh").value = "<%dmvaimdpersonminheight%>";
+                    document.getElementById("personminh").focus();
+                    return false;
+                }
+
+                if (!((value >= min && value <= max))) {
+                    alert(GL("personminh_num"));
+                    document.getElementById("personminh").value = "<%dmvaimdpersonminheight%>";
+                    document.getElementById("personminh").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckPersonMaxHeight(min, max) {
+                var value = document.getElementById("personmaxh").value;
+                if (value.length == 0) {
+                    alert(GL("personmaxh_empty"));
+                    document.getElementById("personmaxh").value = "<%dmvaimdpersonmaxheight%>";
+                    document.getElementById("personmaxh").focus();
+                    return false;
+                }
+                if (!(IsNumeric(value))) {
+                    alert(GL("personmaxh_inv"));
+                    document.getElementById("personmaxh").value = "<%dmvaimdpersonmaxheight%>";
+                    document.getElementById("personmaxh").focus();
+                    return false;
+                }
+
+                if (!((value >= min && value <= max))) {
+                    alert(GL("personmaxh_num"));
+                    document.getElementById("personmaxh").value = "<%dmvaimdpersonmaxheight%>";
+                    document.getElementById("personmaxh").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckVehicleMinWidth(min, max) {
+                var value = document.getElementById("vehicleminw").value;
+                if (value.length == 0) {
+                    alert(GL("vehicleminw_empty"));
+                    document.getElementById("vehicleminw").value = "<%dmvaimdvehicleminwidth%>";
+                    document.getElementById("vehicleminw").focus();
+                    return false;
+                }
+                if (!(IsNumeric(value))) {
+                    alert(GL("vehicleminw_inv"));
+                    document.getElementById("vehicleminw").value = "<%dmvaimdvehicleminwidth%>";
+                    document.getElementById("vehicleminw").focus();
+                    return false;
+                }
+
+                if (!((value >= min && value <= max))) {
+                    alert(GL("vehicleminw_num"));
+                    document.getElementById("vehicleminw").value = "<%dmvaimdvehicleminwidth%>";
+                    document.getElementById("vehicleminw").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckVehicleMaxWidth(min, max) {
+                var value = document.getElementById("vehiclemaxw").value;
+                if (value.length == 0) {
+                    alert(GL("vehiclemaxw_empty"));
+                    document.getElementById("vehiclemaxw").value = "<%dmvaimdvehiclemaxwidth%>";
+                    document.getElementById("vehiclemaxw").focus();
+                    return false;
+                }
+                if (!(IsNumeric(value))) {
+                    alert(GL("vehiclemaxw_inv"));
+                    document.getElementById("vehiclemaxw").value = "<%dmvaimdvehiclemaxwidth%>";
+                    document.getElementById("vehiclemaxw").focus();
+                    return false;
+                }
+
+                if (!((value >= min && value <= max))) {
+                    alert(GL("vehiclemaxw_num"));
+                    document.getElementById("vehiclemaxw").value = "<%dmvaimdvehiclemaxwidth%>";
+                    document.getElementById("vehiclemaxw").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckVehicleMinHeight(min, max) {
+                var value = document.getElementById("vehicleminh").value;
+                if (value.length == 0) {
+                    alert(GL("vehicleminh_empty"));
+                    document.getElementById("vehicleminh").value = "<%dmvaimdvehicleminheight%>";
+                    document.getElementById("vehicleminh").focus();
+                    return false;
+                }
+                if (!(IsNumeric(value))) {
+                    alert(GL("vehicleminh_inv"));
+                    document.getElementById("vehicleminh").value = "<%dmvaimdvehicleminheight%>";
+                    document.getElementById("vehicleminh").focus();
+                    return false;
+                }
+
+                if (!((value >= min && value <= max))) {
+                    alert(GL("vehicleminh_num"));
+                    document.getElementById("vehicleminh").value = "<%dmvaimdvehicleminheight%>";
+                    document.getElementById("vehicleminh").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckVehicleMaxHeight(min, max) {
+                var value = document.getElementById("vehiclemaxh").value;
+                if (value.length == 0) {
+                    alert(GL("vehiclemaxh_empty"));
+                    document.getElementById("vehiclemaxh").value = "<%dmvaimdvehiclemaxheight%>";
+                    document.getElementById("vehiclemaxh").focus();
+                    return false;
+                }
+                if (!(IsNumeric(value))) {
+                    alert(GL("vehiclemaxh_inv"));
+                    document.getElementById("vehiclemaxh").value = "<%dmvaimdvehiclemaxheight%>";
+                    document.getElementById("vehiclemaxh").focus();
+                    return false;
+                }
+
+                if (!((value >= min && value <= max))) {
+                    alert(GL("vehiclemaxh_num"));
+                    document.getElementById("vehiclemaxh").value = "<%dmvaimdvehiclemaxheight%>";
+                    document.getElementById("vehiclemaxh").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckPersonWidth1() {
+                var minwidth = parseInt(GetCCV("personminw"));
+                var maxwidth = parseInt(GetCCV("personmaxw"));
+                if (minwidth >= maxwidth) {
+                    alert(GL("personmin_maxwidth"));
+                    document.getElementById("personminw").value = "<%dmvaimdpersonminwidth%>";
+                    document.getElementById("personminw").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckPersonWidth2() {
+                var minwidth = parseInt(GetCCV("personminw"));
+                var maxwidth = parseInt(GetCCV("personmaxw"));
+                if (minwidth >= maxwidth) {
+                    alert(GL("personmax_minwidth"));
+                    document.getElementById("personmaxw").value = "<%dmvaimdpersonmaxwidth%>";
+                    document.getElementById("personmaxw").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckPersonHeight1() {
+                var minheight = parseInt(GetCCV("personminh"));
+                var maxheight = parseInt(GetCCV("personmaxh"));
+                if (minheight >= maxheight) {
+                    alert(GL("personmin_maxheight"));
+                    document.getElementById("personminh").value = "<%dmvaimdpersonminheight%>";
+                    document.getElementById("personminh").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckPersonHeight2() {
+                var minheight = parseInt(GetCCV("personminh"));
+                var maxheight = parseInt(GetCCV("personmaxh"));
+                if (minheight >= maxheight) {
+                    alert(GL("personmax_minheight"));
+                    document.getElementById("personmaxh").value = "<%dmvaimdpersonmaxheight%>";
+                    document.getElementById("personmaxh").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckVehicleWidth1() {
+                var minwidth = parseInt(GetCCV("vehicleminw"));
+                var maxwidth = parseInt(GetCCV("vehiclemaxw"));
+                if (minwidth >= maxwidth) {
+                    alert(GL("vehiclemin_maxwidth"));
+                    document.getElementById("vehicleminw").value = "<%dmvaimdvehicleminwidth%>";
+                    document.getElementById("vehicleminw").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckVehicleWidth2() {
+                var minwidth = parseInt(GetCCV("vehicleminw"));
+                var maxwidth = parseInt(GetCCV("vehiclemaxw"));
+                if (minwidth >= maxwidth) {
+                    alert(GL("vehiclemax_minwidth"));
+                    document.getElementById("vehiclemaxw").value = "<%dmvaimdvehiclemaxwidth%>";
+                    document.getElementById("vehiclemaxw").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckVehicleHeight1() {
+                var minheight = parseInt(GetCCV("vehicleminh"));
+                var maxheight = parseInt(GetCCV("vehiclemaxh"));
+                if (minheight >= maxheight) {
+                    alert(GL("vehiclemin_maxheight"));
+                    document.getElementById("vehicleminh").value = "<%dmvaimdvehicleminheight%>";
+                    document.getElementById("vehicleminh").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function CheckVehicleHeight2() {
+                var minheight = parseInt(GetCCV("vehicleminh"));
+                var maxheight = parseInt(GetCCV("vehiclemaxh"));
+                if (minheight >= maxheight) {
+                    alert(GL("vehiclemax_minheight"));
+                    document.getElementById("vehiclemaxh").value = "<%dmvaimdvehiclemaxheight%>";
+                    document.getElementById("vehiclemaxh").focus();
+                    return false;
+                }
+                return true;
+            }
+
+            function ParaCheck() {
+                var flag = false;
+
+                var motionEn = GetCCV("motionEn");
+                if (motionEn == 1)
+                    motionEn = 2;
+                if (motionEn == "<%dmvacfgctdimdsmostzoc%>") {
+                    CTRLARY["motionEn"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var displayoptions = GetCCV("displayoptions");
+                if (displayoptions == 0)
+                    displayoptions = 3;
+                else
+                    displayoptions = 7;
+
+                if (displayoptions == "<%dmvadisplayoptions%>") {
+                    CTRLARY["displayoptions"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var sensLevel = GetCCV("sensLevel");
+                if (sensLevel == "<%dmvaimdsensitivity%>") {
+                    CTRLARY["sensLevel"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var motionalarm = GetCCV("motionalarm");
+                if (motionalarm == "<%motiondec%>")//modified by dsl, 2013-12-2, original GetCCV("motionalarm")
+                {
+                    CTRLARY["motionalarm"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var motionenable1 = GetCCV("motionenable1");
+                var motionenable2 = GetCCV("motionenable2");
+                var zones = (motionenable2 << 1) | motionenable1 & 0x0F;
+                if (zones == "<%dmvaimdzoneenable%>") {
+                    CTRLARY["motionenable1"].active = 0;
+                    CTRLARY["motionenable2"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var personminw = parseInt(GetCCV("personminw"));
+                if (personminw == "<%dmvaimdpersonminwidth%>") {
+                    CTRLARY["personminw"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var personmaxw = parseInt(GetCCV("personmaxw"));
+                if (personmaxw == "<%dmvaimdpersonmaxwidth%>") {
+                    CTRLARY["personmaxw"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var personminh = parseInt(GetCCV("personminh"));
+                if (personminh == "<%dmvaimdpersonminheight%>") {
+                    CTRLARY["personminh"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var personmaxh = parseInt(GetCCV("personmaxh"));
+                if (personmaxh == "<%dmvaimdpersonmaxheight%>") {
+                    CTRLARY["personmaxh"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var vehicleminw = parseInt(GetCCV("vehicleminw"));
+                if (vehicleminw == "<%dmvaimdvehicleminwidth%>") {
+                    CTRLARY["vehicleminw"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var vehiclemaxw = parseInt(GetCCV("vehiclemaxw"));
+                if (vehiclemaxw == "<%dmvaimdvehiclemaxwidth%>") {
+                    CTRLARY["vehiclemaxw"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var vehicleminh = parseInt(GetCCV("vehicleminh"));
+                if (vehicleminh == "<%dmvaimdvehicleminheight%>") {
+                    CTRLARY["vehicleminh"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var vehiclemaxh = parseInt(GetCCV("vehiclemaxh"));
+                if (vehiclemaxh == "<%dmvaimdvehiclemaxheight%>") {
+                    CTRLARY["vehiclemaxh"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var motionx11 = document.getElementById("motionx11").value;
+                if (motionx11 == "<%dmvaimdzone1_x01%>")
+                    CTRLARY["motionx11"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motiony11 = document.getElementById("motiony11").value;
+                if (motiony11 == "<%dmvaimdzone1_y01%>")
+                    CTRLARY["motiony11"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motionx12 = document.getElementById("motionx12").value;
+                if (motionx12 == "<%dmvaimdzone1_x02%>")
+                    CTRLARY["motionx12"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motiony12 = document.getElementById("motiony12").value;
+                if (motiony12 == "<%dmvaimdzone1_y02%>")
+                    CTRLARY["motiony12"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motionx13 = document.getElementById("motionx13").value;
+                if (motionx13 == "<%dmvaimdzone1_x03%>")
+                    CTRLARY["motionx13"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motiony13 = document.getElementById("motiony13").value;
+                if (motiony13 == "<%dmvaimdzone1_y03%>")
+                    CTRLARY["motiony13"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motionx14 = document.getElementById("motionx14").value;
+                if (motionx14 == "<%dmvaimdzone1_x04%>")
+                    CTRLARY["motionx14"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motiony14 = document.getElementById("motiony14").value;
+                if (motiony14 == "<%dmvaimdzone1_y04%>")
+                    CTRLARY["motiony14"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motionx21 = document.getElementById("motionx21").value;
+                if (motionx21 == "<%dmvaimdzone2_x01%>")
+                    CTRLARY["motionx21"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motiony21 = document.getElementById("motiony21").value;
+                if (motiony21 == "<%dmvaimdzone2_y01%>")
+                    CTRLARY["motiony21"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motionx22 = document.getElementById("motionx22").value;
+                if (motionx22 == "<%dmvaimdzone2_x02%>")
+                    CTRLARY["motionx22"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motiony22 = document.getElementById("motiony22").value;
+                if (motiony22 == "<%dmvaimdzone2_y02%>")
+                    CTRLARY["motiony22"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motionx23 = document.getElementById("motionx23").value;
+                if (motionx23 == "<%dmvaimdzone2_x03%>")
+                    CTRLARY["motionx23"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motiony23 = document.getElementById("motiony23").value;
+                if (motiony23 == "<%dmvaimdzone2_y03%>")
+                    CTRLARY["motiony23"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motionx24 = document.getElementById("motionx24").value;
+                if (motionx24 == "<%dmvaimdzone2_x04%>")
+                    CTRLARY["motionx24"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                var motiony24 = document.getElementById("motiony24").value;
+                if (motiony24 == "<%dmvaimdzone2_y04%>")
+                    CTRLARY["motiony24"].active = 0;
+                else if (flag == false)
+                    flag = true;
+
+                return flag;
+            }
+
+            function GetMotionXY(index) {
+                var width1 = localWToServer(motion_w[index]);
+                var height1 = localHToServer(motion_h[index]);
+
+                var x1 = localXToServer(motion_x[index]);
+                var y1 = localYToServer(motion_y[index]);
+
+                var x2 = width1 + x1;
+                var y2 = height1 + y1;
+
+                //左上
+                document.getElementById("motionx" + (1 + index) + "1").value = Math.round(100 * x1 / 1920);
+                document.getElementById("motiony" + (1 + index) + "1").value = Math.round(100 * y1 / 1080);
+
+                // 右上
+                document.getElementById("motionx" + (1 + index) + "2").value = Math.round(100 * x2 / 1920);
+                document.getElementById("motiony" + (1 + index) + "2").value = document.getElementById("motiony" + (1 + index) + "1").value;
+
+                // 右下
+                document.getElementById("motionx" + (1 + index) + "3").value = document.getElementById("motionx" + (1 + index) + "2").value;
+                document.getElementById("motiony" + (1 + index) + "3").value = Math.round(100 * y2 / 1080);
+
+                // 左下
+                document.getElementById("motionx" + (1 + index) + "4").value = document.getElementById("motionx" + (1 + index) + "1").value;
+                document.getElementById("motiony" + (1 + index) + "4").value = document.getElementById("motiony" + (1 + index) + "3").value;
+
+            }
+
+		</script>
+		<script>
+            DW('<div id="motiondiv">');
+            DW('<table cellpadding="0" cellspacing="2"><tr><td style="vertical-align:text-top;">');
+
+            DW('<div class="imgvideoview">');
+            WriteImgtuneVideoHidden();
+            DW('</div>');
+		</script>
+
+		<div width="500" height="281">
+			<table id="Area" name="Area" style="left:0px;top:0px;" width="500" height="281" border="0" style="position:absolute;">
+				<tr>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+		</td>
+
+		<div class="floatDiv" id="div0" onclick="selectArea(this)" style=" filter:alpha(opacity=0);height=0;width=0;background:#f00;">
+			1
+		</div>
+		<div class="floatDiv" id="div1" onclick="selectArea(this)" style=" filter:alpha(opacity=0);height=0;width=0;background:#f00;">
+			2
+		</div>
+
+		<td style="vertical-align:text-top;">
+		<div id="rightDiv" class="layout" id="tabs-motion" >
+			<table>
+				<script>
+                    DW("<tr><td width='100px'>" + GL("motion_detect") + ":</td><td width='100px'>" + WH_("motionEn") + "</td>");
+
+                    if (v_MotionEnable == 1) {
+                        DW("<td height=30 align='center'><input width='12px' height='12px' id='alarmstatus' type='image' src='../skin/green.png' title='" + GL("nomotion_alarm") + "'></td>");
+
+                        setInterval("GetAlarmStatus()", 1000);
+                        function GetAlarmStatus() {
+                            var o = '';
+                            o += c_iniUrl;
+                            o += GetSetterCmdKV("getalarmstatus");
+                            SendHttp(o, false, SendCallBack);
+                        }
+
+                        function SendCallBack() {
+                            if (g_SubmitHttp.readyState == 4) {
+                                if (g_SubmitHttp.status == 200) {
+                                    var txt = g_SubmitHttp.responseText;
+                                    var alarmstatuslist = txt.split('=');
+                                    var alarmstatus = parseInt(alarmstatuslist[1]);
+                                    // alert(alarmstatus);
+                                    if (alarmstatus == 0) {
+                                        var srcimg = "../skin/green.png";
+
+                                        document.getElementById("alarmstatus").title = GL("nomotion_alarm");
+                                        document.getElementById("alarmstatus").src = srcimg;
+                                    } else if (alarmstatus == 2 || alarmstatus == 32) {
+                                        var srcimg = "../skin/red.png";
+
+                                        document.getElementById("alarmstatus").title = GL("motion_alarm");
+                                        document.getElementById("alarmstatus").src = srcimg;
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+
+                    DW('</tr>');
+
+                    DW("<tr><td>" + GL("sens") + ":</td><td>" + WH_("sensLevel") + "</td></tr>");
+
+                    DW("<tr><td>" + GL("motionalarm") + ":</td><td>" + WH_("motionalarm") + "</td></tr>");
+
+                    DW("<tr><td>" + GL("displayoptions") + ":</td><td >" + WH_("displayoptions") + "</td></tr>");
+                    document.getElementById("displayoptions").onchange = function() {
+                        ChangeMotionZone2(this);
+                    };
+
+                    DW('<tr><td colspan=4>');
+
+                    DW('<div class="layout" id="tabs-motion" >');
+                    DW('<table>');
+                    DW('<tr><td>');
+                    DW('<div id="motion1">');
+                    DW('<table>');
+                    DW('<tr><td>');
+                    WH("motionenable1");
+                    DW(GL("motionenable1") + '</td>');
+                    DW('<td>');
+                    DW('<input type="button" id="clear_1" value="' + GL("clear_motion1") + '" class="m1" onClick="MotionClear1()" style="width:90px;height:20px">');
+                    DW('</td></tr>');
+
+                    document.getElementById("motionenable1").onclick = function() {
+                        checkStateChanged(this);
+                    };
+
+                    DW('<tr><td>' + GL("leftup_coord") + ':' + '</td><td>');
+                    WH("motionx11");
+                    DW(' x ');
+                    WH('motiony11')
+                    DW('</td></tr>')
+
+                    DW('<tr><td>' + GL("rightup_coord") + ':' + '</td><td>');
+                    WH("motionx12");
+                    DW(' x ');
+                    WH('motiony12')
+                    DW('</td></tr>');
+
+                    DW('<tr><td>' + GL("leftdown_coord") + ':' + '</td><td>');
+                    WH("motionx14");
+                    DW(' x ');
+                    WH('motiony14')
+                    DW('</td></tr>');
+
+                    DW('<tr><td>' + GL("rightdown_coord") + ':' + '</td><td>');
+                    WH("motionx13");
+                    DW(' x ');
+                    WH('motiony13')
+                    DW('</td></tr>');
+
+                    DW('</table>');
+                    DW('</div>');
+
+                    DW('<div id="motion2">');
+                    DW('<table>');
+
+                    DW('<tr><td>');
+                    WH("motionenable2");
+                    DW(GL("motionenable2") + '</td>');
+                    DW('<td>');
+                    DW('<input type="button" id="clear_2" value="' + GL("clear_motion2") + '" class="m1" onClick="MotionClear2()" style="width:90px;height:20px">');
+                    DW('</td></tr>');
+
+                    document.getElementById("motionenable2").onclick = function() {
+                        checkStateChanged(this);
+                    };
+
+                    DW('<tr><td>' + GL("leftup_coord") + ':' + '</td><td>');
+                    WH("motionx21");
+                    DW(' x ');
+                    WH('motiony21')
+                    DW('</td></tr>')
+
+                    DW('<tr><td>' + GL("rightup_coord") + ':' + '</td><td>');
+                    WH("motionx22");
+                    DW(' x ');
+                    WH('motiony22')
+                    DW('</td></tr>');
+
+                    DW('<tr><td>' + GL("leftdown_coord") + ':' + '</td><td>');
+                    WH("motionx24");
+                    DW(' x ');
+                    WH('motiony24')
+                    DW('</td></tr>');
+
+                    DW('<tr><td>' + GL("rightdown_coord") + ':' + '</td><td>');
+                    WH("motionx23");
+                    DW(' x ');
+                    WH('motiony23')
+                    DW('</td></tr>');
+
+                    DW('</table>');
+                    DW('</div>');
+                    DW('</td></tr>');
+                    DW('</table></div>');
+
+                    DW('<tr><td colspan=4>');
+                    DW('<div id="persondet">');
+                    DW('<table>');
+
+                    DW('<tr><td colspan=2>');
+                    DW('<div class="headline">' + GL("person_det") + '</div>');
+                    DW('</td></tr>');
+
+                    DW('<tr><td>' + GL("min_width") + ':');
+                    WH("personminw");
+                    DW('%</td><td>' + GL("min_height") + ':');
+                    WH("personminh");
+                    DW('%</td></tr>');
+
+                    DW('<tr><td>' + GL("max_width") + ':');
+                    WH("personmaxw");
+                    DW('%</td><td>' + GL("max_height") + ':');
+                    WH("personmaxh");
+                    DW('%</td></tr>');
+
+                    DW('</table>');
+                    DW('</td></tr>');
+
+                    DW('<tr><td colspan=4>');
+                    DW('<div id="vehicle">');
+                    DW('<table>');
+
+                    DW('<tr><td colspan=2>');
+                    DW('<div class="headline">' + GL("vehicle_det") + '</div>');
+                    DW('</td></tr>');
+
+                    DW('<tr><td>' + GL("min_width") + ':');
+                    WH("vehicleminw");
+                    DW('%</td><td>' + GL("min_height") + ':');
+                    WH("vehicleminh");
+                    DW('%</td></tr>');
+
+                    DW('<tr><td>' + GL("max_width") + ':');
+                    WH("vehiclemaxw");
+                    DW('%</td><td>' + GL("max_height") + ':');
+                    WH("vehiclemaxh");
+                    DW('%</td></tr>');
+
+                    DW('</table>');
+                    DW('</td></tr>');
+                    DW("<tr><td colspan=2 align=right><br>");
+                    DW("<input type='button' id='smbtn_' value='" + GL("submit") + "' class='m1' onClick=MotionSendOnePack() style='width:60px;height:20px'>");
+                    DW("</td></tr>");
+                    DW('</td></tr></table>');
+                    DW('</div>');
+
+                    ALC();
+				</script>
+	</body>
+</html>

@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <link href="css/lc_en_us.css" rel="stylesheet" type="text/css">
+    <title>
+    </title>
+    <style type="text/css">
+ td {font-size:12px}
+ </style>
+
+</head>
+<body style="overflow:hidden" onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+  <script>
+  function MY_ONUNLOAD() {  
+    StopActiveX();
+  }
+
+  function MY_ONLOAD() { 
+    g_lockLink = false;
+    StartActiveXOneEx(0, 0, Get9001FirstCodec(), 5, null); //h264 1080p
+  }
+
+  DW('<div class="imgtunediv">');
+  DW('<table><tr><td style="vertical-align:text-top;">');
+  DW('<div class="imgvideoview">');
+  WriteImgtuneVideo();
+  DW('</div></td>');
+</script>
+
+<script>
+
+  DW('<td colspan=3 align="right" style="vertical-align:text-top;">');
+  DW('<div class="segline">');
+  DW('</div>');
+  DW('</td>');
+
+  DW('<td colspan=3 align="left" style="vertical-align:text-top;">');
+  DW('<div class="imgtunecontent" text-align="left">');
+  </script>
+
+  <iframe src="dn.htm" name="dnframe" id="dnframe" 
+    marginwidth="0" marginheight="0" scrolling="no" frameborder="0">
+    </iframe>
+
+  <script>
+
+  DW('</div>');
+  DW('</td></tr>');
+  </script>
+  <script>
+  DW("</table>");
+  DW('</div>');
+  </script>
+<script>
+  ALC();
+</script>
+</body>
+</html>

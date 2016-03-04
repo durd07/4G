@@ -1,0 +1,10 @@
+/bin/addgroup
+/bin/adduser
+/bin/delgroup
+/bin/deluser
+/bin/login
+/bin/su
+/sbin/getty
+/sbin/sulogin
+/usr/bin/passwd
+/usr/bin/vlock

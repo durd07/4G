@@ -1,0 +1,464 @@
+body{
+margin: 0;
+padding:0;
+height:100%;
+width:240px;
+}
+select{
+position:relative;
+left:10px;
+width:220px;
+background: #373737 0px 0px;
+color: #ffffff; 
+font-size: 14px;
+border: #000000 1px solid; 
+padding: 5px;
+}
+.ptz_control{	
+	width:240px; 
+	height:100%; 
+	min-height:600px;
+	background:#333;  
+}
+.ptz_control1{    
+    width:240px; 
+    height:310px;   
+	background:#5c5c5c;   
+}
+.ptz_control2{
+    position:relative;
+    top:5px;    
+    width:240px;
+	height:100%;
+	min-height:340px;
+	overflow:auto;
+	background:#5c5c5c;
+	  
+}
+.ptz_button_left_up {
+          position: absolute;
+          /*margin: 30px auto auto 166px;上外边距是 30px 右外边距是 . 下外边距是 . 左外边距是 166px*/
+          left:50px;
+		  top:15px;
+		  width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+         
+      }
+.ptz_button_left_up:hover{
+		  position: absolute;		  
+		  left:50px;
+          top:15px;         
+          width: 32;
+          height:32px;
+          background-image: url('../images/boat.png');
+		  background-position: -34px -0px;
+         
+}
+.ptz_button_up {
+          position: absolute;
+          left:92px;
+          top:15px;
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+		  background-position: -0px -31px;
+         
+      }
+.ptz_button_up:hover{
+		  position: absolute;
+          left:92px;
+          top:15px;
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+		  background-position: -34px -31px;
+          
+}
+
+.ptz_button_right_up {
+          position: absolute;
+          left:134px;
+          top:15px;
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+		  background-position: -0px -62px;
+         
+}.ptz_button_right_up:hover {
+          position: absolute;
+          left:134px;
+          top:15px;
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+		  background-position: -34px -62px;
+         
+}
+.ptz_button_left {
+          position: absolute;
+          left:50px;
+          top:57px;
+          width:32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -93px;
+}
+.ptz_button_left:hover{
+		 position: absolute;
+         left:50px;
+         top:57px;
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');          
+		  background-repeat: no-repeat;
+		  background-position: -34px -93px;
+}
+.ptz_button_right {
+          position: absolute;
+          left:134px;
+          top:57px;
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -123px;
+}
+.ptz_button_right:hover{
+		 position: absolute;
+         left:134px;
+          top:57px;
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');          
+		  background-repeat: no-repeat;
+		  background-position: -34px -123px;
+}	
+.ptz_button_left_down {
+          position: absolute;
+          left:50px;
+          top:99px;
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -155px;
+}  
+.ptz_button_left_down:hover{
+		 position: absolute;
+         left:50px;
+          top:99px;
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');          
+		  background-repeat: no-repeat;
+		  background-position: -34px -155px;		  
+}
+.ptz_button_down {
+          position: absolute;
+          left:92px;
+          top:99px;
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -185px;
+} 
+.ptz_button_down:hover {
+          position: absolute;
+          left:92px;
+          top:99px;
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+          background-repeat: no-repeat;
+		  background-position: -34px -185px;
+}
+.ptz_button_right_down {
+          position: absolute;
+          left:134px;
+          top:99px;
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -216px;
+} 
+.ptz_button_right_down:hover {
+          position: absolute;
+          left:134px;
+          top:99px;
+          width: 32px;
+          height:32px;
+          background-image: url('../images/boat.png');
+          background-repeat: no-repeat;
+		  background-position: -34px -216px;
+}
+ 	
+.ptz_ytspeed_num{
+		border: 0px none;
+		text-align: right; 
+		background:#5c5c5c;
+		color:#d8d8d8;		
+} 
+.ptz_zoomnear {         
+          width: 27px;
+          height:27px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -0px;
+}
+.ptz_zoomnear:hover {         
+          width: 27px;
+          height:27px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -28px -0px;
+}
+.ptz_zoomfar { 
+		  position: absolute;
+          left:130px;              
+          width: 26px;
+          height:26px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -27px;
+}
+.ptz_zoomfar:hover {
+          position: absolute;
+          left:130px;         
+          width: 26px;
+          height:26px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -28px -27px;
+}
+.ptz_focusnear {         
+          width: 27px;
+          height:27px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -0px;
+}
+.ptz_focusnear:hover {         
+          width: 27px;
+          height:27px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -28px -0px;
+}
+.ptz_focusfar {
+          position: absolute;
+          left:130px;        
+          width: 27px;
+          height:26px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -28px;
+}
+.ptz_focusfar:hover {
+          position: absolute;
+          left:130px;          
+          width: 27px;
+          height:26px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -28px -28px;
+}
+.ptz_zfspeed{
+		position: absolute;        
+		width:130px;
+} 	
+.ptz_zfspeed_num{		
+		border: 0px none;
+		text-align: right; 
+		background:#5c5c5c;
+		color:#d8d8d8;		
+} 
+
+.laser_adjustid{		
+		width:130px;
+} 	
+.laser_adjust_value{
+		
+		border: 0px none;
+		text-align: right; 
+		background:#5c5c5c;
+		color:#d8d8d8;		
+}
+
+#switch_3d
+{
+	position:absolute;
+	top:54px;left:89px;
+	width:43px;
+	height:43px;
+	background-repeat:no-repeat;
+	
+}
+table
+{
+	font-size:12px; color:#d8d8d8;
+}
+
+
+
+
+#preset_container
+{
+	position:absolute;
+	top:75px;
+	min-height:230px;  height:200px; overflow:auto; width:98%;
+}
+
+
+/************************************************************************/
+#preset_table
+{
+	border-collapse:collapse;
+	background:#333;
+	font-size:13px;
+}
+#preset_table tr
+{
+	border:1px solid #999;
+}
+#preset_table td
+{
+	height:20px;
+	padding:6px 0;
+}
+
+.preset_table_tr_hover
+{
+	background:#9D021A;
+	cursor:pointer;
+}
+
+.selected_tr
+{
+	background:#F60;
+}
+#preset_table img
+{
+	padding-left:10px;
+}
+
+/************************************************************************/
+#ptz_icon_table
+{
+	border-collapse:collapse;
+	paddingleft:0;
+	margin:0;
+}
+#ptz_icon_table td
+{
+	cursor:pointer;
+	height:25px;
+}
+
+#brush_td
+{
+	width:40px;
+	height:29px;
+	background-image:url(../images/brush.png);
+	background-repeat: no-repeat;
+}
+#brush_td:active 
+{
+	width:40px;
+	height:29px;
+	background-image:url(../images/brush.png);
+	background-repeat: no-repeat;
+	background-position: 0 -33px;
+}
+
+
+
+.red_ligth_1_on
+{
+	width:36px;
+	height:29px;
+	background-image:url(../images/red_light.png);
+	background-repeat: no-repeat;
+	background-position: 0 -1px;
+}
+
+.red_ligth_1_off
+{
+	width:36px;
+	height:29px;
+	background-image:url(../images/red_light.png);
+	background-repeat: no-repeat;
+	background-position: -74px -1px ;
+}
+
+.red_ligth_2_on
+{
+	width:34px;
+	height:29px;
+	background-image:url(../images/red_light.png);
+	background-repeat: no-repeat;
+	background-position: -114px -1px;
+}
+.red_ligth_2_off
+{
+	width:34px;
+	height:29px;
+	background-image:url(../images/red_light.png);
+	background-repeat: no-repeat;
+	background-position: -40px -1px;
+}
+
+.laser_1_on
+{
+	width:34px;
+	height:29px;
+	background-image:url(../images/laser.png);
+	background-repeat: no-repeat;
+	background-position: -0px 2px;
+}
+.laser_1_off
+{
+	width:34px;
+	height:29px;
+	background-image:url(../images/laser.png);
+	background-repeat: no-repeat;
+	background-position: -74px 2px;
+}
+
+.laser_2_on
+{
+	width:34px;
+	height:29px;
+	background-image:url(../images/laser.png);
+	background-repeat: no-repeat;
+	background-position: -111px 2px;
+}
+.laser_2_off
+{
+	width:34px;
+	height:29px;
+	background-image:url(../images/laser.png);
+	background-repeat: no-repeat;
+	background-position: -37px 2px;
+}
+
+
+
+/*
+.ptz_focusnear {         
+          width: 27px;
+          height:27px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -0px -0px;
+}
+.ptz_focusnear:hover {         
+          width: 27px;
+          height:27px;
+          background-image: url('../images/yt2.png');
+          background-repeat: no-repeat;
+		  background-position: -28px -0px;
+}*/

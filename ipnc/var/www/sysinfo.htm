@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <head>
+		<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+	<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script language="javascript" src="js/panasonic.js"></script>
+    <script src="js/jquery-1.10.2.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <link href="css/sysinfo.css" rel="stylesheet" type="text/css">
+    <title>
+      System Infomation
+    </title>
+   
+  </head>
+
+  <body onload="MY_ONLOAD()">
+
+	<script>
+
+	// setInterval("ChangeContent()",1000*60*5);
+	// setInterval("ReFresh()", 1000*60*50);
+
+	var title = g_titleName;
+	// var kernelversion = "<%kernelversion%>";
+	// var biosversion = "<%biosversion%>";
+	// var softwareversion = "<%softwareversion%>";
+	var lgversion = "<%lgver%>";
+	var softversion = "<%softwarever%>";
+	var mcutemp = parseFloat("<%mcutemp%>").toFixed(2);
+	var temp8147 = parseFloat("<%temp8147%>").toFixed(2);
+	var mcuversion = "<%mcuver%>";
+	var lgtemp = "<%lgtemp%>";
+	var mac = "<%mac%>".toLocaleUpperCase();
+	var serialnum = "<%serialnum%>";
+	//var devicetype = "<%devicetype%>";
+	var devicetype = "<%devicetype%>";
+	var hdver = "<%hardwarever%>";
+	var currentagc = "<%currentagc%>";
+
+	function WTablePHSys()
+	{
+		DW('<br>');
+		DW("<center><table width='auto' border='1' bordercolor='#333' style='border-collapse:collapse'>");
+	}
+
+	function WTablePBSys()
+	{
+		DW("</table></center></fieldset></form>");
+	}
+
+	function WIPSys(tid, ctx)
+	{
+		DW('<tr style="border:solid 1px #333"  width="500px"><td style="border:solid 1px #333">&nbsp;' + GL(tid) + '&nbsp;</td>');
+		DW('<td style="border:solid 1px #333"  width="300px">&nbsp;' + ctx + '&nbsp;</td></tr>');
+	}
+
+	function WIPSysTe(tid, ctx)
+	{
+		DW('<tr style="border:solid 1px #333"  width="500px"><td style="border:solid 1px #333">&nbsp;' + GL(tid) + '&nbsp;</td>');
+		DW('<td style="border:solid 1px #333"  width="300px">&nbsp;' + ctx + '℃&nbsp;</td></tr>');
+	}
+
+	function ReFresh()
+	{
+		// ChangeContent(null, true);
+		window.location.reload();
+	}
+
+	function MY_ONLOAD()
+	{
+		g_lockLink = false;
+		var o = '';
+		o += c_iniUrl;
+        //o += GetSetterCmdKV("mcutemp");
+		o += GetSetterCmdKV("temp8147");
+		//o += GetSetterCmdKV("lgtemp");
+    	// o += GetSetterCmdKV("currentagc");
+    	// alert(o);
+		SendHttp(o, false);
+		
+		$("html").css("font-size","13px"); 
+		$("td").css("padding","5px");
+	}
+
+// SendHttp(c_iniUrl + GetSetterCmdKV("uptime"), false, SendCallBack);
+
+function SendCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+  	WS("");
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      // alert(txt);
+      txt = "= 14:00:02 up  4:12, load average: 0.00, 0.01, 0.04";
+      var sysinfolist = txt.split('=');
+      var sysinfo = sysinfolist[1].split(',');
+      // alert(sysinfo[0]);
+      // alert(sysinfo[1]);
+      var uptime = sysinfo[0];
+
+      var num1 = uptime.indexOf("up") + 2;
+      var num2 = uptime.indexOf("days") + 4;
+      var len = uptime.length;
+
+      alert(num1);
+      alert(num2);
+      alert(len);
+      if (num2 == -1)
+      {
+      	var time1 = uptime.substr(num1, len);
+      	var time = time1.split(':');
+      	alert(time[0]);
+      	alert(time[1]);
+      }
+      else
+      {
+      	var num3 = num2 - 4;
+      	alert(num3);
+      	var time1 = uptime.substr(num1, num3);
+      	var time2 = uptime.substr(num2, len);
+      	alert(time1);
+      	alert(time2);
+
+      }
+      // window.currentagc = parseFloat(sysinfolist[4]).toFixed(2);
+    } 
+  } 
+}
+
+
+function CheckTitle()
+{
+  // alert("CheckTitle");
+  var title = document.getElementById("devtitle").value;
+  var num = 0;
+  // alert(title.length);
+  if (title.length == 0)
+  {
+    alert(GL("title_empty"));
+    document.getElementById("devtitle").focus();
+    document.getElementById("devtitle").value = window.frames["hiddenIFrame"].document.getElementById("titlename").value;
+    return false;
+  }
+    for (var i = 0; i < title.length; i++) {
+    var ch = title.charAt(i);
+    // alert(ch);
+    if (isChinese(ch))
+    { 
+      num = num + 2;      
+    }
+    else
+    {
+      num = num + 1;
+    }
+    if (num > 11)
+    {
+      alert(GL("title_long"));
+      document.getElementById("devtitle").value = window.frames["hiddenIFrame"].document.getElementById("titlename").value;
+      document.getElementById("devtitle").focus();
+      return false;
+    }
+    if (ch == ' ' || ch == '#' || ch == '=' || ch == '+' || ch == '&' || ch=='$' || ch == '%' || ch=='^' || ch=='!' || ch=='~' || ch=='`')
+    {
+      alert(GL("title_inv"));
+      document.getElementById("devtitle").value = window.frames["hiddenIFrame"].document.getElementById("titlename").value;
+      document.getElementById("devtitle").focus();
+      return false;
+    }
+  }
+  return true;
+}
+	function SubmitTitle()
+	{
+		var val = document.getElementById("devtitle").value;
+		if (val == g_titleName)
+		{
+			alert(GL("para_not_change"));
+			return;
+		}
+		if (CheckTitle() == false)
+			return;
+
+		SendHttp(c_iniUrl + GetSetterCmdKV("title", val), false);
+		alert(GL("submit_success"));
+		window.location.reload();
+	}
+</script>
+    <div id="sysdiv">
+      <table>
+        <tr>
+          <td>
+            <table id="systable">
+<script>
+	WIPSysTitle("devtitle", title);
+	// WIPSys("kernelversion", kernelversion);
+	// WIPSys("biosversion", biosversion);
+    WIPSys("devicetype", devicetype);
+    WIPSys("serialnum", serialnum);
+    WIPSys("mac", mac);
+    WIPSys("hd_ver", hdver);
+    WIPSys("softversion", softversion);
+    //WIPSys("mcu_ver", mcuversion);
+    //WIPSys("lg_ver", lgversion);
+    //WIPSysTe("mcu_temp", mcutemp);
+    WIPSysTe("temp_8147", temp8147);
+    //WIPSysTe("lg_temp", lgtemp);
+    // WIPSys("current_agc", currentagc);
+    //WIPSysTe("lg_temp", panasonicGetTemp());
+</script>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div style="float:right">
+              <input type="button" id="submit" onclick="SubmitTitle()" style="width:80px;height:30px;line-height:16px;">
+              <script>document.getElementById("submit").value=GL("submit")</script>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+	<script>
+	// WSubmitSys();
+    ALC();
+	</script>
+		
+    </div>
+  </body>
+</html>

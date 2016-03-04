@@ -1,0 +1,1718 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<title>image config</title>
+<link rel="stylesheet" type="text/css" href="css/image.css"/>
+<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+<script src="js/jquery-1.10.2.js"></script>
+<script src="js/image.js"></script>
+<script language="javascript" src="var.js"></script>
+<script language="javascript" src="common.js"></script>
+<script>
+      InitLoad();	 
+</script>
+</head>
+
+<body onload="MY_ONLOAD()" onunload="MY_ONUNLOAD()">
+<script>
+var shortlist = GL("off")+ ";1/100;1/250;1/500;1/1000;1/2000;1/4000;1/10000;1/16000";
+var irislist = "X1;X2;X4;X6;X10;X16;X32;X64;1/100;1/250;1/500;1/1000;1/2000;1/4000;1/10000;1/16000";
+var longexplist = GL("off") + ";X1;X2;X4;X6;X10;X16;X32;X64";
+var agclist = GL("e_Auto_indoor_60") + ";" + GL("e_Manu_eshutter_off") + ";" + GL("e_Manu_eshutter_on") + ";" + GL("e_Auto_outdoor_60")+ ";" + GL("e_Auto_indoor_50")+ ";" + GL("e_Auto_outdoor_50")+ ";" + GL("e_fixshutter"); //光圈模式
+//var wdrlevellist = GL("off") + ";" + GL("full_screen")+ ";" + GL("center")+ ";" + GL("area_detect");
+var wdrlevellist = GL("off") + ";" + GL("full_screen");
+var agcmodellist = GL("off") + ";" + GL("low")+ ";" + GL("mid") + ";" + GL("high")+ ";"+ GL("low1")+ ";"+ GL("low2")+ ";" + GL("up_mid")+ ";" + GL("up_high")+ ";" + GL("m_low")+ ";" + GL("m_low1")+ ";" + GL("m_low2"); //增益模式
+//var acelist = GL("off") + ";" + GL("low")+ ";" + GL("mid") + ";" + GL("high")+ ";" + GL("up-low")+ ";" + GL("up-mid")+ ";" + GL("up-high"); 
+var wdrblclist = GL("off") + ";" + GL("on");
+var blclevellist = "0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15" ; 
+var bgbclist = "0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15" ; 
+var irisStopList = GL("iris_open") + ";F2.0;F2.8;F4.0;F5.6;F8.0;F11;F16;" + GL("iris_close");
+var shutterlist =  GL("Long_exp") + ";" + GL("auto") + ";" + GL("short_exp"); 
+var sensuplist = GL("off") + ";" + GL("auto") + " X2;" + GL("auto") + " X4;" + GL("auto") + " X8;" + GL("auto") + " X16;" + GL("auto") + " X32;" + GL("auto") + " X64;" + GL("auto") + " X128";
+//==========================================================================================================================================================================================================================
+var focusmodelist = GL("auto") + ";" + GL("manual")+ ";" + GL("onekey_focus");
+var focusdistlist = GL("d50cm") + ";" + GL("d1m") + ";" + GL("d3m") + ";" + GL("d5m");
+var zoom30startlist = "X1;X2;X3;X4;X5;X6;X7;X8;X9;X10;X11;X12;X13;X14;X15;X16;X17;X18;X19;X20;X21;X22;X23;X24;X25;X26;X27;X28;X29;X30";
+var zoom22startlist = "X1;X2;X3;X4;X5;X6;X7;X8;X9;X10;X11;X12;X13;X14;X15;X16;X17;X18;X19;X20;X21;X22";
+var zoom30endlist = "X1;X2;X3;X4;X5;X6;X7;X8;X9;X10;X11;X12;X13;X14;X15;X16;X17;X18;X19;X20;X21;X22;X23;X24;X25;X26;X27;X28;X29;X30";
+var zoom22endlist = "X1;X2;X3;X4;X5;X6;X7;X8;X9;X10;X11;X12;X13;X14;X15;X16;X17;X18;X19;X20;X21;X22";
+var awblist = GL("auto") + ";" + GL("awc") + ";" + GL("manual")+ ";" + GL("indoor")+ ";" + GL("outdoor")+ ";" + GL("FLUO");
+var colortemplist = GL("indoor") + ";" + GL("outdoor");
+//=====================================================================================================================================================================================
+var daynightlist = GL("day") + ";" + GL("night") + ";" + GL("auto");
+var dnlevellist = GL("low") + ";" + GL("mid") + ";" + GL("high");
+var dndelaylist = "5s;10s;15s;20s";
+//=====================================================================================================================================================================
+var stabilizer_lev_list = GL("low") + ";" + GL("mid") + ";" + GL("high"); 
+var stabilizerlist = GL("off") + ";" + GL("on"); 
+var dnr2d_switchlist = GL("off") + ";" + GL("on"); 
+var sharpness_flaglist = GL("off") + ";" + GL("on"); 
+var gammalist =  GL("off") + ";" + GL("on") + ";SMART1;SMART2;SMART3;SMART4;SMART5";
+var deffectlist =GL("off") + ";" + GL("mirror") + ";" + GL("v_flip") + ";" + GL("h_flip");
+CTRLARY = {
+  //=============================expose 曝光===================================================
+  longexp: new Ctrl_Select("longexp",longexplist,"<%longexp%>","longexp","Changelexposure()"),
+  shortexp: new Ctrl_Select("shortexp",shortlist,"<%shortexp%>","shortexp","Changesexposure()"),
+  agc: new Ctrl_Select("agc", agclist, "<%agc%>", "agc=", "changeapeture()"),//光圈模式*
+  wdrblc: new Ctrl_Select("wdrblc", wdrblclist, "<%wdrblc%>", "wdrblc=", "ChangeWdrBlc()"),//宽动态
+  wdrlevel: new Ctrl_Select("wdrlevel", wdrlevellist, "<%wdrlevel%>", "wdrlevel=", "ChangeWdrLevel()"),//背光补偿模式*
+  agcmode: new Ctrl_Select("agcmode", agcmodellist, "<%agcmode%>", "agcmode=", "Changeagcmode()"),//增益模式  
+  ace: new Ctrl_Radio("ace", "<%ace%>", "ace=", "ChangeAce()"),
+  blclevel: new Ctrl_Select("blclevel", blclevellist, "<%blclevel%>", "blclevel=", "ChangeBlcLevel()"),//背光补偿亮度基准* 
+  luminance1: new Ctrl_Text("luminance1",3,3,"<%luminance1%>", "luminance1=",null, false,"ChangeLumi()"),//亮度*****************//  
+  shutter: new Ctrl_Select("shutter", shutterlist, "<%shutter%>", "shutter=", "ChangeShutter()"),//曝光模式*
+  sensup: new Ctrl_Select("sensup", sensuplist, "<%sensup%>", "sensup=", "ChangeSenseup()"),//senser up
+  slowae: new Ctrl_Select("slowae", bgbclist, "<%slowae%>", "slowae=", "ChangeSlowAe()"),//背光补偿基准*
+  black_level: new Ctrl_Text("black_level",3,3,"<%black_level%>", "black_level=",null, false,"Changeblack_level()"),//黑电平 对比度********//
+  
+  aesensitivit: new Ctrl_Text("aesensitivit", 3, 3, "<%aesensitivit%>", "aesensitivit=", null, false, "ChangeContrast()"),//AE灵敏度********//  
+  iris_stop: new Ctrl_Select("iris_stop", irisStopList, "<%iris_stop%>", "iris_stop=", "ChangeIrisStop()"),//光圈调节
+  //=============================focus_awb 聚焦白平衡==================================================
+   // focus 
+  focusmode: new Ctrl_Select("focusmode", focusmodelist, "<%focusmode%>", "focusmode=", "ChangeFocusMode()"),//聚焦模式
+  //focusdist: new Ctrl_Select("focusdist", focusdistlist, "<%focusdist%>", "focusdist=", "ChangeFocusDist()"),    
+  zoom30start: new Ctrl_Select("zoom30start", zoom30startlist, "<%zoom30start%>", "zoom30start=", "ChangeZoom30Start()"),//30变倍起始位置
+  zoom22start: new Ctrl_Select("zoom22start", zoom22startlist, "<%zoom22start%>", "zoom22start=", "ChangeZoom22Start()"),//30变倍起始位置
+  zoom30end: new Ctrl_Select("zoom30end", zoom30endlist, "<%zoom30end%>", "zoom30end=", "ChangeZoom30End()"),//30变倍结束位置
+  zoom22end: new Ctrl_Select("zoom22end", zoom22endlist, "<%zoom22end%>", "zoom22end=", "ChangeZoom22End()"),//22变倍结束位置  
+  // white balance 
+  awb: new Ctrl_Select("awb", awblist, "<%awb1%>", "awb=", "ChangeAWB()"),// 白平衡模式
+  magnification: new Ctrl_Text("magnification", "4", "4", "<%magnification%>", "magnification="), //机芯倍率
+  rgain: new Ctrl_Text("rgain", "4", "4", "<%rgain%>", "rgain=", null, false, "ChangeRgain()"),//红色增益
+  bgain: new Ctrl_Text("bgain", "4", "4", "<%bgain%>", "bgain=", null, false, "ChangeBgain()"),//蓝色增益 
+//===============================================================================================================
+ // day night
+  daynight: new Ctrl_Select("daynight", daynightlist, "<%daynight%>", "daynight=", "ChangeDN()"),//日夜模式
+  dnlevel: new Ctrl_Select("dnlevel", dnlevellist, "<%dnsensitivity%>", "dnsensitivity=", "ChangeDnSens()"),//日夜转换灵敏度
+  dndelay: new Ctrl_Select("dndelay", dndelaylist, "<%dndelay%>", "dndelay=", "ChangeDelay()"),//日夜转换延时
+//===========================================================================================================
+// advance setting
+  stabilizer_leve: new Ctrl_Select("stabilizer_leve", stabilizer_lev_list, "<%stabilizer_leve%>", "stabilizer_leve=", "Change_stabilizer_lev()"),//防抖等级 //
+  dnr2d_lev: new Ctrl_Text("dnr2d_lev", 1, 1, "<%dnr2d_lev%>", "dnr2d_lev=", null, false, "Change_dnr2d_lev()"),//降噪级别//  
+  saturation1: new Ctrl_Text("saturation1", 3, 3, "<%saturation1%>", "saturation1=", null, false, "ChangeSaturation()"),//饱和度********// 
+  sharpnesssx: new Ctrl_Text("sharpnesssx", 2, 2, "<%sharpnesssx%>", "sharpnesssx=", null, false, "ChangeSharpx()"),//锐度-x***************** // 
+  sharpnesss_y: new Ctrl_Text("sharpnesss_y", 2, 2, "<%sharpnesss_y%>", "sharpnesss_y=", null, false, "ChangeSharp_y()"),//锐度-y******//
+  deffect: new Ctrl_Select("deffect", deffectlist, "<%deffect%>", "deffect=", "ChangeDeffect()"),//数字特效********//
+  freeze: new Ctrl_Check("freeze", "<%freeze%>", "freeze=", "ChangeFreeze()"),//冻结********//
+  sharpness_flag: new Ctrl_Select("sharpness_flag",sharpness_flaglist, "<%sharpness_flag%>", "sharpness_flag=", "sharpness_flag_change()"),//锐度开关******//
+  dnr2d_switch: new Ctrl_Select("dnr2d_switch",dnr2d_switchlist, "<%dnr2d_switch%>", "dnr2d_switch=", "dnr2d_switch_change()"),//降燥开关*******//
+  stabilizer: new Ctrl_Select("stabilizer",stabilizerlist, "<%stabilizer%>", "stabilizer=", "ChangeStab()"),//防抖开关********//
+  zoommag: new Ctrl_Check("zoommag", "<%zoommag%>", "zoommag=", "ChangeZoommag()"),//变倍标识************//  
+  gamma: new Ctrl_Select("gamma", gammalist, "<%lggamma%>", "lggamma=", "ChangeGamma()")//Gamma**************//  
+}
+</script>
+<script>
+$(document).ready(function(){
+	$(window).resize(function() {
+		setTimeout(function(){adaptionComponent("ocx_object","vlc",16/9,0);},10);
+	});
+	
+});
+
+function switch_stream(index)
+{
+	VideoActiveXControl.videoPlay(index,1,300);
+}
+/*
+function switch_stream1(){
+	StopV();
+    StartV(0, 0, Get9001FirstCodec(), 5, null); //stream 1	
+}
+function switch_stream2(){	
+	StopV();
+    StartV(0, 0, Get9001FirstCodec(), 6, null); //stream 2	
+}
+function switch_stream3(){	
+    StopV();
+    StartV(0, 0, Get9001FirstCodec(), 1, null); //stream 3
+}
+*/
+
+function FixIris()
+{
+  //alert(1);
+  var iris = document.getElementById("agc").selectedIndex;
+  if ((iris == 1) || (iris == 2)) {
+        document.getElementById("irisStop").style.display = "";
+        //document.getElementById("irisLevel").style.display = "none";
+  }
+  else {
+        //document.getElementById("irisLevel").style.display = "";
+        document.getElementById("irisStop").style.display = "none";
+  }
+}
+function ChangeContrast()
+{
+ if (CheckAe(0, 600) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("aesensitivit_change", GetCCV("aesensitivit")), false, SendImgCallBack);
+}
+function Changeblack_level()
+{
+ if (Checkcon(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("black_level_change", GetCCV("black_level")), false, SendImgCallBack);
+}
+
+
+function Changelexposure()
+{ 
+  SendHttp(c_iniUrl + GetSetterCmdKV("change_lexposure_value", GetCCV("longexp")), false, SendImgCallBack); 
+}
+
+function Changesexposure()
+{
+  //alert(GetCCV("shortexp"));
+  SendHttp(c_iniUrl + GetSetterCmdKV("change_sexposure_value", GetCCV("shortexp")), false, SendImgCallBack);  
+}
+
+function changeapeture()
+{
+  FixIris();
+  SendHttp(c_iniUrl + GetSetterCmdKV("change_apeture", GetCCV("agc")), false, SendImgCallBack);
+}
+function ChangeIrisStop()
+{
+	SendHttp(c_iniUrl + GetSetterCmdKV("change_iris_vel", GetCCV("iris_stop")), false, SendImgCallBack);	
+}
+
+function ChangeShutter()
+{
+  //alert(GetCCV("shutter"));
+  FixAllShutter();
+  SendHttp(c_iniUrl + GetSetterCmdKV("change_shutter", GetCCV("shutter")), false, SendImgCallBack);
+}
+
+function ChangeWdrBlc()
+{
+  //FixWdrBlc();
+  SendHttp(c_iniUrl + GetSetterCmdKV("change_wdrblc", GetCCV("wdrblc")), false, SendImgCallBack);
+}
+
+function ChangeWdrLevel()
+{
+  FixBK();
+  SendHttp(c_iniUrl + GetSetterCmdKV("change_wdrlevel", GetCCV("wdrlevel")), false, SendImgCallBack);
+}
+function Changeagcmode()//增益模式
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("change_agcmode", GetCCV("agcmode")), false, SendImgCallBack);
+}
+
+function ChangeAce()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("ace", GetCCV("ace")), false, SendImgCallBack);
+}
+
+function ChangeBlcLevel()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("change_blclevel", GetCCV("blclevel")), false, SendImgCallBack);
+}
+
+function ChangeSenseup()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("change_sensup", GetCCV("sensup")), false, SendImgCallBack);
+}
+
+function ChangeSlowAe()
+{
+  //if (CheckSlowAE(0, 15) == false)
+  //  return;
+  SendHttp(c_iniUrl + GetSetterCmdKV("backlight_compensation_ben", GetCCV("slowae")), false, SendImgCallBack);
+}
+function LumiCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      var sysinfolist = txt.split('=');
+      document.getElementById("luminance1").value = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+    } 
+  } 
+}
+
+function CheckLum(min, max)
+{
+  var value = document.getElementById("luminance1").value;
+  if (value.length == 0)
+  {
+    alert(GL("lum_empty"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getluminance1"), false, LumiCallBack);
+    document.getElementById("luminance1").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("lum_inv"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getluminance1"), false, LumiCallBack);
+    // document.getElementById("luminance1").value = "";
+    document.getElementById("luminance1").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("lum_num"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getluminance1"), false, LumiCallBack);
+    // document.getElementById("luminance1").value = "";
+    document.getElementById("luminance1").focus();
+    return false;
+  }
+  return true;
+}
+function CheckAe(min, max)
+{
+  var value = document.getElementById("aesensitivit").value;
+  if (value.length == 0)
+  {
+    alert(GL("ae_empty"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getluminance1"), false, LumiCallBack);
+    document.getElementById("aesensitivit").value = "<%aesensitivit%>";
+	document.getElementById("aesensitivit").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("ae_inv"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getluminance1"), false, LumiCallBack);
+     document.getElementById("aesensitivit").value = "<%aesensitivit%>";
+    document.getElementById("aesensitivit").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("ae_num"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getluminance1"), false, LumiCallBack);
+    document.getElementById("aesensitivit").value = "<%aesensitivit%>";
+    document.getElementById("aesensitivit").focus();
+    return false;
+  }
+  return true;
+}
+function Checkcon(min, max)
+{
+  var value = document.getElementById("black_level").value;
+  if (value.length == 0)
+  {
+    alert(GL("con_empty"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getluminance1"), false, LumiCallBack);
+    document.getElementById("black_level").value = "<%black_level%>";
+	document.getElementById("black_level").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("con_inv"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getluminance1"), false, LumiCallBack);
+     document.getElementById("black_level").value = "<%black_level%>";
+    document.getElementById("black_level").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("con_num"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getluminance1"), false, LumiCallBack);
+    document.getElementById("black_level").value = "<%black_level%>";
+    document.getElementById("black_level").focus();
+    return false;
+  }
+  return true;
+}
+function Checkluminance1(min, max)
+{
+  var value = document.getElementById("luminance1").value;
+  if (value.length == 0)
+  {
+    alert(GL("lu_empty"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getluminance1"), false, LumiCallBack);
+    document.getElementById("luminance1").value = "<%luminance1%>";
+	document.getElementById("luminance1").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("lu_inv"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getluminance1"), false, LumiCallBack);
+     document.getElementById("luminance1").value = "<%luminance1%>";
+    document.getElementById("luminance1").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("lu_num"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getluminance1"), false, LumiCallBack);
+    document.getElementById("luminance1").value = "<%luminance1%>";
+    document.getElementById("luminance1").focus();
+    return false;
+  }
+  return true;
+}
+function ChangeLumi()
+{	
+	//alert("ChangeLumi");
+   if (Checkluminance1(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("luminance_change", GetCCV("luminance1")), false, SendImgCallBack);
+}
+function AdvanceSave()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("image_save", 1), false);
+}
+function AdvanceDefault()
+{  
+  SendHttp(c_iniUrl + GetSetterCmdKV("image_advancedefault", 1), false);
+  window.location.reload();
+}
+
+
+// if awb == auto || awb == ATW; rgain , bgain and colortemp.disabled == true
+  function FixBK()
+  {
+    var value = document.getElementById("wdrlevel").selectedIndex;
+    if(value == 0)
+    {        
+		document.getElementById("BLC_S").style.display = "none";
+		document.getElementById("BLC_L").style.display = "none";
+    }   
+    else
+	{  
+         document.getElementById("BLC_S").style.display = "";
+		document.getElementById("BLC_L").style.display = "";
+    }
+  }
+  // if shutter == auto; sens-up == auto X2......auto X64
+  function FixAllShutter()
+  {
+     var agc = document.getElementById("agc").selectedIndex;
+    var shutter = document.getElementById("shutter").selectedIndex;
+    switch (shutter)
+    {
+      case 0:
+		//alert(0);
+        document.getElementById("longExposure").style.display = "";
+        document.getElementById("highSpeed").style.display = "none";
+        break;
+      case 1:
+		//alert(1);
+        document.getElementById("longExposure").style.display = "none";
+        document.getElementById("highSpeed").style.display = "none";
+        break;
+      case 2:
+		//alert(2);
+        document.getElementById("longExposure").style.display = "none";
+        document.getElementById("highSpeed").style.display = "";
+        break;
+    }
+  }
+  
+  // if shutter == auto; sens-up == auto X2......auto X64
+  function FixShutter()
+  {
+    // var agc = document.getElementById("agc").selectedIndex;
+    var shutter = document.getElementById("shutter").selectedIndex;
+
+    if (shutter == 0)
+      CTRLARY["sensup"].Disable(0);
+    else
+      CTRLARY["sensup"].Disable(1);
+  }
+
+function  FixAgc () {
+  var agc = document.getElementById("agc").selectedIndex;
+  if (agc == 0)
+  {
+    alert(GL("agc_dn"));
+  }
+}
+
+function CheckBrightness(min, max)
+{
+  var value = document.getElementById("brightness").value;
+  var ch = value.charAt(0);
+  if (value.length == 0)
+  {
+    alert(GL("bri_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("bri_inv"));
+    document.getElementById("brightness").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("bri_num"));
+    document.getElementById("brightness").value = "";
+    return false;
+  }
+  return true;
+}
+
+
+function SlowaeCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      var sysinfolist = txt.split('=');
+      document.getElementById("slowae").value = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+    } 
+  } 
+}
+
+
+function CheckSlowAE(min, max)
+{
+  var value = document.getElementById("slowae").value;
+  var ch = value.charAt(0);
+  if (value.length == 0)
+  {
+    alert(GL("slowae_empty"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getslowae"), false, SlowaeCallBack);
+    document.getElementById("slowae").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("slowae_inv"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getslowae"), false, SlowaeCallBack);
+    // document.getElementById("slowae").value = "";
+    document.getElementById("slowae").focus();
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("slowae_num"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getslowae"), false, SlowaeCallBack);
+    // document.getElementById("slowae").value = "";
+    document.getElementById("slowae").focus();
+    return false;
+  }
+  return true;
+}
+
+
+  function MY_BEFORE_SUBMIT() {
+    // if (CheckBrightness(0, 100) == false)
+    //   return false;
+
+
+    return true;
+  }
+
+  function MY_SUBMIT_OK() {
+    // alert(GL("submit_success"));
+    // window.location.reload();
+  }
+
+function ExposureDefault()
+{
+  var o = '';
+  o += c_iniUrl;
+  o += GetSetterCmdKV("expdefault");
+  SendHttp(o, false, DefaultCallBack);
+}
+
+function DefaultCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      if (txt.indexOf("NG") >= 0 || txt.indexOf("UW") >= 0)
+      {
+        alert(GL("submit_fail"));
+        WS(GL("fail_"));
+      }
+      else
+      {
+        alert(GL("submit_success"));
+        WS(GL("ok_"));
+        window.location.reload();
+      }
+    }
+  }
+}
+  function FixAwb(){
+    if (document.getElementById("awb").selectedIndex == 2)
+    {
+      CTRLARY["rgain"].Disable(0);
+      CTRLARY["bgain"].Disable(0);
+      
+    }
+    else
+    {
+      CTRLARY["rgain"].Disable(1);
+      CTRLARY["bgain"].Disable(1);
+     
+    }
+  }
+  
+function Fixmagnification()
+{
+	document.getElementById("magnification").style.display="none";
+	var m_cation = GetCCV("magnification");
+	//alert(m_cation);
+	if(m_cation == 22){
+			document.getElementById("zoomend_30").style.display="none";
+			document.getElementById("zoomstart_30").style.display="none";			
+			document.getElementById("zoomend_22").style.display="";
+			document.getElementById("zoomstart_22").style.display="";
+	 }
+	
+	if(m_cation == 30){
+			document.getElementById("zoomend_30").style.display="";
+			document.getElementById("zoomstart_30").style.display="";
+			document.getElementById("zoomend_22").style.display="none";
+			document.getElementById("zoomstart_22").style.display="none";
+	}
+	if(m_cation == -1)
+	{		
+		alert(GL("erro_please_restart"));
+		document.getElementById("zoomend_22").style.display="none";
+		document.getElementById("zoomstart_22").style.display="none";
+		document.getElementById("zoomend_30").style.display="none";
+		document.getElementById("zoomstart_30").style.display="none";		
+	}
+	
+}
+
+function RgainCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      var sysinfolist = txt.split('=');
+      document.getElementById("rgain").value = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+    } 
+  } 
+}
+function ChangeFocusMode()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("focusmode1", GetCCV("focusmode"))+ 
+			GetSetterCmdKV("panasonic_camera_set", panasonicFocusModeCmd(GetCCV("focusmode"))), false, SendImgCallBack);
+}
+function AdvanceSave()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("image_save", 1), false);
+}
+function AdvanceDefault()
+{  
+  SendHttp(c_iniUrl + GetSetterCmdKV("image_advancedefault", 1), false);
+  window.location.reload();
+}
+function ChangeFocusDist()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("focusdist", GetCCV("focusdist")), false, SendImgCallBack);
+}
+
+function ZoomStartCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      // alert(txt);
+      var sysinfolist = txt.split('=');
+      // alert(sysinfolist[1]);
+      document.getElementById("zoom30start").selectedIndex = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+      // window.currentagc = parseFloat(sysinfolist[4]).toFixed(2);
+      // window.mcutemp = parseFloat
+    } 
+  } 
+}
+
+function ZoomEndCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      // alert(txt);
+      var sysinfolist = txt.split('=');
+      // alert(sysinfolist[1]);
+      document.getElementById("zoom30end").selectedIndex = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+      // window.currentagc = parseFloat(sysinfolist[4]).toFixed(2);
+      // window.mcutemp = parseFloat
+    } 
+  } 
+}
+function ChangeZoom30Start()
+{
+  if (CheckZoom30S() == false)
+  {
+    // document.getElementById("zoom30start").value = "<%zoom30start%>";
+   document.getElementById("zoom30start").selectedIndex = "<%zoom30start%>";
+    // window.location.reload();
+    return;
+  }
+  SendHttp(c_iniUrl + GetSetterCmdKV("zoomstartstation", GetCCV("zoom30start")), false, SendImgCallBack);
+}
+
+function ChangeZoom22Start()
+{
+  if (CheckZoom22S() == false)
+  {
+    // document.getElementById("zoom30start").value = "<%zoom30start%>";
+     document.getElementById("zoom22start").selectedIndex ="<%zoom22start%>";
+    // window.location.reload();
+    return;
+  }
+  SendHttp(c_iniUrl + GetSetterCmdKV("zoomstartstation", GetCCV("zoom22start")), false, SendImgCallBack);
+}
+
+
+
+function ChangeZoom30End()
+{
+  if (CheckZoom30E() == false)
+  {
+    // document.getElementById("zoom30end").value = "<%zoom30end%>";
+    document.getElementById("zoom30end").selectedIndex = "<%zoom30end%>";
+
+    // window.location.reload();
+    return;
+  }
+  SendHttp(c_iniUrl + GetSetterCmdKV("zoomendstation", GetCCV("zoom30end")), false, SendImgCallBack);
+}
+
+function ChangeZoom22End()
+{
+  if (CheckZoom22E() == false)
+  { 
+	document.getElementById("zoom22end").selectedIndex = "<%zoom22end%>";
+    return;
+  }
+  SendHttp(c_iniUrl + GetSetterCmdKV("zoomendstation", GetCCV("zoom22end")), false, SendImgCallBack);
+}
+
+
+function ChangeAWB()
+{
+  FixAwb();  
+  SendHttp(c_iniUrl + GetSetterCmdKV("awb_mode", GetCCV("awb")), false, SendImgCallBack);
+  
+}
+function ChangeRgain()
+{
+  if (CheckRgain(0, 255) == false)
+    return;
+  SendHttp(c_iniUrl + GetSetterCmdKV("redgain", GetCCV("rgain")), false, SendImgCallBack);
+}
+function ChangeBgain()
+{
+  if (CheckBgain(0, 255) == false)
+    return;
+  SendHttp(c_iniUrl + GetSetterCmdKV("bluegain", GetCCV("bgain")), false, SendImgCallBack);
+}
+function ChangeColorTemp()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("colortemp", GetCCV("colortemp")), false, SendImgCallBack);
+}
+
+
+function CheckRgain(min, max)
+{
+  var value = document.getElementById("rgain").value;
+  var ch = value.charAt(0);
+
+  if (value.length == 0)
+  {
+    alert(GL("rgain_empty"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getrgain"), false, RgainCallBack);
+	document.getElementById("rgain").value = "<%rgain%>";
+    document.getElementById("rgain").focus();
+    return false;
+  }
+  
+  if (!(IsNumeric(value)))
+  {
+    if(ch == '-')
+    {
+      var temp1 = value.substring(value.indexOf('-')+1, value.length);
+      // alert(temp1);
+      if (!(IsNumeric(temp1)))
+      {
+        alert(GL("rgain_inv"));
+        //SendHttp(c_iniUrl + GetSetterCmdKV("getrgain"), false, RgainCallBack);
+        document.getElementById("rgain").value = "<%rgain%>";
+        document.getElementById("rgain").focus();
+        return false;
+      }     
+    }
+    else
+    {
+      alert(GL("rgain_inv"));
+      //SendHttp(c_iniUrl + GetSetterCmdKV("getrgain"), false, RgainCallBack);
+      document.getElementById("rgain").value = "<%rgain%>";
+      document.getElementById("rgain").focus();
+      return false;
+    }
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("rgain_num"));
+   // SendHttp(c_iniUrl + GetSetterCmdKV("getrgain"), false, RgainCallBack);
+	document.getElementById("rgain").value = "<%rgain%>";
+    document.getElementById("rgain").focus();
+    return false;  
+  }
+  
+  return true;
+}
+
+function BgainCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      var sysinfolist = txt.split('=');
+      document.getElementById("bgain").value = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+    } 
+  } 
+}
+
+
+function CheckBgain(min, max)
+{
+  var value = document.getElementById("bgain").value;
+  var ch = value.charAt(0);
+  if (value.length == 0)
+  {
+    alert(GL("bgain_empty"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getbgain"), false, BgainCallBack);
+    document.getElementById("bgain").focus();
+    return false;
+  }
+
+  if (!(IsNumeric(value)))
+  {
+    if(ch == '-')
+    {
+      var temp1 = value.substring(value.indexOf('-')+1, value.length);
+      // alert(temp1);
+      if (!(IsNumeric(temp1)))
+      {
+        alert(GL("bgain_inv"));
+        //SendHttp(c_iniUrl + GetSetterCmdKV("getbgain"), false, BgainCallBack);
+        document.getElementById("bgain").value = "<%bgain%>";
+        document.getElementById("bgain").focus();
+        return false;
+      }     
+    }
+    else
+    {
+      alert(GL("bgain_inv"));
+      //SendHttp(c_iniUrl + GetSetterCmdKV("getbgain"), false, BgainCallBack);
+      document.getElementById("bgain").value = "<%bgain%>";
+      document.getElementById("bgain").focus();
+      return false;
+    }
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("bgain_num"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getbgain"), false, BgainCallBack);
+    document.getElementById("bgain").value = "<%bgain%>";
+    document.getElementById("bgain").focus();
+    return false;
+  }
+
+  return true;
+}
+function CheckZoom30S(){
+  var res = false;
+  var sidx = document.getElementById("zoom30start").selectedIndex;
+  var eidx = document.getElementById("zoom30end").selectedIndex;
+  if (eidx <= sidx )
+  {
+    alert(GL("zoomstart_end"));
+    return res;
+  }
+  return true;
+};
+function CheckZoom22S(){
+  var res = false;
+  var sidx = document.getElementById("zoom22start").selectedIndex;
+  var eidx = document.getElementById("zoom22end").selectedIndex;
+  if (eidx <= sidx )
+  {
+    alert(GL("zoomstart_end"));
+    return res;
+  }
+  return true;
+};
+function CheckZoom30E () {
+  var res = false;
+  var sidx = document.getElementById("zoom30start").selectedIndex;
+  var eidx = document.getElementById("zoom30end").selectedIndex;
+  if (eidx <= sidx )
+  {
+    alert(GL("zoomend_start"));
+    return res;
+  }
+  return true;
+}
+function CheckZoom22E () {
+  var res = false;
+  var sidx = document.getElementById("zoom22start").selectedIndex;
+  var eidx = document.getElementById("zoom22end").selectedIndex;
+  if (eidx <= sidx )
+  {
+    alert(GL("zoomend_start"));
+    return res;
+  }
+  return true;
+}
+
+function ChangeDnSens()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("dnsensitivity", GetCCV("dnlevel")), false, SendImgCallBack);
+}
+
+function ChangeDelay()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("dndelay", GetCCV("dndelay")), false, SendImgCallBack);
+}
+function ChangeDN()
+{
+	FixDN();
+  if(GetCCV("daynight")==0){
+	SendHttp(c_iniUrl + GetSetterCmdKV("daynight_change", GetCCV("daynight"))+ GetSetterCmdKV("e_agc_mode", 0), false, SendImgCallBack);
+  }
+  if(GetCCV("daynight")==1)
+  {
+	SendHttp(c_iniUrl + GetSetterCmdKV("daynight_change", GetCCV("daynight"))+ GetSetterCmdKV("e_agc_mode", 1), false, SendImgCallBack);
+  }
+  if(GetCCV("daynight")==2)
+  {
+	SendHttp(c_iniUrl + GetSetterCmdKV("daynight_change", GetCCV("daynight"))+ GetSetterCmdKV("e_agc_mode", 2), false, SendImgCallBack);
+  }
+}
+// if daynight == auto, dnlevel and dndelay.disabled==false
+  function FixDN()
+  {
+    //alert("daynight");
+	if (document.getElementById("daynight").selectedIndex == 0)
+    {
+      CTRLARY["dnlevel"].Disable(0);
+      CTRLARY["dndelay"].Disable(0);
+    }
+	if (document.getElementById("daynight").selectedIndex == 1)
+    {
+      CTRLARY["dnlevel"].Disable(0);
+      CTRLARY["dndelay"].Disable(0);
+    }
+   if (document.getElementById("daynight").selectedIndex == 2)
+    {
+      CTRLARY["dnlevel"].Disable(1);
+      CTRLARY["dndelay"].Disable(1);
+    }
+  }
+ function Fixsharpness_flag()
+  {
+    var value = document.getElementById("sharpness_flag").selectedIndex;
+    switch (value)
+    {
+      case 0:
+        CTRLARY["sharpnesssx"].Disable(1);
+        CTRLARY["sharpnesss_y"].Disable(1);
+        break;
+      case 1:
+        CTRLARY["sharpnesssx"].Disable(0);
+        CTRLARY["sharpnesss_y"].Disable(0);
+        // CTRLARY["brightness"].Disable(0);
+        break;
+       default:
+        break;
+    }
+  }
+  
+  function Fixstabilizer()
+  {
+    var value = document.getElementById("stabilizer").selectedIndex;
+    switch (value)
+    {
+      case 0:
+        CTRLARY["stabilizer_leve"].Disable(1);
+        break;
+      case 1:
+        CTRLARY["stabilizer_leve"].Disable(0);
+       // CTRLARY["brightness"].Disable(0);
+        break;
+       default:
+        break;
+    }
+  }
+  
+  function Fixdnr2d_switch()
+  {
+    var value = document.getElementById("dnr2d_switch").selectedIndex;
+    switch (value)
+    {
+      case 0:
+        CTRLARY["dnr2d_lev"].Disable(1);
+        break;
+      case 1:
+        CTRLARY["dnr2d_lev"].Disable(0);
+       // CTRLARY["brightness"].Disable(0);
+        break;
+       default:
+        break;
+    }
+  }
+  
+ function Change_dnr2d_lev()
+{
+  if (Checkdnr2d_lev(0, 5) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("dnr2d_change", GetCCV("dnr2d_lev")), false, SendImgCallBack);
+}
+
+function ChangeContrast()
+{
+  if (CheckContrast(0, 600) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("contrast_change", GetCCV("contrast")), false, SendImgCallBack);
+}
+
+function ChangeSaturation()
+{
+  if (CheckSat(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("saturation1_change", GetCCV("saturation1")), false, SendImgCallBack);
+}
+function ChangeLumi()
+{
+  if (CheckLum(0, 255) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("luminance_change", GetCCV("luminance")), false, SendImgCallBack);
+}
+
+
+
+
+function ChangeSharpx()
+{
+  if (CheckSharpx(0, 63) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("sharpness_xchange", GetCCV("sharpnesssx")), false, SendImgCallBack);
+  
+}
+function ChangeSharp_y()
+{
+  if (CheckSharpy(0, 63) == false)
+    return ;
+  SendHttp(c_iniUrl + GetSetterCmdKV("sharpness_ychange", GetCCV("sharpnesss_y")), false, SendImgCallBack);
+}
+
+
+function ChangeDeffect()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("deffect_change", GetCCV("deffect")), false, SendImgCallBack);
+}
+function ChangeFreeze()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("freeze_change", GetCCV("freeze")), false, SendImgCallBack);
+}
+function sharpness_flag_change()
+{
+  Fixsharpness_flag();
+  SendHttp(c_iniUrl + GetSetterCmdKV("sharpness_flag_change", GetCCV("sharpness_flag")), false, SendImgCallBack);
+}
+
+function dnr2d_switch_change()
+{
+   Fixdnr2d_switch();
+  SendHttp(c_iniUrl + GetSetterCmdKV("dnr2d_switch_change", GetCCV("dnr2d_switch")), false, SendImgCallBack);
+}
+
+function ChangeStab()
+{
+  Fixstabilizer();
+  SendHttp(c_iniUrl + GetSetterCmdKV("stabilizer_change", GetCCV("stabilizer")), false, SendImgCallBack);
+}
+
+function Change_stabilizer_lev()
+{   
+  SendHttp(c_iniUrl + GetSetterCmdKV("stabilizer_lev_change", GetCCV("stabilizer_leve")), false, SendImgCallBack);  
+}
+
+function ChangeZoommag()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("zoommag_change", GetCCV("zoommag")), false, SendImgCallBack);
+}
+// function ChangeOsddis()
+// {
+//   SendHttp(c_iniUrl + GetSetterCmdKV("osddis", GetCCV("osddis")), false, SendImgCallBack);
+// }
+function ChangeGamma()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("lggamma_change", GetCCV("gamma")), false, SendImgCallBack);
+}
+
+function ContrastCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      var sysinfolist = txt.split('=');
+      document.getElementById("contrast").value = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+    } 
+  } 
+}
+
+// if awb == auto || awb == ATW; rgain , bgain and colortemp.disabled == true
+function CheckContrast(min, max)
+{
+  var value = document.getElementById("contrast").value;
+  if (value.length == 0)
+  {
+    alert(GL("con_empty"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+    document.getElementById("contrast").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("con_inv"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+    // document.getElementById("contrast").value = "";
+    document.getElementById("contrast").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("con_num"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+    // document.getElementById("contrast").value = "";
+    document.getElementById("contrast").focus();
+    return false;
+  }
+  return true;
+}
+
+function Checkdnr2d_lev(min, max)
+{
+  var value = document.getElementById("dnr2d_lev").value;
+  if (value.length == 0)
+  {
+    alert(GL("d_empty"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+     document.getElementById("dnr2d_lev").value = "<%dnr2d_lev%>";
+	document.getElementById("contrast").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("d_inv"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+    document.getElementById("dnr2d_lev").value = "<%dnr2d_lev%>";
+    document.getElementById("dnr2d_lev").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("d_num"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+    document.getElementById("dnr2d_lev").value = "<%dnr2d_lev%>";
+    document.getElementById("dnr2d_lev").focus();
+    return false;
+  }
+  return true;
+}
+function CheckSharpx(min, max)
+{
+  var value = document.getElementById("sharpnesssx").value;
+  if (value.length == 0)
+  {
+    alert(GL("sharpx_empty"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+     document.getElementById("sharpnesssx").value = "<%sharpnesssx%>";
+	document.getElementById("sharpnesssx").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("sharpx_inv"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+    document.getElementById("sharpnesssx").value = "<%sharpnesssx%>";
+    document.getElementById("sharpnesssx").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("sharpx_num"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+    document.getElementById("sharpnesssx").value = "<%sharpnesssx%>";
+    document.getElementById("sharpnesssx").focus();
+    return false;
+  }
+  return true;
+}
+
+function CheckSharpy(min, max)
+{
+  var value = document.getElementById("sharpnesss_y").value;
+  if (value.length == 0)
+  {
+    alert(GL("sharpy_empty"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+     document.getElementById("sharpnesss_y").value = "<%sharpnesss_y%>";
+	document.getElementById("sharpnesss_y").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("sharpy_inv"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+    document.getElementById("sharpnesss_y").value = "<%sharpnesss_y%>";
+    document.getElementById("sharpnesss_y").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("sharpy_num"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getcontrast"), false, ContrastCallBack);
+    document.getElementById("sharpnesss_y").value = "<%sharpnesss_y%>";
+    document.getElementById("sharpnesss_y").focus();
+    return false;
+  }
+  return true;
+}
+function SaturationCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      var sysinfolist = txt.split('=');
+      document.getElementById("saturation1").value = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+    } 
+  } 
+}
+
+function CheckSat(min, max)
+{
+  var value = document.getElementById("saturation1").value;
+  if (value.length == 0)
+  {
+    alert(GL("sat_empty"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation1"), false, SaturationCallBack);
+    document.getElementById("saturation1").value = "<%saturation1%>";
+	document.getElementById("saturation1").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("sat_inv"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation1"), false, SaturationCallBack);
+     document.getElementById("saturation1").value = "<%saturation1%>";
+    document.getElementById("saturation1").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("sat_num"));
+    //SendHttp(c_iniUrl + GetSetterCmdKV("getsaturation1"), false, SaturationCallBack);
+      document.getElementById("saturation1").value = "<%saturation1%>";
+    document.getElementById("saturation1").focus();
+    return false;
+  }
+  return true;
+}
+
+function LumiCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      var sysinfolist = txt.split('=');
+      document.getElementById("luminance").value = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+    } 
+  } 
+}
+
+function CheckLum(min, max)
+{
+  var value = document.getElementById("luminance").value;
+  if (value.length == 0)
+  {
+    alert(GL("lum_empty"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getluminance"), false, LumiCallBack);
+    document.getElementById("luminance").focus();
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("lum_inv"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getluminance"), false, LumiCallBack);
+    // document.getElementById("luminance").value = "";
+    document.getElementById("luminance").focus();
+    return false;
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("lum_num"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getluminance"), false, LumiCallBack);
+    // document.getElementById("luminance").value = "";
+    document.getElementById("luminance").focus();
+    return false;
+  }
+  return true;
+}
+
+function SharpCallBack()
+{
+  if (g_SubmitHttp.readyState == 4) {
+    if (g_SubmitHttp.status == 200) {
+      var txt = g_SubmitHttp.responseText;
+      var sysinfolist = txt.split('=');
+      document.getElementById("sharpness").value = parseInt(sysinfolist[1], 10);
+      WS(GL("ok_"));
+    } 
+  } 
+}
+
+function CheckSha(min, max)
+{
+  var value = document.getElementById("sharpness").value;
+  if (value.length == 0)
+  {
+    alert(GL("sha_empty"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getsharpness"), false, SharpCallBack);
+    document.getElementById("sharpness").focus();
+    return false;
+  }
+    if (!(IsNumeric(value)))
+  {
+    alert(GL("sha_inv"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getsharpness"), false, SharpCallBack);
+    // document.getElementById("sharpness").value = "";
+    document.getElementById("sharpness").focus();
+    return false;       
+  }
+
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("sha_num"));
+    SendHttp(c_iniUrl + GetSetterCmdKV("getsharpness"), false, SharpCallBack);
+    // document.getElementById("sharpness").value = "";
+    document.getElementById("sharpness").focus();
+    return false;
+  }
+  return true;
+}
+ 
+  
+  function MY_ONLOAD(){
+	setTimeout(function(){adaptionComponent("ocx_object","vlc",16/9,0);},10);
+	switch_stream(1);
+	//switch_stream1();
+	g_lockLink = false;
+	FixBK(); 
+	FixAllShutter();
+	FixIris(); 
+	//--focus_awb----
+	 FixAwb();
+     Fixmagnification();
+	//---DN----------
+	 FixDN();
+	//----advance-----
+	Fixsharpness_flag();
+	Fixstabilizer();
+	Fixdnr2d_switch();
+}
+
+function MY_ONUNLOAD() {  
+
+	StopActiveX();
+}
+  
+  
+function SaveCamPara()
+{
+	SendHttp(c_iniUrl + GetSetterCmdKV("image_save", 1), false);
+	alert(GL("save_ok"));
+}
+function Restore_Defaults()
+{  
+	SendHttp(c_iniUrl + GetSetterCmdKV("image_advancedefault", 1), false);
+	alert(GL("set_ok"));
+	window.location.reload(true);
+}
+</script>
+
+<script language="JavaScript" event="OnDrawRect(x1, y1, x2, y2)" for="vlc">  
+	//var r = VLC1.SetRange(index, x1, y1, x2, y2, 0x00FF0000);====add by jackie
+	//if (r == 0) {
+	path =  "d:\\bit\\v\\2.txt";
+	var wid = x2-x1;
+	var hig = y2-y1;
+	var neirong = x1+','+ y1 +','+wid+','+hig;			
+	//creatfolder(path);
+	//alert("SetRange to index" + index + " failed " + x1 +"," + y1 +"," + x2 +"," + y2);
+	if( (wid >3)&&(hig>3)){
+		//SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_x", x1), false);
+		//SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_y", y1), false);
+		//SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_wide", wid), false);
+		//SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_high", hig), false);
+		SendHttp(c_iniUrl + GetSetterCmdKV("3d_ptz_contral", neirong), false);
+	}
+	
+	
+	//writeFile(path,neirong);			
+	//}//===========================================================================
+</script>
+<!--上面tab Div-->
+<div id="top_div">
+	<div id="empty_div"></div>
+	<div id="tab_container">
+    	<span id="stream_1" onclick = "switch_stream(1)"><script>DW(GL("stream1"));</script></span>
+        <span id="stream_2" onclick = "switch_stream(2)"><script>DW(GL("stream2"));</script></span>
+        <span id="stream_3" onclick = "switch_stream(3)"><script>DW(GL("stream3"));</script></span>
+    </div>
+</div>
+<div id="main_div">
+	<div id="video_ocx_div">
+    	<script>
+		  WriteVideo();
+		</script>
+    </div>
+    <div id="image_config_div">
+    	<div id="config_div">
+            <ul id="accordion" class="accordion">
+                <li>
+                    <div class="link"><script>DW(GL("exposure"));</script><i class="fa fa-chevron-down"></i></div>
+                    <div class="submenu">
+                        <table width="100px" style="color:black;">
+                            <tr>
+                                <td><script>DW(GL("agc"));</script></td>
+                                <td>
+                                	<script>
+                                      WH("agc");
+                                    </script>
+                                </td>
+							</tr>
+							<tr id="irisStop">
+                                <td><script>DW(GL("iris_stop"));</script></td>
+                                <td><script>
+                                      WH("iris_stop");
+                                    </script>
+                                </td>
+                             </tr>
+                             <tr>
+                                <td><script>DW(GL("luminance"));</script></td>
+                                 <td><script>
+                                      WH("luminance1");DW(GL("(0~255)"));
+                                    </script>
+                                </td>
+							</tr>
+							<tr>	
+                                <td><script>DW(GL("exposure_mode"));</script></td>
+                                 <td><script>
+                                       WH("shutter");
+                                    </script>
+                                </td>
+                             </tr>
+							 <tr id="longExposure">	
+                                <td><script>DW(GL("iris"));</script></td>
+                                 <td><script>
+                                      WH("longexp"); 
+                                    </script>
+                                </td>
+                             </tr>
+							 <tr id="highSpeed">	
+                                <td><script>DW(GL("iris"));</script></td>
+                                 <td><script>
+                                      WH("shortexp");   
+                                    </script>
+                                </td>
+                             </tr>
+							  <tr>	
+                                <td><script>DW(GL("aesensitivit"));</script></td>
+                                 <td><script>
+                                     WH("aesensitivit");DW(GL("(0-600)"));
+                                    </script>
+                                </td>
+                             </tr>
+							  <tr>	
+                                <td><script>DW(GL("wdr_blc"));</script></td>
+                                 <td><script>
+                                     WH("wdrblc");
+                                    </script>
+                                </td>
+                             </tr>
+							  <tr>	
+                                <td><script>DW(GL("agc_mode"));</script></td>
+                                 <td><script>
+                                     WH("agcmode");
+                                    </script>
+                                </td>
+                             </tr>
+							 <tr>	
+                                <td><script>DW(GL("black_level"));</script></td>
+                                 <td><script>
+                                     WH("black_level");DW(GL("(0-255)"));
+                                    </script>
+                                </td>
+                             </tr>
+							 <tr>	
+                                <td><script>DW(GL("bk_mode"));</script></td>
+                                 <td><script>
+                                     WH("wdrlevel");
+                                    </script>
+                                </td>
+                             </tr>
+							 <tr id="BLC_L">	
+                                <td><script>DW(GL("blc_level"));</script></td>
+                                 <td><script>
+                                     WH("blclevel");
+                                    </script>
+                                </td>
+                             </tr>
+                              <tr id="BLC_S">
+                                <td><script>DW(GL("sens"));</script></td><!---->
+                                 <td><script>
+                                     WH("slowae");
+                                    </script>
+                                </td>
+                                <td></td><td></td>
+                             </tr>
+                        </table>
+                    </div>
+                </li>
+                <li>
+                    <div class="link"><script>DW(GL("focus_awb"));</script><i class="fa fa-chevron-down"></i></div>
+                    <div class="submenu"> 
+                        <table width="100px" style="color:black;">
+                            <tr>
+                                <td><script>DW(GL("focus_mode"));</script></td>
+                                <td>
+                                	<script>
+                                       WH("focusmode");
+                                    </script>
+                                </td>
+							</tr>
+							<tr id= "zoomstart_30">
+                                <td><script>DW(GL("zoom_start"));</script></td>
+                                <td><script>
+                                      WH("zoom30start");
+                                    </script>
+                                </td>
+                             </tr>
+                             <tr id= "zoomstart_22">
+                                <td><script>DW(GL("zoom_start"));</script></td>
+                                 <td><script>
+                                      WH("zoom22start");
+                                    </script>
+                                </td>
+							</tr>
+							<tr id= "zoomend_30">
+                                <td><script>DW(GL("zoom_end"));</script></td>
+                                 <td><script>
+                                      WH("zoom30end");
+                                    </script>
+                                </td>
+							</tr>
+							<tr id= "zoomend_22">
+                                <td><script>DW(GL("zoom_end"));</script></td>
+                                 <td><script>
+                                      WH("zoom22end");
+                                    </script>
+                                </td>
+							</tr>
+							<tr>
+                                <td><script>DW(GL("awb"));</script></td>
+                                 <td><script>
+                                      WH("awb");
+                                    </script>
+                                </td>
+							</tr>
+							<tr>
+                                <td><script>DW(GL("red_gain"));</script></td>
+                                 <td><script>
+                                      WH("rgain"); DW(GL("(0-255)"));
+                                    </script>
+                                </td>
+                             </tr>
+                              <tr>
+                                <td><script>DW(GL("blue_gain"));</script></td>
+                                 <td><script>
+                                      WH("bgain");DW(GL("(0-255)"));
+                                    </script>
+                                </td>
+                                <td></td>
+								<td><script>WH("magnification");//机芯倍率</script></td>
+                             </tr>
+                        </table>                    
+                    </div>
+                </li>
+                <li>
+                    <div class="link"><script>DW(GL("day_night"));</script><i class="fa fa-chevron-down"></i></div>
+                    <div class="submenu"> 
+                        <table width="100px" style="color:black;">
+                            <tr>
+                                <td><script>DW(GL("d_n"));</script></td>
+                                <td>
+                                	<script>
+                                     WH("daynight");
+                                    </script>
+                                </td>
+							</tr>
+							<tr>
+                                <td><script>DW(GL("dnlevel"));</script></td>
+                                <td><script>
+                                     WH("dnlevel");
+                                    </script>
+                                </td>
+                             </tr>
+                             <tr>
+                                <td><script>DW(GL("dndelay"));</script></td>
+                                 <td><script>
+                                       WH("dndelay"); 
+                                    </script>
+                                </td>
+								 <td></td><td></td>
+                             </tr> 
+                        </table>                    
+                    </div>
+                </li>
+                <li>
+                    <div class="link"><script>DW(GL("advance_set"));</script><i class="fa fa-chevron-down"></i></div>
+                    <div class="submenu"> 
+                        <table width="100px" style="color:black;">
+                            <tr>
+                                <td><script>DW(GL("gamma"));</script></td>
+                                <td>
+                                	<script>
+                                      WH("gamma");
+                                    </script>
+                                </td>
+							</tr>
+							<tr>
+                                <td><script>DW(GL("stabilizer"));</script></td>
+                                <td><script>
+                                       WH("stabilizer");
+                                    </script>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><script>DW(GL("stabilizer_lev"));</script></td>
+                                 <td>
+									<script>
+                                      WH("stabilizer_leve");
+                                    </script>
+                                </td>
+							</tr>
+							<tr>
+                                <td><script>DW(GL("dnr_2d"));</script></td>
+                                 <td>
+									<script>
+                                      WH("dnr2d_switch");
+                                    </script>
+                                </td>
+							</tr>
+							<tr>
+                                <td><script>DW(GL("denoise_lev"));</script></td>
+                                 <td>
+									<script>
+                                      WH("dnr2d_lev");DW(GL("(0-5)"));
+                                    </script>
+                                </td>
+							</tr>
+							<tr>
+                                <td><script>DW(GL("saturation"));</script></td>
+                                 <td>
+									<script>
+                                      WH("saturation1");DW(GL("satu_range"));
+                                    </script>
+                                </td>
+							</tr>
+							<tr>
+                                <td><script>DW(GL("sharpness_flag"));</script></td>
+                                 <td>
+									<script>
+                                      WH("sharpness_flag");
+                                    </script>
+                                </td>
+							</tr>
+							<tr>
+                                <td><script>DW(GL("sharpness_x"));</script></td>
+                                 <td>
+									<script>
+                                      WH("sharpnesssx");DW(GL("(0-63)"));
+                                    </script>
+                                </td>
+							</tr>
+							<tr>
+                                <td><script>DW(GL("sharpness_y"));</script></td>
+                                 <td>
+									<script>
+                                      WH("sharpnesss_y");DW(GL("(0-63)"));
+                                    </script>
+                                </td>
+							</tr>
+							<tr>
+                                <td><script>DW(GL("deffect"));</script></td>
+                                 <td>
+									<script>
+                                      WH("deffect");
+                                    </script>
+                                </td>
+							</tr>
+							<tr>
+                                <td><script>DW(GL("freeze"));</script></td>
+                                 <td>
+									<script>
+                                      WH("freeze");
+                                    </script>
+                                </td>
+                                <td><script>DW(GL("zoom_mag"));</script></td>
+                                 <td>
+									<script>
+                                      WH("zoommag");
+                                    </script>
+                                </td>
+                                <td></td><td></td>
+                            </tr>
+                        </table>                    
+                    </div>
+                </li>
+            </ul>
+        </div>
+        
+        <div id="save_div">
+        	 <input type="button" id="submit" onclick="SaveCamPara()"  style="margin-right:20px; margin-top:10px; padding:5px 15px;" />
+			 <script>
+					document.getElementById("submit").value=GL("submit");    
+					document.getElementById("submit").title=GL("Save_the_camera_parameters");
+			 </script>
+             <input type="button" id="restoredefaults"  onclick="Restore_Defaults()" style="margin-right:20px; margin-top:10px; padding:5px 15px;" />
+				<script>
+					 document.getElementById("restoredefaults").value=GL("_default");  
+					 document.getElementById("restoredefaults").title=GL("restore_defaults_the_camera_parameters");
+				</script>
+		</div>
+    </div>
+</div>
+    
+</body>

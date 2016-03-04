@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script>
+            InitLoad();
+         </script>
+        <title>
+            
+        </title>
+    <style type="text/css">
+    td {
+      font-size: 12px;
+    }
+    </style>
+
+    </head>
+<body onload="MY_ONLOAD()">
+<!--Factory Reset, add by zdy, 2013-03-18-->
+<script>
+
+	function FactoryReset() {
+    	if (confirm(GL("confirm_reset")))
+        {
+            reloadCount = 3;
+            // window.location.reload("restart.htm");
+            // SendHttp(c_iniUrl + GetSetterCmdKV("resetipcam"), false);
+            window.location.reload("wait.htm?reset");
+            // Wait();
+        }			
+    }
+
+    function Wait()
+    {
+        g_lockLink = true;
+        reloadCount--;
+        if (reloadCount > 0)
+        {
+            timerID = setTimeout("Wait()", 1000);
+        }          
+        else
+        {
+          window.location.reload("wait.htm?reset");
+        }
+    }
+function MY_ONLOAD() {
+  g_lockLink = false;
+}
+
+ </script>
+ <script> 
+DW('<table>');
+</script>
+ <script> 
+    DW('<tr align="left"><td><label>' + GL("factory_reset") + '?</lable></td></tr>');
+    DW('<tr align="center"><td><input type="button" id="reset" value="' + GL("factory_reset") + '" class="m1" onClick="FactoryReset()"></td></tr>');
+    
+    DW('<br><br>');
+    DW('<tr><td>' + GL("freset_msg") + '</td><td>');
+</script>
+ <script> 
+DW('</table>');
+    ALC();
+</script>
+</body>
+</html>

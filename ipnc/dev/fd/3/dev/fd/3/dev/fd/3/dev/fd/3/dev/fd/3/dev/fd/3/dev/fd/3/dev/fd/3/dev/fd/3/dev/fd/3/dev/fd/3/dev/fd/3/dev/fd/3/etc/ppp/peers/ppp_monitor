@@ -1,0 +1,10 @@
+##!/bin/bash
+while [ 1 ]
+do
+if [ -e /var/run/ppp0.pid ]; then
+    sleep 600
+else
+    pppd call td_lte
+    sleep 600
+fi
+done

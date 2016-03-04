@@ -1,0 +1,320 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script language="javascript" src="ptzctrl.js"></script>        
+        <script language="javascript" src="My97DatePicker/WdatePicker.js"></script>
+        <script language="javascript" src="jquery/jquery-1.9.1.min.js"></script>
+		<script>
+      		InitLoad();
+   		 </script>
+		<title>
+			
+		</title>
+	</head>
+<body onload="MY_ONLOAD()">
+<script>
+// vga, cds
+    CTRLARY = {
+      //VGA gain
+      vgaagain: new Ctrl_Text("vgaagain", "4", "4", "<%vgaagain%>", "vgaagain="), 
+      vgabgain: new Ctrl_Text("vgabgain", "4", "4", "<%vgabgain%>", "vgabgain="),
+      vgacgain: new Ctrl_Text("vgacgain", "4", "4", "<%vgacgain%>", "vgacgain="),
+      vgadgain: new Ctrl_Text("vgadgain", "4", "4", "<%vgadgain%>", "vgadgain="),
+      //cds gain
+      cdsagain: new Ctrl_Radio("cdsagain", "<%cdsagain%>", "cdsagain="),
+      cdsbgain: new Ctrl_Radio("cdsbgain", "<%cdsbgain%>", "cdsbgain="),
+      cdscgain: new Ctrl_Radio("cdscgain", "<%cdscgain%>", "cdscgain="),
+      cdsdgain: new Ctrl_Radio("cdsdgain", "<%cdsdgain%>", "cdsdgain=")
+}
+</script>
+<script>
+
+function CheckVgaAgain(min, max)
+{
+  var value = document.getElementById("vgaagain").value;
+  if (value.length == 0)
+  {
+    alert(GL("vgaagain_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("vgaagain_inva"));
+    document.getElementById("vgaagain").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("vgaagain_rager"));
+    document.getElementById("vgaagain").value = "";
+    return false;
+  }
+  return true;
+}
+
+function CheckVgaBgain(min, max)
+{
+  var value = document.getElementById("vgabgain").value;
+  if (value.length == 0)
+  {
+    alert(GL("vgabgain_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("vgabgain_inva"));
+    document.getElementById("vgabgain").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("vgabgain_rager"));
+    document.getElementById("vgabgain").value = "";
+    return false;
+  }
+  return true;
+}
+
+function CheckVgaCgain(min, max)
+{
+  var value = document.getElementById("vgacgain").value;
+  if (value.length == 0)
+  {
+    alert(GL("vgacgain_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("vgacgain_inva"));
+    document.getElementById("vgacgain").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("vgacgain_rager"));
+    document.getElementById("vgacgain").value = "";
+    return false;
+  }
+  return true;
+}
+
+function CheckVgaDgain(min, max)
+{
+  var value = document.getElementById("vgadgain").value;
+  if (value.length == 0)
+  {
+    alert(GL("vgadgain_empty"));
+    return false;
+  }
+  if (!(IsNumeric(value)))
+  {
+    alert(GL("vgadgain_inva"));
+    document.getElementById("vgadgain").value = "";
+    return false;
+  }
+  if (!((value >= min && value <= max)))
+  {
+    alert(GL("vgadgain_rager"));
+    document.getElementById("vgadgain").value = "";
+    return false;
+  }
+  return true;
+}
+
+function Update(){
+  var o = '';
+  o += c_iniUrl + GetSetterCmdKV("getvgaagain");
+  o += GetSetterCmdKV("getvgbagain");
+  o += GetSetterCmdKV("getvgcagain");
+  o += GetSetterCmdKV("getvgdagain");
+  o += GetSetterCmdKV("getcdsagain");
+  o += GetSetterCmdKV("getcdsbgain");
+  o += GetSetterCmdKV("getcdscgain");
+  o += GetSetterCmdKV("getcdsdgain");
+  SendHttp(o, false);
+}
+
+		function MY_ONLOAD() {
+      g_lockLink = false;
+      // Update();
+      // StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+    }
+function ParaCheck()
+{
+  var flag = false;
+
+  var vgaagain = GetCCV("vgaagain");
+  if (vgaagain == "<%vgaagain%>")
+  {
+    CTRLARY["vgaagain"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var vgabgain = GetCCV("vgabgain");
+  if (vgabgain == "<%vgabgain%>")
+  {
+    CTRLARY["vgabgain"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var vgacgain = GetCCV("vgacgain");
+  if (vgacgain == "<%vgacgain%>")
+  {
+    CTRLARY["vgacgain"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var vgadgain = GetCCV("vgadgain");
+  if (vgadgain == "<%vgadgain%>")
+  {
+    CTRLARY["vgadgain"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var cdsagain = GetCCV("cdsagain");
+  if (cdsagain == "<%cdsagain%>")
+  {
+    CTRLARY["cdsagain"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var cdsbgain = GetCCV("cdsbgain");
+  if (cdsbgain == "<%cdsbgain%>")
+  {
+    CTRLARY["cdsbgain"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var cdscgain = GetCCV("cdscgain");
+  if (cdscgain == "<%cdscgain%>")
+  {
+    CTRLARY["cdscgain"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  var cdsdgain = GetCCV("cdsdgain");
+  if (cdsdgain == "<%cdsdgain%>")
+  {
+    CTRLARY["cdsdgain"].active = 0;
+  } 
+  else if (flag == false)
+    flag = true;
+
+  return flag;
+}
+    function MY_BEFORE_SUBMIT() { 
+      if (CheckVgaAgain(0, 1023) == false)
+        return false;
+      if (CheckVgaBgain(0, 1023) == false)
+        return false;
+      if (CheckVgaCgain(0, 1023) == false)
+        return false;
+      if (CheckVgaDgain(0, 1023) == false)
+        return false;
+      if (ParaCheck() == false)
+      {
+        alert(GL("para_not_change"));
+        return false;
+      }
+
+      return true;
+
+    }
+
+    function MY_SUBMIT_OK() {
+      alert(GL("submit_success"));
+  window.location.reload();
+    }
+
+  function GetRadioCDS(list, id)
+  {
+     var o = '';
+     o += '<td height="30">';
+     o += GetRadioCtrlHtml(list, id, 0); //zdy  
+     o += GL("0(-3 dB)");
+     o += '</td>';
+     o += '<td height="30">';
+     o += GetRadioCtrlHtml(list, id, 1);
+     o += GL("4(0 dB)");
+     o += '</td>';
+     o += '<td height="30">';
+     o += GetRadioCtrlHtml(list, id, 2);
+     o += GL("6(+3 dB)");
+     o += '</td>';
+     o += '<td height="30">';
+     o += GetRadioCtrlHtml(list, id, 3);
+     o += GL("7(+6 dB)");
+     o += '</td>';      
+     return o;
+  };
+    /*  End add */
+  function WHAWB(tid, id)
+  {
+    DW('<tr><td height="30" >');    
+    DW(GL(tid) + ':</td>' + GetCtrlAWB(tid, id) + '</tr>');
+  }
+  function GetCtrlAWB(tid, id){
+    var res = '';
+    var obj = CTRLARY[id];
+    if (obj != null)
+      {
+        switch(tid) {
+          case "cds_a_gain":
+          case "cds_b_gain":
+          case "cds_c_gain":
+          case "cds_d_gain":
+            res = GetRadioCDS(CTRLARY, id);
+            break;
+        }       
+      }
+      else
+      {
+          res = obj.html;
+      }
+      return res;
+  }
+  function WIPXGain(tid, ctx, numrange)
+{
+  DW('<tr><td height="30" >');
+  DW(GL(tid) + ':</td><td height=30>' + ctx + '</td><td height=30>' + GL(numrange)+ '</td></tr>');  
+};
+function WIPGain(tid, id, numrange)
+{
+  WIPXGain(tid, WH_(id), numrange)
+}
+
+</script>
+<script>
+  DW('<div class="layout" id="tabs-2">');
+  DW('<table>');
+  WIPGain("vga_a_gain", "vgaagain", "vga_numrange");
+  WIPGain("vga_b_gain", "vgabgain", "vga_numrange");
+  WIPGain("vga_c_gain", "vgacgain", "vga_numrange");
+  WIPGain("vga_d_gain", "vgadgain", "vga_numrange");
+  WHAWB("cds_a_gain", "cdsagain");
+  WHAWB("cds_b_gain", "cdsbgain");
+  WHAWB("cds_c_gain", "cdscgain");
+  WHAWB("cds_d_gain", "cdsdgain");
+
+  DW('</table>');
+  DW('</div>');
+  
+  DW('<div>');
+  DW('<table><tr><td colspan=4 align="center">');
+  CreateSubmitButton();
+  DW('</td></tr></table>');
+  DW('</div>');
+
+</script>
+</body>
+</html>

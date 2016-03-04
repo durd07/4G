@@ -1,0 +1,336 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+		<title>高级云台控制</title>
+		<link rel="stylesheet" href="jquery/themes/base/jquery.ui.all.css"/>
+		<link href="css/ptz_function.css" rel="stylesheet">
+		<script src="js/jquery-1.10.2.js"></script>
+		<script src="jquery/jquery-ui.js"></script>
+		<script language="javascript" src="var.js"></script>
+		<script language="javascript" src="common.js"></script>
+		<script language="javascript" src="js/ptz_function.js"></script>
+		<script type="text/javascript" src="js/json2.js"></script>
+		<script type="text/javascript" src="js/validate.js"></script>
+
+	</head>
+	<body>
+		<!--左侧div-->
+		<div id="left_div" style="">
+			<!--控件容器div-->
+			<div id="ocx_container" style="">
+				<OBJECT id="vlc" height="100%" width="100%" classid="clsid:A2D1277C-2CC2-4A1A-B715-C6BAB17661D6"  events="True">
+					<PARAM NAME="_Version" VALUE="65536">
+					<PARAM NAME="_ExtentX" VALUE="9419">
+					<PARAM NAME="_ExtentY" VALUE="7064">
+					<PARAM NAME="_StockProps" VALUE="1">
+					<PARAM NAME="BackColor" VALUE="16777215">
+				</OBJECT>
+			</div>
+			<!--PTZ控制div-->
+			<div id="bottom_conatainer" style="position:relative;">
+				<table style="position:relative; left:200px; top:10px;">
+					<tr>
+						<td id="ptz_button_left_up" class="ptz_button_left_up" style="cursor:hand" onmousedown="PtzControl('LU')" onmouseup="PtzStop()"></td>
+						<script>
+                            document.getElementById("ptz_button_left_up").title = GL("ptz_left_up");
+						</script>
+						<td id="ptz_up" class="ptz_button_up" style="cursor:hand" onmousedown="PtzControl('U')" onmouseup="PtzStop()"></td>
+						<script>
+                            document.getElementById("ptz_up").title = GL("ptz_up");
+						</script>
+						<td id="ptz_button_right_up" class="ptz_button_right_up" style="cursor:hand" onmousedown="PtzControl('RU')" onmouseup="PtzStop()"></td>
+						<script>
+                            document.getElementById("ptz_button_right_up").title = GL("ptz_right_up");
+						</script>
+					</tr>
+					<tr>
+						<td id="ptz_button_left" class="ptz_button_left" style="cursor:hand"  onmousedown="PtzControl('L')" onmouseup="PtzStop()"></td>
+						<script>
+                            document.getElementById("ptz_button_left").title = GL("ptz_left");
+						</script>
+						<td></td>
+						<td id="ptz_button_right" class="ptz_button_right" style="cursor:hand" onmousedown="PtzControl('R')" onmouseup="PtzStop()"></td>
+						<script>
+                            document.getElementById("ptz_button_right").title = GL("ptz_right");
+						</script>
+					</tr>
+					<tr>
+						<td id="ptz_button_left_down" class="ptz_button_left_down" style="cursor:hand" onmousedown="PtzControl('LD')" onmouseup="PtzStop()"></td>
+						<script>
+                            document.getElementById("ptz_button_left_down").title = GL("ptz_left_down");
+						</script>
+						<td id="ptz_button_down" class="ptz_button_down" style="cursor:hand" onmousedown="PtzControl('D')" onmouseup="PtzStop()"></td>
+						<script>
+                            document.getElementById("ptz_button_down").title = GL("ptz_down");
+						</script>
+						<td id="ptz_button_right_down" class="ptz_button_right_down" style="cursor:hand" onmousedown="PtzControl('RD')" onmouseup="PtzStop()"></td>
+						<script>
+                            document.getElementById("ptz_button_right_down").title = GL("ptz_right_down");
+						</script>
+					</tr>
+				</table>
+
+				<table  style="position:absolute; top:20px; left:320px;">
+					<tr>
+						<td style="color:#d8d8d8;font-size:12px; width:55px;">
+						<script>
+                            DW(GL("zoom_contrl"));
+						</script></td>
+						<td id= "zoomnear" class = "ptz_zoomnear" style="cursor:hand" onmousedown="zoomCtrl.tele()" onmouseup="zoomCtrl.zoomStop()"></td>
+						<script>
+                            document.getElementById("zoomnear").title = GL("zoom_tele");
+						</script>
+						<td id= "zoomfar" class = "ptz_zoomfar" style="cursor:hand" onmousedown="zoomCtrl.wide()" onmouseup="zoomCtrl.zoomStop()"></td>
+						<script>
+                            document.getElementById("zoomfar").title = GL("zoom_wide");
+						</script>
+					</tr>
+					<tr>
+						<td style="color:#d8d8d8;font-size:12px; width:55px;">
+						<script>
+                            DW(GL("focus_contrl"));
+						</script></td>
+						<td id= "focusnear" class = "ptz_focusnear" style="cursor:hand" onmousedown="focusCtrl.near()" onmouseup="focusCtrl.focusStop()"></td>
+						<script>
+                            document.getElementById("focusnear").title = GL("focus_near");
+						</script>
+						<td id= "focusfar" class = "ptz_focusfar" style="cursor:hand" onmousedown="focusCtrl.far()" onmouseup="focusCtrl.focusStop()"></td>
+						<script>
+                            document.getElementById("focusfar").title = GL("focus_far");
+						</script>
+					</tr>
+				</table>
+
+				<table style="position:absolute; top:90px; left:320px;">
+					<tr>
+						<td style="color:#d8d8d8;font-size:12px; width:55px;">
+						<script>
+                            DW(GL("pan_speed"));
+						</script></td>
+						<td  class ="ptz_ytspeed" style=" width:130px; vertical-align:middle;"><div id="yt_speed" style="height:7px; width:100%;float:left"></div></td>
+						<td>
+						<input type="text" id="yt_speed_val" readonly="readonly" class = "ptz_ytspeed_num" maxlength=1 size=1/>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<!--右侧div-->
+		<div id="right_div">
+			<div id="nav_div">
+				<ul>
+					<li>
+						<a href="#"><span class="selected_span" onclick="showConfig(this,'#Cruise_Config')">巡航配置</span></a>
+					</li>
+					<li>
+						<a href="#"><span onclick="showConfig(this,'#Scan_Config')">自动扫描</span></a>
+					</li>
+					<li>
+						<a href="#"><span onclick="showConfig(this,'#Learn_Config')">自学习功能</span></a>
+					</li>
+					<li>
+						<a href="#"><span onclick="showConfig(this,'#Watch_Config')">守望设置</span></a>
+					</li>
+				</ul>
+			</div>
+			<div id="func_container">
+				<div id="Cruise_Config"  style="width:100%; height:100%;">
+
+					<table style="padding-top:15px; padding-bottom:15px; ">
+						<tr>
+							<td> 路线：
+							<select id="cruise_line">
+								<option value="01">巡航线路1</option>
+								<option value="02">巡航线路2</option>
+								<option value="03">巡航线路3</option>
+								<option value="04">巡航线路4</option>
+								<option value="05">巡航线路5</option>
+								<option value="06">巡航线路6</option>
+							</select>
+							<input type="button" value="开始巡航" onclick="CruiseCtrl.Cruise_Start();"/>
+							<input type="button" value="停止巡航" onclick="CruiseCtrl.Cruise_Stop();"/>
+							</td>
+						</tr>
+					</table>
+					<hr/>
+						<table>
+							<tr>
+								<td style="text-align:right;">巡航路线：</td>
+								<td>
+								<select id="cruise_config_line" style="width:80px;">
+									<option value="01">线路1</option>
+									<option value="02">线路2</option>
+									<option value="03">线路3</option>
+									<option value="04">线路4</option>
+									<option value="05">线路5</option>
+									<option value="06">线路6</option>
+								</select></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td  style="text-align:right;">预置位号：</td>
+								<td id="preset_td"></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td  style="text-align:right;">停留时间：</td>
+								<td>
+								<input id="stop_time" type="text" value="30" style="width:76px;"/>
+								秒</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+								<input type="button" value="保存" onclick="CruiseCtrl.Cruise_Config();"/>
+								&nbsp;
+								<input type="button" value="清除" onclick="CruiseCtrl.Cruise_Clear();" />
+								</td>
+								<td></td>
+
+							</tr>
+						</table>
+
+				</div>
+				<div id="Scan_Config"  style="width:100%; height:100%;"  >
+					<table style="padding-top:15px; padding-bottom:15px; ">
+						<tr>
+							<td>
+							<input type="button" value="启动扫描" onclick="ScanCtrl.Scan_Start(1)"/>
+							</td>
+							<td>
+							<input type="button" value="停止扫描" onclick="ScanCtrl.Scan_Stop()"/>
+							</td>
+						</tr>
+
+					</table>
+
+					<hr />
+					<table style="padding-top:15px; padding-bottom:20px; ">
+						<tr>
+							<td>
+							<input type="button" value="设置扫描起点" onclick="ScanCtrl.Scan_Config_Begin(1)"/>
+							</td>
+							<td>
+							<input type="button" value="设置扫描终点" onclick="ScanCtrl.Scan_Config_End(1)"/>
+							</td>
+						</tr>
+					</table>
+
+				</div>
+				<div id="Learn_Config"   style="width:100%; height:100%;" >
+					<table style="padding-top:15px; padding-bottom:15px; ">
+						<tr>
+							<td>调用线路：</td>
+							<td>
+							<select id="learn_no">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+							</select></td>
+							<td>
+							<input type="button" value="开始回放" onclick="LearnCtrl.Play_Start($('#learn_no').val())"/>
+							</td>
+							<td>
+							<input type="button" value="停止回放" onclick="LearnCtrl.Play_Stop()"/>
+							</td>
+						</tr>
+
+					</table>
+
+					<hr />
+					<table style="padding-top:15px; padding-bottom:15px; ">
+						<tr>
+							<td>录制线路：</td>
+							<td>
+							<select id="learn_config_no">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+							</select></td>
+							<td>
+							<input type="button" value="开始学习" onclick="LearnCtrl.Learn_Begin($('#learn_config_no').val())"/>
+							</td>
+							<td>
+							<input type="button" value="停止学习" onclick="LearnCtrl.Learn_End()"/>
+							</td>
+							<td>
+							<input type="button" value="清除学习" onclick="LearnCtrl.Remove_Learn($('#learn_config_no').val())"/>
+							</td>
+						</tr>
+
+					</table>
+
+				</div>
+				<div id="Watch_Config"  style="width:100%; height:100%;" >
+					<table style="padding-top:15px; padding-bottom:15px; ">
+						<tr>
+							<td>
+							<input type="button" value="守望开" onclick="WatchCtrl.Watch_Open();"/>
+							</td>
+							<td>
+							<input type="button" value="守望关" onclick="WatchCtrl.Watch_Close();"/>
+							</td>
+
+						</tr>
+					</table>
+					<hr />
+					<table style="padding-top:15px; padding-bottom:15px; ">
+						<tr>
+							<td>守望等待时间：</td><td>
+							<input id="watch_time" type="text" style="width:90px;" value="30" maxlength="3"/>
+							秒</td>
+						</tr>
+						<tr>
+							<td>守望模式设置：</td>
+							<td>
+							<select id="watch_func" style="width:90px;">
+								<option value="01" data="preset">预置位</option>
+								<option value="02" data="scan">线扫</option>
+								<option value="03" data="cruise">巡航</option>
+								<option value="04" data="learn">自学习</option>
+							</select></td>
+						</tr>
+						<tr>
+							<td>守望模式编号：</td>
+							<td id="watch_config_td">
+							<select data="preset">
+								<script>
+                                    for (var i = 1; i < 65; i++) {
+                                        DW('<option value="' + FixNum(i + 16, 3) + '">预置位' + i + '</option>');
+                                    }
+								</script>
+							</select>
+							<select data="learn">
+								<option value="001">自学习1</option>
+								<option value="002">自学习2</option>
+								<option value="003">自学习3</option>
+							</select>
+							<select data="cruise">
+								<option value="001">巡航线路1</option>
+								<option value="002">巡航线路2</option>
+								<option value="003">巡航线路3</option>
+								<option value="004">巡航线路4</option>
+								<option value="005">巡航线路5</option>
+								<option value="006">巡航线路6</option>
+							</select>
+							<select data="scan" disabled="disabled">
+								<option value="000">无</option>
+							</select></td>
+						</tr>
+						<tr>
+							<td colspan="2" style="text-align:right; padding-top:15px;">
+							<input id="watch_config_save" type="button" value="保存"/>
+							</td>
+						</tr>
+					</table>
+
+				</div>
+			</div>
+		</div>
+
+	</body>
+</html>

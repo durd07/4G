@@ -1,0 +1,51 @@
+<script>
+    WriteSysPH("update_firmware");
+    WriteGroup("update_firmware");
+    WTablePH();
+    /* Following modified by zdy, 2013-03-11
+    WIP1(GL("ver_desc"));
+    WIPX("ver_kernel", "<%KernelVersion%>");    
+    WIPX("ver_bios", "<%biosversion%>");
+    WIPX("ver_soft", "<%SoftwareVersion%>");
+    */ 
+    /*
+    WIPX("ver_html", webPageVersion + "." + webPageSubVersion);
+    WIPX("ver_ax", AxVer);
+    */ //not use,zdy
+/*
+    function ClickRestart() { //modified by zdy, 2013-03-28
+        SendHttp(c_iniUrl + GetSetterCmdKV("ipcamrestartcmd", "1"), false);
+    }*/
+   // WIP1(GL("update_describe"));
+</script>
+<tr>
+    <td colspan=2>
+        <br>{$update_describe}
+        <form action="/update.cgi" method="post" enctype="multipart/form-data">
+            <input class="m1" type="file" name="upfile">
+            <span class="m1">{$update_and_click}</span>
+            <input class="m1" type="submit" value="{$update}">
+        </form>
+        <span class="m3">{$update_note}:</span>
+        <span class="m1">{$update_note_describe}</span>
+    </td>
+</tr>
+<!-- Following modified by zdy, 2013-03-28
+<tr>
+    <td colspan=2 align=center>
+        <div style="border:1px solid gray; padding:5px;">
+            <input type="button" value="Restart" class="m1" onClick="ClickRestart()">
+            <br>
+            <span class="m3">Warning:</span>
+            <span class="m1">IPCAM will restart immediately!!</span>
+        </div>
+    </td>
+</tr>
+-->
+<script>
+    WTablePB();
+    DW('<br>');
+    WriteNetPB();
+    
+    ALC();
+</script>

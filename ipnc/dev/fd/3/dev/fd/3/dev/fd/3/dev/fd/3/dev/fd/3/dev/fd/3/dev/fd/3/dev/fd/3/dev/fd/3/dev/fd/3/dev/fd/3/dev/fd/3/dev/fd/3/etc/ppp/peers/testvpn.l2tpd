@@ -1,0 +1,13 @@
+remotename testvpn
+user "durd"
+password "durd"
+unit 0
+lock
+nodeflate
+nobsdcomp
+noauth
+persist
+nopcomp
+noaccomp
+maxfail 5
+debug

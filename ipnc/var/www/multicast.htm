@@ -1,0 +1,17 @@
+<script>
+  CTRLARY = {
+    multicast: new Ctrl_Check("multicast", "<%multicast%>", "multicast=")
+  };
+ WriteNetPH("multicast_function");
+ WriteGroup("multicast_function");   
+  WTablePH();
+  DW("<tr><td>");
+  WH("multicast");
+  //DW("Enable Multicast</td></tr>"); //modified by zdy,2012-07-27
+  DW('&nbsp;' + GL("enable_multicast"));//add by zdy,2012-07-27
+ 
+  WIPSubmit();
+  WTablePB();
+  WriteNetPB();
+  ALC();
+</script>

@@ -1,0 +1,18 @@
+<html>
+    <head>
+		<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+		<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+        <meta http-equiv=Content-Type content="text/html; charset=GB2312">
+  </head> 
+  <body onload="MY_ONLOAD()">
+    <script>
+    function MY_ONLOAD()
+    {
+      window.parent.document.getElementById("devTitle").value = document.getElementById("titlename").value;
+    }
+
+    </script>
+    <input name="titlename" id="titlename" type="text" value="<%title%>" />
+  </body>
+</html>

@@ -1,0 +1,968 @@
+<!--
+  LG Parameter Setting
+-->
+  <style type="text/css">
+ .menu ul,li { list-style:none}
+ .box {width:500px; height:300px; border:1px solid #88BBB4; margin:0px; font-size:12px; font-family:Verdana, Arial, Helvetica, sans-serif}
+ .tagMenu {height:28px; line-height:28px; background:#efefef; position:relative; border-bottom:1px solid #88BBB4}
+ .tagMenu ul {position:absolute; left:0px; bottom:-1px; height:26px;}
+ ul.menu li {float:left; margin-bottom:1px; line-height:16px; height:14px; margin:5px 0 0 -1px; border-left:1px solid #88BBB4; text-align:center; padding:0 12px; cursor:pointer}
+ ul.menu li.current {border:1px solid #88BBB4; border-bottom:none; background:#fff; height:25px; line-height:26px; margin:0}
+ .content { padding:10px}
+ </style>
+ <script>
+  v_valueRange = new V_NumRange(256, 1023, GL("gain_qa"));
+  v_vgaRange = new V_NumRange(0, 1023, GL("vgagain_qa"));
+  v_blkRange = new V_NumRange(0, 1023, GL("blk_qa"));
+  v_expoRange = new V_NumRange(0, 1260, GL("expo_qa"));
+  v_gainRange = new V_NumRange(0, 1029, GL("agc_qa"));
+
+  var irislist = "{$full};F2.0;F2.2;F2.5;F2.8;F3.2;F3.5;F4.0;F4.5;F5.0;F5.6;F6.3;F7.1;F8;F9;F10;F11;F13;F14;F16;F18;F20;F22";
+  var exposurelist = "{$manual_ex};{$auto_ex_agc};{$auto_ex};{$auto_agc}";
+  var wdrgammalist = "{$all_on};{$all_off};{$wdr_on};{$gamma_on}";
+  var defogmodelist = "{$auto};{$manual_on};${manual_off}";
+  var defogintensitylist = "{$wdr_hi};{$wdr_mid};{$wdr_min};{$defog_hi};{$defog_mid};{$defog_min}";
+    CTRLARY = {
+      iris: new Ctrl_Select("iris", irislist, "<%iris%>", "iris"),
+
+      exposurectrl: new Ctrl_Select("exposurectrl", exposurelist,"<%exposurectrl%>", "exposurectrl=", "FixExpo()"),
+      exposure: new Ctrl_Text("exposure", "4", "4", "<%exposure%>", "exposure=", new CheckerObj(v_expoRange)), 
+      exposuremax: new Ctrl_Text("exposuremax", "4", "4", "<%exposuremax%>", "exposuremax=", new CheckerObj(v_expoRange)), 
+      exposuremid: new Ctrl_Text("exposuremid", "4", "4", "<%exposuremid%>", "exposuremid=", new CheckerObj(v_expoRange)), 
+      exposuremin: new Ctrl_Text("exposuremin", "4", "4", "<%exposuremin%>", "exposuremin=", new CheckerObj(v_expoRange)), 
+      agc: new Ctrl_Text("agc", "4", "4", "<%agc%>", "agc=", new CheckerObj(v_gainRange)), 
+      agcmax: new Ctrl_Text("agcmax", "4", "4", "<%agcmax%>", "agcmax=", new CheckerObj(v_gainRange)), 
+      agcmid: new Ctrl_Text("agcmid", "4", "4", "<%agcmid%>", "agcmid=", new CheckerObj(v_gainRange)), 
+      agcmin: new Ctrl_Text("agcmin", "4", "4", "<%agcmin%>", "agcmin=", new CheckerObj(v_gainRange)), 
+      cuexposure: new Ctrl_Text("cuexposure", "4", "4", "<%cuexposure%>", "cuexposure="),
+      cuagc: new Ctrl_Text("cuagc", "4", "4", "<%cuagc%>", "cuagc="),
+      cubright: new Ctrl_Text("cubright", "4", "4", "<%cubright%>", "cubright="),
+
+      awb: new Ctrl_Radio("awb", "<%awb%>", "awb=", "FixStatusAWB()"),
+      //manual awb
+      rgain: new Ctrl_Text("rgain", "4", "4", "<%rgain%>", "rgain=", new CheckerObj(v_valueRange)), 
+      ggain: new Ctrl_Text("ggain", "4", "4", "<%ggain%>", "ggain=", new CheckerObj(v_valueRange)),
+      bgain: new Ctrl_Text("bgain", "4", "4", "<%bgain%>", "bgain=", new CheckerObj(v_valueRange)),
+      autocalib: new Ctrl_Input("autocalib", "calibrationstart", "ClickStartCalibration()"),
+      //VGA gain
+      vgaagain: new Ctrl_Text("vgaagain", "4", "4", "<%vgaagain%>", "vgaagain=", new CheckerObj(v_vgaRange)), 
+      vgabgain: new Ctrl_Text("vgabgain", "4", "4", "<%vgabgain%>", "vgabgain=", new CheckerObj(v_vgaRange)),
+      vgacgain: new Ctrl_Text("vgacgain", "4", "4", "<%vgacgain%>", "vgacgain=", new CheckerObj(v_vgaRange)),
+      vgadgain: new Ctrl_Text("vgadgain", "4", "4", "<%vgadgain%>", "vgadgain=", new CheckerObj(v_vgaRange)),
+      //cds gain
+      cdsagain: new Ctrl_Radio("cdsagain", "<%cdsagain%>", "cdsagain="),
+      cdsbgain: new Ctrl_Radio("cdsbgain", "<%cdsbgain%>", "cdsbgain="),
+      cdscgain: new Ctrl_Radio("cdscgain", "<%cdscgain%>", "cdscgain="),
+      cdsdgain: new Ctrl_Radio("cdsdgain", "<%cdsdgain%>", "cdsdgain="),      
+      //image set
+      imgenc: new Ctrl_Check("imgenc", "<%imgenc%>", "imgenc="),
+      // contrast: new Ctrl_Text("contrast", "4", "4", "<%contrast%>", "contrast=", new CheckerObj(v_blkRange)), 
+      luminance: new Ctrl_Text("luminance", "4", "4", "<%luminance%>", "luminance=", new CheckerObj(v_blkRange)), 
+      hue: new Ctrl_Text("hue", "4", "4", "<%hue%>", "hue=", new CheckerObj(v_blkRange)), 
+      saturation: new Ctrl_Text("saturation", "4", "4", "<%saturation%>", "saturation=", new CheckerObj(v_blkRange)), 
+      sharpness: new Ctrl_Text("sharpness", "4", "4", "<%sharpness%>", "sharpness=", new CheckerObj(v_blkRange)), 
+      dnr3d: new Ctrl_Check("dnr3d", "<%dnr3d%>", "dnr3d="),
+      dnr2d: new Ctrl_Check("dnr2d", "<%dnr2d%>", "dnr2d="),
+      wdrgamma: new Ctrl_Select("wdrgamma", wdrgammalist,"<%wdrgamma%>", "wdrgamma="),
+      defogmode: new Ctrl_Select("defogmode", defogmodelist,"<%defogmode%>", "defogmode="),
+      defogintensity: new Ctrl_Select("defogintensity", defogintensitylist,"<%defogintensity%>", "defogintensity="),
+      phaseen: new Ctrl_Check("phaseenable", "<%phaseenable%>", "phaseenable="),
+      phasevalue: new Ctrl_Text("phasevalue", "4", "4", "<%phasevalue%>", "phasevalue="), 
+
+      // Black Level channel
+      blka: new Ctrl_Text("blka", "4", "4", "<%blka%>", "blka=", new CheckerObj(v_blkRange)), 
+      blkb: new Ctrl_Text("blkb", "4", "4", "<%blkb%>", "blkb=", new CheckerObj(v_blkRange)),
+      blkc: new Ctrl_Text("blkc", "4", "4", "<%blkc%>", "blkc=", new CheckerObj(v_blkRange)),
+      blkd: new Ctrl_Text("blkd", "4", "4", "<%blkd%>", "blkd=", new CheckerObj(v_blkRange)),
+
+      gamma: new Ctrl_Check("gamma", "<%gamma%>", "gamma="),
+      raw: new Ctrl_Check("raw", "<%raw%>", "raw="),
+      imgmod: new Ctrl_Select("imgmod","<%imgmodname.all%>","<%imgmod%>","imgmod="),
+      lvdsdelay: new Ctrl_Select("lvdsdelay","<%lvdsdelayname.all%>","<%lvdsdelay%>","lvdsdelay="),
+      coloradjust: new Ctrl_Select("coloradjust","<%coloradjustname.all%>","<%coloradjust%>","coloradjust="),
+      
+      peakenable: new Ctrl_Check("peakenable", "<%peakenable%>", "peakenable=", "isPeakEnable()"),
+      nfcoef: new Ctrl_Text("nfcoef", "4", "4", "<%nfcoef%>", "nfcoef=", new CheckerObj(v_blkRange)), 
+      lowthr: new Ctrl_Text("lowthr", "4", "4", "<%lowthr%>", "lowthr=", new CheckerObj(v_blkRange)), 
+      hithr: new Ctrl_Text("hithr", "4", "4", "<%hithr%>", "hithr=", new CheckerObj(v_blkRange)), 
+      peakgain: new Ctrl_Text("peakgain", "4", "4", "<%peakgain%>", "peakgain=", new CheckerObj(v_blkRange)), 
+      ad9928: new Ctrl_Select("ad9928","<%ad9928name.all%>","<%ad9928%>","ad9928="),
+      //software reset
+      softreset: new Ctrl_Input("softreset", "softreset", "SoftReset()")
+    };
+
+    function FixExpo()
+    {
+      var value = document.getElementById("exposurectrl").selectedIndex;
+      // switch (value)
+      // {
+      //   case 0: ///manual exposure
+      if (value == 0)
+      {   
+                  document.getElementById("exposure").disabled = 0;
+                  document.getElementById("agc").disabled = 0;
+                  document.getElementById("exposuremax").disabled = 1;
+                  document.getElementById("exposuremid").disabled = 1;
+                  document.getElementById("exposuremin").disabled = 1;
+                  document.getElementById("agcmax").disabled = 1;
+                  document.getElementById("agcmid").disabled = 1;
+                  document.getElementById("agcmin").disabled = 1;
+        }
+        // case 1: // auto exposre + auto agc
+        if (value == 1)
+        {
+                  document.getElementById("exposure").disabled = 1;
+                  document.getElementById("agc").disabled = 1;
+                  document.getElementById("exposuremax").disabled = 0;
+                  document.getElementById("exposuremid").disabled = 0;
+                  document.getElementById("exposuremin").disabled = 0;
+                  document.getElementById("agcmax").disabled = 0;
+                  document.getElementById("agcmid").disabled = 0;
+                  document.getElementById("agcmin").disabled = 0;
+                  }
+        // /case 2:   ///auto exposure
+        if (value == 2)
+        {
+                  document.getElementById("exposure").disabled = 0;
+                  document.getElementById("agc").disabled = 1;
+                  document.getElementById("exposuremax").disabled = 0;
+                  document.getElementById("exposuremid").disabled = 0;
+                  document.getElementById("exposuremin").disabled = 0;
+                  document.getElementById("agcmax").disabled = 1;
+                  document.getElementById("agcmid").disabled = 1;
+                  document.getElementById("agcmin").disabled = 1;
+                  }
+        // case 3:   //auto agc
+        if (value == 3)
+        {
+                  document.getElementById("exposure").disabled = 1;
+                  document.getElementById("agc").disabled = 0;
+                  document.getElementById("exposuremax").disabled = 1;
+                  document.getElementById("exposuremid").disabled = 1;
+                  document.getElementById("exposuremin").disabled = 1;
+                  document.getElementById("agcmax").disabled = 0;
+                  document.getElementById("agcmid").disabled = 0;
+                  document.getElementById("agcmin").disabled = 0;}
+          
+       
+    }
+    function FixStatusAWB()
+    {
+      CTRLARY["rgain"].Disable(GetCCV("awb") == 0 || GetCCV("awb") == 2);
+      CTRLARY["ggain"].Disable(GetCCV("awb") == 0 || GetCCV("awb") == 2);
+      CTRLARY["bgain"].Disable(GetCCV("awb") == 0 || GetCCV("awb") == 2);
+      CTRLARY["autocalib"].Disable(GetCCV("awb") == 0 || GetCCV("awb") == 1);
+    }
+    /*  Following add by zdy, 2012-12-13  */
+    function GetRadioExpo(list, id)
+  {
+     var o = '';
+     o += '<td height="30">';
+     o += GetRadioCtrlHtml(list, id, 0); //zdy  
+     o += GL("auto");
+     o += '</td>';
+     o += '<td height="30">';
+     o += GetRadioCtrlHtml(list, id, 1);
+     o += GL("manual");
+     o += '</td>';      
+     return o;
+  };
+  function GetRadioCDS(list, id)
+  {
+     var o = '';
+     o += '<td height="30">';
+     o += GetRadioCtrlHtml(list, id, 0); //zdy  
+     o += GL("0(-3 dB)");
+     o += '</td>';
+     o += '<td height="30">';
+     o += GetRadioCtrlHtml(list, id, 1);
+     o += GL("4(0 dB)");
+     o += '</td>';
+     o += '<td height="30">';
+     o += GetRadioCtrlHtml(list, id, 2);
+     o += GL("6(+3 dB)");
+     o += '</td>';
+     o += '<td height="30">';
+     o += GetRadioCtrlHtml(list, id, 3);
+     o += GL("7(+6 dB)");
+     o += '</td>';      
+     return o;
+  };
+    /*  End add */
+  function WHAWB(tid, id)
+  {
+    DW('<tr><td height="30" >');    
+    DW(GL(tid) + ':</td>' + GetCtrlAWB(tid, id) + '</tr>');
+  }
+  function GetCtrlAWB(tid, id){
+    var res = '';
+    var obj = CTRLARY[id];
+    if (obj != null)
+      {
+        switch(tid) {
+          case "white_balance":
+            res = GetRadioAWB(CTRLARY, id);
+            break;
+          case "exposuremode":
+            res = GetRadioExpo(CTRLARY, id);
+            break;
+          case "cds_a_gain":
+          case "cds_b_gain":
+          case "cds_c_gain":
+          case "cds_d_gain":
+            res = GetRadioCDS(CTRLARY, id);
+            break;
+        }       
+      }
+      else
+      {
+          res = obj.html;
+      }
+      return res;
+  }
+// Following add 2012-12-13
+
+function ClickStartCalibration(){
+  SendHttp(c_iniUrl + GetSetterCmdKV("calibrationstart", "1"), false);  
+  ChangeContent();
+}
+function ClickStopCalibration(){  
+  SendHttp(c_iniUrl + GetSetterCmdKV("calibrationstop", "0"), false);
+  ChangeContent();
+}
+
+function ClickStartAutoGain()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("autogainstart", "1"), false);
+  ChangeContent();
+}
+function ClickStartAutoClamp()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("autoclampstart", "1"), false);
+  ChangeContent();
+}
+
+function ClickStopAutoGain(){ 
+  SendHttp(c_iniUrl + GetSetterCmdKV("autogainstop", "0"), false);
+    ChangeContent();
+}
+function ClickStopAutoClamp(){  
+  SendHttp(c_iniUrl + GetSetterCmdKV("autoclampstop", "0"), false);
+    ChangeContent();
+}
+
+// add by zdy, 2012-12-17 
+
+function isPeakEnable(){
+  CTRLARY["peakgain"].Disable(GetCCV("peakenable") == 0);
+  CTRLARY["lowthr"].Disable(GetCCV("peakenable") == 0);
+  CTRLARY["hithr"].Disable(GetCCV("peakenable") == 0);
+  CTRLARY["nfcoef"].Disable(GetCCV("peakenable") == 0);
+}
+// add by zdy, 2012-12-17 
+function ClickDefault() {
+    SendHttp(c_iniUrl + GetSetterCmdKV("imagedefault", "1"), false);
+    ChangeContent();
+}
+
+function SoftReset(){
+  SendHttp(c_iniUrl + GetSetterCmdKV("softreset", "1"), false);
+  ChangeContent();
+}
+  function Set()
+  {
+    var address, avalue;
+    var addr = document.getElementById("addr").value;
+    if (addr.charAt(1) == 'x')
+      address = addr.substring(addr.indexOf('x')+1, addr.length);
+    else
+      address = addr;
+
+    var val = document.getElementById("val").value;
+    if (val.charAt(1) == 'x')
+      value = val.substring(val.indexOf('x')+1, val.length);
+    else
+      value = val;
+    var addrval = address + '_' + value;
+    SendHttp(c_iniUrl + GetSetterCmdKV("addrval", addrval), false);
+  }
+
+function GetRadioAWB(list, id)
+{
+  var o = '';
+  o += '<td height="30">';
+  o += GetRadioCtrlHtml(list, id, 0); //zdy  
+  o += GL("auto");
+  o += '</td>';
+  o += '<td height="30">';
+  o += GetRadioCtrlHtml(list, id, 1);
+  o += GL("manual");
+  o += '</td>'; 
+  o += '<td height="30">';
+  o += GetRadioCtrlHtml(list, id, 2);
+  o += GL("calibration");
+  o += '</td>';
+  
+  return o;
+};
+function WIPXGain(tid, ctx, numrange)
+{
+  DW('<tr><td height="30" >');
+  DW(GL(tid) + ':</td><td height=30>' + ctx + '</td><td height=30>' + GL(numrange)+ '</td></tr>');  
+};
+function WIPGain(tid, id, numrange)
+{
+  WIPXGain(tid, WH_(id), numrange)
+}
+
+function FixCtrl(value){
+  if (value == 1)
+  {
+    alert(value);
+//tabs-1
+DisableObject("iris", false);
+//tabs-2
+DisableObject("vgaagain", true);
+DisableObject("vgabgain", true);
+DisableObject("vgacgain", true);
+DisableObject("vgadgain", true);
+DisableObject("cdsagain", true);
+DisableObject("cdsbgain", true);
+DisableObject("cdscgain", true);
+DisableObject("cdsdgain", true);
+//tabs-3
+DisableObject("exposurectrl", true);
+DisableObject("exposuremax", true);
+DisableObject("exposuremid", true);
+DisableObject("exposuremin", true);
+DisableObject("agc", true);
+DisableObject("agcmax", true);
+DisableObject("agcmin", true);
+DisableObject("awb", true);
+DisableObject("rgain", true);
+DisableObject("ggain", true);
+DisableObject("luminance", true);
+DisableObject("hue", true);
+DisableObject("saturation", true);
+//tabs-4
+DisableObject("blka", true);
+DisableObject("blkb", true);
+DisableObject("blkc", true);
+DisableObject("peakenable", true);
+DisableObject("nfcoef", true);
+DisableObject("lowthr", true);
+DisableObject("peakgain", true);
+// tabs-5
+DisableObject("blkd", true);
+DisableObject("gamma", true);
+DisableObject("raw", true);
+DisableObject("lvdsdelay", true);
+DisableObject("coloradjust", true);
+DisableObject("ad9928", true);
+DisableObject("softreset", true);
+
+        FixExpo();
+        FixStatusAWB();
+
+  }
+  else if (value == 2)
+  {
+    alert(value);
+//tabs-1
+DisableObject("iris", true);
+//tabs-2
+DisableObject("vgaagain", false);
+DisableObject("vgabgain", false);
+DisableObject("vgacgain", false);
+DisableObject("vgadgain", false);
+DisableObject("cdsagain", false);
+DisableObject("cdsbgain", false);
+DisableObject("cdscgain", false);
+DisableObject("cdsdgain", false);
+//tabs-3
+DisableObject("exposurectrl", true);
+DisableObject("exposuremax", true);
+DisableObject("exposuremid", true);
+DisableObject("exposuremin", true);
+DisableObject("agc", true);
+DisableObject("agcmax", true);
+DisableObject("agcmin", true);
+DisableObject("awb", true);
+DisableObject("rgain", true);
+DisableObject("ggain", true);
+DisableObject("luminance", true);
+DisableObject("hue", true);
+DisableObject("saturation", true);
+//tabs-4
+DisableObject("blka", true);
+DisableObject("blkb", true);
+DisableObject("blkc", true);
+DisableObject("peakenable", true);
+DisableObject("nfcoef", true);
+DisableObject("lowthr", true);
+DisableObject("peakgain", true);
+// tabs-5
+DisableObject("blkd", true);
+DisableObject("gamma", true);
+DisableObject("raw", true);
+DisableObject("lvdsdelay", true);
+DisableObject("coloradjust", true);
+DisableObject("ad9928", true);
+DisableObject("softreset", true);
+
+        FixExpo();
+        FixStatusAWB();
+
+  }
+  else if (value == 3)
+  {
+    alert(value);
+//tabs-1
+DisableObject("iris", true);
+//tabs-2
+DisableObject("vgaagain", true);
+DisableObject("vgabgain", true);
+DisableObject("vgacgain", true);
+DisableObject("vgadgain", true);
+DisableObject("cdsagain", true);
+DisableObject("cdsbgain", true);
+DisableObject("cdscgain", true);
+DisableObject("cdsdgain", true);
+//tabs-3
+DisableObject("exposurectrl", false);
+DisableObject("exposuremax", false);
+DisableObject("exposuremid", false);
+DisableObject("exposuremin", false);
+DisableObject("agc", false);
+DisableObject("agcmax", false);
+DisableObject("agcmin", false);
+DisableObject("awb", false);
+DisableObject("rgain", false);
+DisableObject("ggain", false);
+DisableObject("luminance", false);
+DisableObject("hue", false);
+DisableObject("saturation", false);
+//tabs-4
+DisableObject("blka", true);
+DisableObject("blkb", true);
+DisableObject("blkc", true);
+DisableObject("peakenable", true);
+DisableObject("nfcoef", true);
+DisableObject("lowthr", true);
+DisableObject("peakgain", true);
+// tabs-5
+DisableObject("blkd", true);
+DisableObject("gamma", true);
+DisableObject("raw", true);
+DisableObject("lvdsdelay", true);
+DisableObject("coloradjust", true);
+DisableObject("ad9928", true);
+DisableObject("softreset", true);
+FixExpo();
+        FixStatusAWB();
+
+  }
+  else if (value == 4)
+  {
+    alert(value);
+//tabs-1
+DisableObject("iris", true);
+//tabs-2
+DisableObject("vgaagain", true);
+DisableObject("vgabgain", true);
+DisableObject("vgacgain", true);
+DisableObject("vgadgain", true);
+DisableObject("cdsagain", true);
+DisableObject("cdsbgain", true);
+DisableObject("cdscgain", true);
+DisableObject("cdsdgain", true);
+//tabs-3
+DisableObject("exposurectrl", true);
+DisableObject("exposuremax", true);
+DisableObject("exposuremid", true);
+DisableObject("exposuremin", true);
+DisableObject("agc", true);
+DisableObject("agcmax", true);
+DisableObject("agcmin", true);
+DisableObject("awb", true);
+DisableObject("rgain", true);
+DisableObject("ggain", true);
+DisableObject("luminance", true);
+DisableObject("hue", true);
+DisableObject("saturation", true);
+//tabs-4
+DisableObject("blka", false);
+DisableObject("blkb", false);
+DisableObject("blkc", false);
+DisableObject("peakenable", false);
+DisableObject("nfcoef", false);
+DisableObject("lowthr", false);
+DisableObject("peakgain", false);
+// tabs-5
+DisableObject("blkd", true);
+DisableObject("gamma", true);
+DisableObject("raw", true);
+DisableObject("lvdsdelay", true);
+DisableObject("coloradjust", true);
+DisableObject("ad9928", true);
+DisableObject("softreset", true);
+
+
+        FixExpo();
+        FixStatusAWB();
+  }
+  else if (value == 5)
+  {
+     alert(value);
+//tabs-1
+DisableObject("iris", true);
+//tabs-2
+DisableObject("vgaagain", true);
+DisableObject("vgabgain", true);
+DisableObject("vgacgain", true);
+DisableObject("vgadgain", true);
+DisableObject("cdsagain", true);
+DisableObject("cdsbgain", true);
+DisableObject("cdscgain", true);
+DisableObject("cdsdgain", true);
+//tabs-3
+DisableObject("exposurectrl", true);
+DisableObject("exposuremax", true);
+DisableObject("exposuremid", true);
+DisableObject("exposuremin", true);
+DisableObject("agc", true);
+DisableObject("agcmax", true);
+DisableObject("agcmin", true);
+DisableObject("awb", true);
+DisableObject("rgain", true);
+DisableObject("ggain", true);
+DisableObject("luminance", true);
+DisableObject("hue", true);
+DisableObject("saturation", true);
+//tabs-4
+DisableObject("blka", true);
+DisableObject("blkb", true);
+DisableObject("blkc", true);
+DisableObject("peakenable", true);
+DisableObject("nfcoef", true);
+DisableObject("lowthr", true);
+DisableObject("peakgain", true);
+// tabs-5
+DisableObject("blkd", false);
+DisableObject("gamma", false);
+DisableObject("raw", false);
+DisableObject("lvdsdelay", false);
+DisableObject("coloradjust", false);
+DisableObject("ad9928", false);
+DisableObject("softreset", false);
+
+FixExpo();
+        FixStatusAWB();
+  }
+}
+
+    function MY_ONLOAD() {
+        StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+        FixExpo();
+        FixStatusAWB();
+        isPeakEnable();
+        click1();
+        document.getElementById("cuexposure").disabled = 1;
+        document.getElementById("cuagc").disabled = 1;
+        document.getElementById("cubright").disabled = 1;
+        g_lockLink = false;
+    }
+    function MY_BEFORE_SUBMIT() { 
+      
+    }
+    function MY_SUBMIT_OK() {
+        ChangeContent();
+    }
+</script>
+ <script language="javascript" type="text/javascript">
+ function ready()
+ {
+    $("ul.menu li:first-child").addClass("current");
+    $("div.content").find("div.layout:not(:first-child)").hide();
+    $("div.content div.layout").attr("id", function(){return idNumber("No")+ $("div.content div.layout").index(this)});    
+ }
+    
+    function show(controlMenu,num,prefix){
+        var content= prefix + num;
+        $('#'+content).siblings().hide();
+        $('#'+content).show();
+        controlMenu.eq(num).addClass("current").siblings().removeClass("current");
+    };
+ 
+    function idNumber(prefix){
+        var idNum = prefix;
+        return idNum;
+    };
+    function click1(){
+        var c = $("ul.menu li");
+        var index = 0;
+        var p = idNumber("No");
+        show(c,index,p);
+        $("#tabs-1").show();
+        $("#tabs-2").hide();
+        $("#tabs-3").hide();
+        $("#tabs-4").hide();
+        $("#tabs-5").hide();
+        $("#tabs-sub").show();
+        FixCtrl(1);
+    };
+
+    function click2(){
+        var c = $("ul.menu li");
+        var index = 1;
+        var p = idNumber("No");
+        show(c,index,p);
+        $("#tabs-2").show();
+        $("#tabs-1").hide();
+        $("#tabs-3").hide();
+        $("#tabs-4").hide();
+        $("#tabs-5").hide();
+        $("#tabs-sub").show();
+        FixCtrl(2);
+    }
+
+    function click3(){
+        var c = $("ul.menu li");
+        var index = 2;
+        var p = idNumber("No");
+        show(c,index,p);
+        $("#tabs-3").show();
+        $("#tabs-1").hide();
+        $("#tabs-2").hide();
+        $("#tabs-4").hide();
+        $("#tabs-5").hide();
+        $("#tabs-sub").show();
+        FixCtrl(3);
+    }
+
+    function click4(){
+        var c = $("ul.menu li");
+        var index = 3;
+        var p = idNumber("No");
+        show(c,index,p);
+        $("#tabs-4").show();
+        $("#tabs-1").hide();
+        $("#tabs-2").hide();
+        $("#tabs-3").hide();
+        $("#tabs-5").hide();
+        $("#tabs-sub").show();
+        FixCtrl(4);
+    }
+    function click5(){
+        var c = $("ul.menu li");
+        var index = 4;
+        var p = idNumber("No");
+        show(c,index,p);
+        $("#tabs-5").show();
+        $("#tabs-1").hide();
+        $("#tabs-2").hide();
+        $("#tabs-3").hide();
+        $("#tabs-4").hide();
+        $("#tabs-sub").show();
+        FixCtrl(5);
+    }
+
+function FocusNStart()
+{
+  // alert("FocusNStart");
+  SendHttp(c_iniUrl + GetSetterCmdKV("focusnear", 1), false);
+}
+
+function FocusNStop()
+{
+  // alert("FocusNStop");
+  SendHttp(c_iniUrl + GetSetterCmdKV("focusnear", 0), false);
+}
+
+function FocusFStart()
+{
+  // alert("FocusFStart");
+  SendHttp(c_iniUrl + GetSetterCmdKV("focusfar", 1), false);
+}
+
+function FocusFStop()
+{
+  // alert("FocusFStop");
+  SendHttp(c_iniUrl + GetSetterCmdKV("focusfar", 0), false);
+}
+
+function WiperOn()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("wiper", 1), false);
+}
+
+function WiperOff()
+{
+  SendHttp(c_iniUrl + GetSetterCmdKV("wiper", 0), false);
+}
+</script>
+<script>
+  WriteNetPH("image"); //add by zdy, 2012-11-20
+  WriteGroup("image");
+  DW('<table><tr><td>');
+  DW('<div overflow="left">');
+  WriteImageTxtPage(useActiveX, isNoShowWaitImg);
+  DW('</div></td>');
+</script>
+
+<script>
+  DW('<td colspan=3 align="left">');
+  DW('<div overflow="left" text-align="left">');
+
+  WriteGroup("camera_set");
+// title and codemode
+  DW('<div class="box">');
+  DW('<div class="tagMenu">');
+  DW('<ul class="menu">');
+  DW('<li onclick="click1()">' + GL("ptz") + '</li>');
+  DW('<li onclick="click2()">' + GL("vga_cds") + '</li>');
+  DW('<li onclick="click3()">' + GL("exposure_awb") + '</li>');
+  DW('<li onclick="click4()">' + GL("blk_peak") + '</li>');
+  DW('<li onclick="click5()">' + GL("gamma") + '</li>');
+
+  DW('</ul>');
+  DW('</div>');
+</script>
+
+<script>
+
+// //div stream1, 云台控制
+DW('<div class="content">');
+
+// //div stream1
+  DW('<div class="layout" id="tabs-1" >');
+  DW('<table>');
+  DW('<tr><td>')
+  DW('<input type="button" id="focusnear" style="width:36px" value="◄ N" title = "' + GL("focus_near") + '" onmousedown="FocusNStart()" onmouseup="FocusNStop()">');
+  DW('</td><td>');
+  DW('<input type="button" id="focusfar" style="width:36px" value="F ►" title = "' + GL("focus_far") + '" onmousedown="FocusFStart()" onmouseup="FocusFStop()">');
+  DW('</td></tr>');
+
+  DW('<tr><td>')
+  DW('<input type="button" id="wiperon" style="width:60px" value = "' + GL("wiper_on") + '" onmousedown="WiperOn()">');
+  DW('</td><td>');
+  DW('<input type="button" id="wiperoff" style="width:60px" value = "' + GL("wiper_off") + '" onmousedown="WiperOff()">');
+  DW('</td></tr>');
+
+  DW('<tr><td colspan=2>' + GL("iris") + ': </td><td>');
+  WH("iris");
+  DW('</td></tr>');
+  DW('</table>');
+  DW('</div>');
+
+//stream2
+  DW('<div class="layout" id="tabs-2" >');
+  DW('<table>');
+  WIPGain("vga_a_gain", "vgaagain", "vga_numrange");
+  WIPGain("vga_b_gain", "vgabgain", "vga_numrange");
+  WIPGain("vga_c_gain", "vgacgain", "vga_numrange");
+  WIPGain("vga_d_gain", "vgadgain", "vga_numrange");
+  WHAWB("cds_a_gain", "cdsagain");
+  WHAWB("cds_b_gain", "cdsbgain");
+  WHAWB("cds_c_gain", "cdscgain");
+  WHAWB("cds_d_gain", "cdsdgain");
+
+  DW('</table>');
+  DW('</div>');
+
+// stream3
+  DW('<div class="layout" id="tabs-3" >');
+  DW('<table>');
+  WIP("exposuremode", "exposurectrl");
+  DW('<tr><td>');
+  DW(GL("manual_ex") + WH_("exposure") + GL("ex_numrange"));
+  DW('</td><td>');
+  DW(GL("manual_agc") + WH_("agc") + GL("agc_numrange"));
+  DW('</td></tr>');
+
+  DW('<tr><td>');
+  DW(GL("exposure_max") + WH_("exposuremax") + GL("ex_numrange"));
+  DW('</td><td>');
+  DW(GL("exposure_mid") + WH_("exposuremid") + GL("ex_numrange"));
+  DW('</td><td>');
+  DW(GL("exposure_min") + WH_("exposuremin") + GL("ex_numrange"));
+  DW('</td></tr>');
+
+  DW('<tr><td>');
+  DW(GL("agc_max") + WH_("agcmax") + GL("agc_numrange"));
+  DW('</td><td>');
+  DW(GL("agc_mid") + WH_("agcmid") + GL("agc_numrange"));
+  DW('</td><td>');
+  DW(GL("agc_min") + WH_("agcmin") + GL("agc_numrange"));
+  DW('</td><td>');
+  DW(GL("cuexposure") + WH_("cuexposure"));
+  DW('</td><td>');
+  DW(GL("cuagc") + WH_("cuagc"));
+  DW('</td><td>');
+  DW(GL("cubright") + WH_("cubright"));
+  DW('</td></tr>');
+
+  WHAWB("white_balance", "awb");
+
+  WIPGain("red_gain", "rgain", "gain_numrange");
+  WIPGain("green_gain", "ggain", "gain_numrange");
+  WIPGain("blue_gain", "bgain", "gain_numrange");
+
+  DW('<tr><td colspan=2><input type="button" id="autocalib" value="' + GL("Calibrationstart") + '" class="m1" onClick="ClickStartCalibration()"></td>');
+  DW('<td colspan=2><input type="button" id="autocalib" value="' + GL("Calibrationstop") + '" class="m1" onClick="ClickStopCalibration()"></td></tr>');
+  
+  DW('<tr class="b1"><td>');  
+  WH("imgenc");
+  DW('&nbsp;' + GL('imgenc'));
+  DW('</td></tr>');
+
+  WIPGain("hue", "hue", "img_range");
+  WIPGain("saturation", "saturation", "img_range");
+  WIPGain("luminance", "luminance", "img_range");
+  WIPGain("sharpness", "sharpness", "img_range");
+
+  DW('<tr class="b1"><td>');  
+  WH("dnr3d");
+  DW('&nbsp;' + GL('dnr3d'));
+  DW('</td></tr>');
+
+  DW('<tr class="b1"><td>');  
+  WH("dnr2d");
+  DW('&nbsp;' + GL('dnr2d'));
+  DW('</td></tr>');
+
+  DW('<tr class="b1"><td>');  
+  WH("phaseen");
+  DW('&nbsp;' + GL('phaseen'));
+  DW('</td></tr>');
+
+  WIPGain("phasevalue", "phasevalue", "phase_range");
+
+  DW('<tr><td  height=30><input type="button" id="autogain" value="' + GL("AutoGainstart") + '" class="m1" onClick="ClickStartAutoGain()"></td>');
+  DW('<td  height=30><input type="button" id="autogain" value="' + GL("AutoGainstop") + '" class="m1" onClick="ClickStopAutoGain()">');
+  DW('</td></tr>');
+  
+  // Auto Clamp  
+  DW('<tr><td  height=30><input type="button" id="autoclamp" value="' + GL("AutoClampStart") + '" class="m1" onClick="ClickStartAutoClamp()"></td>');
+  DW('<td  height=30><input type="button" id="autoclamp" value="' + GL("AutoClampStop") + '" class="m1" onClick="ClickStopAutoClamp()"></td></tr>');
+  // WIPGain("contrast", "contrast", "img_range");
+ 
+  DW('</table>');
+  DW('</div>');
+
+//stream4
+  DW('<div class="layout" id="tabs-4" >');
+  DW('<table>');
+  WIPGain("blk_a", "blka", "vga_numrange");
+  WIPGain("blk_b", "blkb", "vga_numrange");
+  WIPGain("blk_c", "blkc", "vga_numrange");
+  WIPGain("blk_d", "blkd", "vga_numrange"); 
+  DW('<tr><td>');  
+  WH("peakenable");
+  DW('&nbsp;' + GL('peak_enable'));
+  DW('</td></tr>');
+  
+  WIPGain("nf_coef", "nfcoef", "img_range");
+  WIPGain("peak_gain", "peakgain", "img_range");
+  WIPGain("low_thr", "lowthr", "thr_range");
+  WIPGain("hi_thr", "hithr", "thr_range");
+
+  DW('</table>');
+  DW('</div>');
+
+  DW('<div class="layout" id="tabs-5" >');
+  DW('<table>');
+  DW('<tr class="b1"><td width=150 height="30" >');  
+  WH("gamma");
+  DW('&nbsp;' + GL('gamma'));
+  DW('</td></tr>');
+
+  //raw
+  DW('<tr class="b1"><td width=150 height="30" >');  
+  WH("raw");
+  DW('&nbsp;' + GL('raw'));
+  DW('</td></tr>');
+
+  WIP("img_mod", "imgmod");
+
+  //lvds delay time
+  WIP("lvds_delay", "lvdsdelay");
+
+  // color adjust
+  WIP("color_adjust", "coloradjust");
+
+  //ad9928
+  WIP("ad9928", "ad9928");
+
+  DW('<tr><td height=30><input type="button" id="softreset" value="' + GL("soft_reset") + '" class="m1" onClick="SoftReset()"></td>');
+
+  </script>
+    <tr >
+  <td>根据输入地址设置该地址的值</td>
+  <td>
+    <span>Address:</span>
+    <input type="text" id="addr"></input>
+  </td>
+  <td  >
+    <span>Value:</span>
+    <input type="text" id="val"></input>
+  </td>
+  <td  >
+    <input type="button" id="set" value="Set" onclick="Set()"></input>
+  </td>  
+ </tr>
+
+  <script>
+  DW('</table>');
+
+  DW('</div>');
+
+  DW('<table>');
+  DW('<div>');
+  WIP("Wdr_gamma", "wdrgamma");
+  WIP("defog_mode", "defogmode");
+  WIP("defog_intensity", "defogintensity");
+
+  DW('</table>');
+
+  DW('</div>');
+
+
+//submit button
+  DW('<div class="layout" id="tabs-sub">');
+  DW('<table><tr><td colspan=4 align="center">');
+  CreateSubmitButton();
+  DW('</td></tr></table>');
+  DW('</div>');
+
+  DW('</fieldset></form>');
+  DW('</div>');
+  DW('</td></tr>');
+
+  </script>
+  <script>
+  
+    // if (!IsVS()) {
+    //   DW("<tr><td id='viewerTable1' height=45></td><td id='viewerTable2'></td></tr>");
+    // }
+    DW("</table>");
+  </script>
+  <!-- <tr> 
+    <td colspan=4 align=center>
+       <hr> 
+      <script>
+       CreateSubmitButton();
+      </script>
+    </td> 
+  </tr>-->
+<script>
+  //WriteImagePB();
+  // if (!isNoShowWaitImg) {
+  //   ChangeMode("change_format");
+  // }
+  //WTablePB();
+  DW('</fieldset></form>');
+  WriteNetPB();
+  ALC();
+</script>
+

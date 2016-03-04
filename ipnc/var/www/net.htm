@@ -1,0 +1,373 @@
+<!-- network configuration ZDY-->
+<html>
+  <head>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+		<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+    <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="var.js"></script>
+    <script type="text/javascript" src="common.js"></script>
+    <script>
+      InitLoad();
+    </script>
+    <link href="css/net.css" rel="stylesheet" type="text/css">
+    <title>
+      Network Setting
+    </title>  
+    <style type="text/css">
+      div.headline {
+          display: block;
+          background: #666;
+          width: 100%;
+          color: white;
+          padding: 3px 0 3px 0;
+          margin: 0;
+          font-weight: bold;
+          text-align: left;
+          vertical-align: middle;
+      }
+    </style>
+  </head>
+
+  <body onLoad="MY_ONLOAD()">
+
+<script>
+	// get parameters value ini.txt cmdlist.txt ZDY
+    var network_card_list = GL("half_duplex_10M") + ";" + 
+                            GL("full_duplex_10M") + ";" + 
+                            GL("half_duplex_100M") + ";" + 
+                            GL("full_duplex_100M") + ";" + 
+                            GL("auto");
+    var isDhcpEn = "<%dhcpenable%>";  // dhcpenable = 1 //ZDY
+    var v_netip = "<%netip%>";  // netip = 192.168.001.168 //ZDY
+    var v_netmask = "<%netmask%>"; //netmask=255.255.255.000 //ZDY
+    var v_gateway = "<%gateway%>";  //gateway=192.168.001.254 //ZDY
+    var v_httpPort = "<%httpport%>"; //httpport=80 //ZDY
+    //var isDhcpConfig = (GV("<%dhcpconfig%>", 0) == 1);  //not found //ZDY
+    var isDhcpChecked = (isDhcpEn == "1") ? true : false;  //isDhcpChecked=true
+
+    CTRLARY = {
+        network_card_type: new Ctrl_Select("network_card_type", network_card_list, "<%network_card_type%>", "network_card_type=", "ChangeNetworkCardType()"),
+        //useDhcp: new Ctrl_Check("useDhcp", isDhcpEn, "dhcpenable=", "switchIPSet()"), //dhcpenable checkbox,设置复选框的状态、动作 //ZDY
+        useDhcp: new Ctrl_Check("useDhcp", isDhcpEn, "dhcpenable=", "isDhcpEnable()"),
+        netip: new Ctrl_IPAddr("netip", v_netip, "netip="), //IP Address
+        netmask: new Ctrl_IPAddr("netmask", v_netmask, "netmask="), //netmask
+        gateway: new Ctrl_IPAddr("gateway", v_gateway, "gateway=") //gateway
+    };
+
+    function isDhcpEnable(){
+      CTRLARY["netip"].Disable(GetCCV("useDhcp") == 1); //设置netip的状态
+      CTRLARY["netmask"].Disable(GetCCV("useDhcp") == 1); //设置netmask的状态
+      CTRLARY["gateway"].Disable(GetCCV("useDhcp") == 1); //设置gateway的状态
+      // CTRLARY["dnsip"].Disable(GetCCV("useDhcp") == 1); //设置netmask的状态
+      // if (GetCCV("useDhcp") == 1)
+      // {
+      //   alert("GL(dhcp_enable)");
+      //   SendHttp(c_iniUrl + GetSetterCmdKV("dhcpenable", GetCCV("useDhcp")), false);
+      //   window.location.reload("wait.htm?restart");
+      // }
+    }
+
+    function network_card_type()
+    {
+    }
+
+    function MY_ONLOAD() {
+        if (g_sh_net) {
+            g_sh_net = false;
+        }
+        g_lockLink = false; 
+        isDhcpEnable();       
+    }
+    function MY_SUBMIT_OK() {
+        alert(GL("submit_success"));
+        window.location.reload();
+    }
+
+function ParaCheck()
+{
+	var flag = false;
+    var net_card_type = GetCCV("network_card_type");
+	if (net_card_type == "<%network_card_type%>")
+	{
+		CTRLARY["network_card_type"].active = 0;
+	}
+	else if (flag == false)
+		flag = true;
+
+	var ipaddr = GetCCV("netip");
+	var ip1 = parseInt(ipaddr.substring(0, 3), 10);
+	var ip2 = parseInt(ipaddr.substring(3, 6), 10);
+	var ip3 = parseInt(ipaddr.substring(6, 9), 10);
+	var ip4 = parseInt(ipaddr.substring(9, 12), 10);
+	var netip = ip1 + '.' + ip2 + '.' + ip3 + '.' + ip4;
+
+	if (netip == "<%netip%>")
+	{
+		CTRLARY["netip"].active = 0;
+	}
+	else if (flag == false)
+		flag = true;
+
+	var ipaddr = GetCCV("netmask");
+	var ip1 = parseInt(ipaddr.substring(0, 3), 10);
+	var ip2 = parseInt(ipaddr.substring(3, 6), 10);
+	var ip3 = parseInt(ipaddr.substring(6, 9), 10);
+	var ip4 = parseInt(ipaddr.substring(9, 12), 10);
+	var netmask = ip1 + '.' + ip2 + '.' + ip3 + '.' + ip4;
+
+	if (netmask == "<%netmask%>")
+	{
+		CTRLARY["netmask"].active = 0;
+	} 
+	else if (flag == false)
+		flag = true;
+
+	var ipaddr = GetCCV("gateway");
+	var ip1 = parseInt(ipaddr.substring(0, 3), 10);
+	var ip2 = parseInt(ipaddr.substring(3, 6), 10);
+	var ip3 = parseInt(ipaddr.substring(6, 9), 10);
+	var ip4 = parseInt(ipaddr.substring(9, 12), 10);
+	var gateway = ip1 + '.' + ip2 + '.' + ip3 + '.' + ip4;
+
+	if (gateway == "<%gateway%>")
+	{
+		CTRLARY["gateway"].active = 0;
+	} 
+	else if (flag == false)
+		flag = true;
+
+
+	var dhcpenable = GetCCV("useDhcp");
+	if (dhcpenable == "<%dhcpenable%>")
+	{
+		CTRLARY["useDhcp"].active = 0;
+	}
+	else if (flag == false)
+		flag = true;
+
+	return flag;
+}
+
+function MY_BEFORE_SUBMIT()
+{
+	if (GetCCV("useDhcp") == 0 && GetCCV("useDhcp") == "<%dhcpenable%>")
+	{
+		if (CheckIP() == false)
+			return false;
+		if (IPChange() == false)
+			return false;
+		if (NetmaskChange() == false)
+			return false;
+		if (GateChange() == false)
+			return false;
+
+		if (ParaCheck() == false)
+		{
+			alert(GL("para_not_change"));
+			ChangeActive();
+			return false;
+		}
+	}
+	else
+	{
+		if (GetCCV("useDhcp") == "<%dhcpenable%>")
+		{
+			alert(GL("para_not_change"));
+			ChangeActive();
+			return false;
+		}
+		else if (GetCCV("useDhcp") == 1)
+		{
+			CTRLARY["netmask"].active = 0;
+			CTRLARY["netip"].active = 0;
+			CTRLARY["gateway"].active = 0;
+			// alert(GL("dhcp_enable"));
+			// if (confirm(GL("dhcp_enable")))
+			// {
+			SendHttp(c_iniUrl + GetSetterCmdKV("dhcpenable", GetCCV("useDhcp")), false);
+			// window.top.location = "wait.htm?restart";
+			// }
+			// else
+			// {
+			//     window.location.reload();
+			//     return false;
+			// }
+
+		}
+		else if (GetCCV("useDhcp") == 0)
+		{
+			if (CheckIP() == false)
+				return false;
+			if (IPChange() == false)
+				return false;
+			if (NetmaskChange() == false)
+				return false;
+			if (GateChange() == false)
+				return false;
+
+			if (ParaCheck() == false)
+			{
+				alert(GL("para_not_change"));
+				ChangeActive();
+				return false;
+			}
+		}            
+	}
+	return true;
+}
+
+
+function CheckIP()
+{
+	var ipaddr = GetCCV("netip");
+	var ip1 = parseInt(ipaddr.substring(0, 3), 10);
+	var ip2 = parseInt(ipaddr.substring(3, 6), 10);        
+	var ip3 = parseInt(ipaddr.substring(6, 9), 10);  
+	var ip4 = parseInt(ipaddr.substring(9, 12), 10);        
+	var gateway = GetCCV("gateway");
+	var gate1 = parseInt(gateway.substring(0, 3), 10);
+	var gate2 = parseInt(gateway.substring(3, 6), 10);
+	var gate3 = parseInt(gateway.substring(6, 9), 10);
+	var gate4 = parseInt(gateway.substring(9, 12), 10);  
+	
+	var netmask = GetCCV("netmask");
+	var mask1 = parseInt(netmask.substring(0, 3), 10);
+	var mask2 = parseInt(netmask.substring(3, 6), 10);
+	var mask3 = parseInt(netmask.substring(6, 9), 10);
+	var mask4 = parseInt(netmask.substring(9, 12), 10); 
+	
+	//if (ip1 != gate1 || ip2 != gate2 || ip3 != gate3)
+	if(((ip1&mask1)!=(gate1&mask1)) || ((ip2&mask2)!=(gate2&mask2)) || ((ip3&mask3)!= (gate3&mask3)) || ((ip4&mask4)!= (gate4&mask4)) )
+	{
+		alert(GL("not_a_net"));
+		SetCCV("netip", "<%netip%>");
+		SetCCV("gateway", "<%gateway%>");
+		return false;
+	}
+	return true;
+}
+    function IPChange()
+    {
+        var ipaddr = GetCCV("netip");
+        var ip1 = parseInt(ipaddr.substring(0, 3), 10);
+        var ip2 = parseInt(ipaddr.substring(3, 6), 10);
+        var ip3 = parseInt(ipaddr.substring(6, 9), 10);
+        var ip4 = parseInt(ipaddr.substring(9, 12), 10);
+        if (ip1 == 0||ip4 ==0||ip4 ==255)
+        {
+            alert(GL("ip_inva"));
+            return false;
+        }
+          
+        return true;
+    }
+    function NetmaskChange()
+    {
+        var ipaddr = GetCCV("netmask");
+        var ip1 = parseInt(ipaddr.substring(0, 3), 10);
+        var ip2 = parseInt(ipaddr.substring(3, 6), 10);
+        var ip3 = parseInt(ipaddr.substring(6, 9), 10);
+        var ip4 = parseInt(ipaddr.substring(9, 12), 10);
+      //  if (ip1 != 255 || (ip2 != 0 && ip2 != 255) || (ip3 != 0 && ip3 != 255) || (ip4 != 0 && ip4 != 255))
+	  	if (ip1 != 255  )
+        {
+            alert(GL("netmask_inva"));
+            return false;
+        }
+        return true;
+    }
+    function GateChange()
+    {
+        var ipaddr = GetCCV("gateway");
+        var ip1 = parseInt(ipaddr.substring(0, 3), 10);
+        var ip2 = parseInt(ipaddr.substring(3, 6), 10);
+        var ip3 = parseInt(ipaddr.substring(6, 9), 10);
+        var ip4 = parseInt(ipaddr.substring(9, 12), 10);
+        if (ip1 == 0|| ip4==0||ip4==255 )
+        {
+            alert(GL("gateway_inva"));
+            return false;
+        }
+        return true;
+    }
+
+
+    function networkMsg() { //显示警告信息
+        alert(GL("change_ip_warn"));
+    }
+
+
+function SubmitAndRestart()
+{
+  if (g_lockLink)
+  {
+    WS("LOCKED...");
+    return;
+  }
+  if (MY_BEFORE_SUBMIT() == false)
+  {
+    return false;
+  }
+
+  var o = c_iniUrl;
+  for ( var key in CTRLARY)
+  {
+    var obj = CTRLARY[key];
+    if (obj.active)
+    {
+      if (obj.setcmd != "")
+      {
+        var str = GetSetterCmd(obj, GetCtrlValue(CTRLARY, key));
+        o += str;
+        // alert(o);
+      }
+    }
+  }
+  alert(o);
+  SendHttp(o, false, CallBack);
+};
+
+function CallBack()
+{
+    // alert("CallBack");
+    if (g_SubmitHttp.readyState == 4)
+    {
+        window.top.location = "wait.htm?restart";
+    }
+}
+</script>
+<script>
+    DW('<table>');
+    DW('<tr><td width="750px">');
+    DW('<div class="headline">' + GL("network_card_configuration") + '</div>');
+    DW('<table>');
+    DW('<tr><td>' + GL("network_card_type") + '</td><td>');
+    WH("network_card_type");
+    DW('</td>');
+    DW('<tr><td>');
+    WH("useDhcp");
+    DW(GL("useDhcp"));
+    // WIP("useDhcp", "useDhcp");
+    DW('</td></tr>');
+
+    WIP("ip_addr", "netip");
+    WIP("netmask", "netmask");
+    WIP("def_gateway", "gateway");
+    // DW('<tr><td class="m3" colspan=2><span>');
+    // DW(GL("net_text"));
+    // DW('</span></td></tr>');
+    // WIPSubmit(true);
+    DW('<tr align="right"><td>');
+    DW('</td><td>');
+    DW('<input type="button" style="width:120px;height:30px" value="' + GL("submit_not_restart") + '" onclick="ValidateCtrlAndSubmit(CTRLARY)">');
+    DW('&nbsp&nbsp<input type="button" style="width:120px;height:30px" value="' + GL("submit_restart") + '" onclick="SubmitAndRestart()">');
+
+    DW('</td></tr>');
+    DW('</table>');
+    DW('</td></tr>');
+    DW('</table>');
+    ALC(); //window.status=msg; 加载时间超过300ms(?)，显示超时
+</script>
+</body>
+</html>

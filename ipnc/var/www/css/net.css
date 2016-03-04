@@ -1,0 +1,23 @@
+body {
+	margin: 0;
+	padding:0;
+	height:90%;
+	width:90%;
+	min-width:600px;
+	color:#333;
+	background:#D5D5D5;
+}
+
+
+table
+{ 
+	margin-left:20px;
+	margin-top:20px;
+	border-collapse:collapse;
+	font-size:12px;
+}
+
+table td
+{
+	padding:5px;
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+		<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+		<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+		<script type="text/javascript" src="common.js"></script>
+		<script type="text/javascript" src="js/json2.js"></script>		
+		<script>
+      		InitLoad();
+   		 </script>
+		<title>
+			Testtest
+		</title>
+	</head>
+	<body>	
+		<script>
+		 CTRLARY = {
+			data1: new Ctrl_Text("data1", "10", "10", "0", "data1=",null, false,"ChangeData1()"),//
+			data2: new Ctrl_Text("data2", "10", "10", "0", "data2=",null, false,"ChangeData2()"),//
+			data3: new Ctrl_Text("data3", "10", "10", "0", "data3=",null, false,"ChangeData3()")//			
+		}
+		</script>
+		
+		<script>  
+
+			function ChangeData1()
+			{
+				var ctrl = null;
+				var ctrljson = {"Factory":"POWER_VIEW",
+				  "Type":"PV8340-F2",
+				  "Action_Item":"Zoom_Direct",
+				  "Param":"5"
+				  };					
+				ctrljson.Param = GetCCV("data1");  
+				ctrl = JSON.stringify(ctrljson);
+			    //alert(ctrl); 
+				SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);		
+			}
+			
+			function ChangeData2()
+			{
+				var ctrl = null;
+				var ctrljson = {"Factory":"POWER_VIEW",
+				  "Type":"PV8340-F2",
+				  "Action_Item":"Aov_H",
+				  "Param":"5"
+				  };					
+				ctrljson.Param = GetCCV("data2");  
+				ctrl = JSON.stringify(ctrljson);
+			    //alert(ctrl); 
+				SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);		
+			}
+			
+			function ChangeData3()
+			{
+				var ctrl = null;
+				var ctrljson = {"Factory":"POWER_VIEW",
+				  "Type":"PV8340-F2",
+				  "Action_Item":"Aov_V",
+				  "Param":"5"
+				  };					
+				ctrljson.Param = GetCCV("data3");  
+				ctrl = JSON.stringify(ctrljson);
+			    //alert(ctrl); 
+				SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);		
+			}
+			
+			
+			
+			function settest()
+			{
+				var ctrl = null;
+				var ctrljson = {"Factory":"POWER_VIEW",
+				  "Type":"PV8340-F2",
+				  "Action_Item":"Save_Aov",
+				  "Param":" "
+				  };					
+				
+				ctrl = JSON.stringify(ctrljson);
+			    //alert(ctrl); 
+				SendHttp(c_iniUrl + GetSetterCmdKV("camera_parameters_set", ctrl), false);		
+			}
+		</script>	
+<div>
+	<table>
+	<tr>
+		<td>
+			设置机芯位置:<script>WH("data1");</script>0~20000
+		</td>
+	</tr>
+	<tr>
+		<td>
+			设置水平视角:<script>WH("data2");</script>0~2000000
+		</td>
+	</tr>
+	<tr>
+		<td>
+			设置垂直视角:<script>WH("data3");</script>0~2000000
+		</td>
+	</tr>
+	<tr>
+	<td>
+		<script> DW('<input type="button" style="width:80px;height:20px" value="' + '保存' + '" onclick="settest()">');</script>
+	</td>
+	</tr>	
+	</table>
+</div>
+		
+	</body>
+</html>

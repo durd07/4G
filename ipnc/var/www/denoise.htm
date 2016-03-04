@@ -1,0 +1,982 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<META HTTP-EQUIV="pragma" CONTENT="no-cache">
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+		<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+		<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+		<script language="javascript" src="jquery/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript" src="js/json2.js"></script>
+		<script language="javascript" src="var.js"></script>
+		<script language="javascript" src="common.js"></script>
+		<script language="javascript" src="js/denoise.js"></script>
+		<script language="javascript" src="js/validate.js"></script>
+		<script>
+            InitLoad();
+		</script>
+		<title></title>
+		<style type="text/css">
+			*{font-size: 12px;}
+			.menu ul, li {
+				list-style: none
+			}
+			.box {
+				width: 500px;
+				height: 100px;
+				border: 1px solid #CECECE;/*#88BBB4*/
+				margin: 0px;
+				font-size: 12px;
+				font-family: Verdana, Arial, Helvetica, sans-serif
+			}
+			.tagMenu {
+				height: 28px;
+				line-height: 28px;
+				background: #efefef;
+				position: relative;
+				border-bottom: 1px solid #CECECE;/*#88BBB4*/
+			}
+			.tagMenu ul {
+				position: absolute;
+				left: 0px;
+				bottom: -1px;
+				height: 26px;
+			}
+			ul.menu li {
+				float: left;
+				margin-bottom: 1px;
+				line-height: 16px;
+				height: 14px;
+				margin: 5px 0 0 -1px;
+				border-left: 1px solid #CECECE;/*#88BBB4*/
+				text-align: center;
+				padding: 0 12px;
+				cursor: pointer
+			}
+			ul.menu li.current {
+				border: 1px solid #CECECE;/*#88BBB4*/
+				border-bottom: none;
+				background: #ff;
+				height: 25px;
+				line-height: 26px;
+				margin: 0
+			}
+			.content {
+				padding: 10px
+			}
+			a {
+				TEXT-DECORATION: none
+			}
+			a:link {
+				text-decoration: none;
+				color: black
+			}
+			a:active {
+				text-decoration: none
+			}
+			a:hover {
+				text-decoration: none;
+				color: black
+			}
+			a:visited {
+				text-decoration: none;
+				color: black
+			}
+			#ocx_cache_config {
+				font-size: 13px;
+				border: 1px solid #999;
+				width: 500px;
+				height: 70px;
+				background: #CCC;
+				margin-top: 20px;
+			}
+			#ocx_cache_config p {
+				display: block;
+				background: #666;
+				width: 100%;
+				color: white;
+				padding: 3px 0 3px 0;
+				margin: 0;
+				font-weight: bold;
+				text-align: center;
+				vertical-align: middle;
+			}
+			
+			#analog_videoconfig {
+				font-size: 13px;
+				border: 1px solid #999;
+				width: 500px;
+				height: 170px;
+				background: #CCC;
+				margin-top: 20px;
+			}
+			#analog_videoconfig table
+			{
+				border:none;
+				border-collapse: collapse;
+			}
+			#analog_videoconfig table tr td
+			{
+				padding: 3px;
+			}
+			.header {
+				font-size:13px;
+				background: #666;
+				color: white;
+				padding: 3px 0 3px 0;
+				margin: 0;
+				font-weight: bold;
+				text-align: center;
+				vertical-align: middle;
+			}
+		</style>
+	</head>
+	<body onLoad="MY_ONLOAD()">
+		<script>
+            var h264list = "HP;MP;BP";
+            //var iR_modulelist = "默认参数1;默认参数2;默认参数3;添加参数1;添加参数2;添加参数3;添加参数4;添加参数5;添加参数6;添加参数7";
+            var iR_fnlist = "远光;近光";
+            var iR_modulelist = "默认参数1;默认参数2;默认参数3;添加参数1";
+            CTRLARY = {
+                contrast : new Ctrl_Text("contrast", "3", "3", "<%contrast%>", "contrast="),
+                brightness : new Ctrl_Text("brightness", "3", "3", "<%brightness%>", "brightness="),
+                sharpness : new Ctrl_Text("sharpness", "3", "3", "<%sharpness%>", "sharpness="),
+                //IR ctrl
+                iR_module : new Ctrl_Select("iR_module", iR_modulelist, "<%ir_module%>", "iR_module=", "ChangeIr()"), //红外模式选择
+                //iR_far_near: new Ctrl_Select("iR_far_near",iR_fnlist, "<%ir_far_near%>", "iR_far_near=", "ChangeIrFN()"),//远近光选择
+                //ir_manual: new Ctrl_Select("ir_manual",iR_manuallist, "<%ir_manual%>", "ir_manual=", "Change_ir_manual()"),//远近光选择
+                irnpower : new Ctrl_Text("irnpower", "4", "4", "<%irnpower%>", "irnpower="), //红外功率
+                irfpower : new Ctrl_Text("irfpower", "4", "4", "<%irfpower%>", "irfpower="), //红外功率
+                ircoordinate : new Ctrl_Text("ircoordinate", "4", "4", "<%ircoordinate%>", "ircoordinate="), //红外坐标
+
+                fdata1 : new Ctrl_Text("fdata1", "3", "3", "<%fdata1%>", "fdata1=", null, false, "ChangeData1()"), //
+                fdata2 : new Ctrl_Text("fdata2", "3", "3", "<%fdata2%>", "fdata2=", null, false, "ChangeData2()"), //
+                fdata3 : new Ctrl_Text("fdata3", "3", "3", "<%fdata3%>", "fdata3=", null, false, "ChangeData3()"), //
+                fdata4 : new Ctrl_Text("fdata4", "3", "3", "<%fdata4%>", "fdata4=", null, false, "ChangeData4()"), //
+                fdata5 : new Ctrl_Text("fdata5", "3", "3", "<%fdata5%>", "fdata5=", null, false, "ChangeData5()"), //
+                fdata6 : new Ctrl_Text("fdata6", "3", "3", "<%fdata6%>", "fdata6=", null, false, "ChangeData6()"), //
+                fdata7 : new Ctrl_Text("fdata7", "3", "3", "<%fdata7%>", "fdata7=", null, false, "ChangeData7()"), //
+                fdata8 : new Ctrl_Text("fdata8", "3", "3", "<%fdata8%>", "fdata8=", null, false, "ChangeData8()"), //
+                fdata9 : new Ctrl_Text("fdata9", "3", "3", "<%fdata9%>", "fdata9=", null, false, "ChangeData9()"), //
+                fdata10 : new Ctrl_Text("fdata10", "3", "3", "<%fdata10%>", "fdata10=", null, false, "ChangeData10()"), //
+                fdata11 : new Ctrl_Text("fdata11", "3", "3", "<%fdata11%>", "fdata11=", null, false, "ChangeData11()"), //
+                fdata12 : new Ctrl_Text("fdata12", "3", "3", "<%fdata12%>", "fdata12=", null, false, "ChangeData12()"), //
+                fdata13 : new Ctrl_Text("fdata13", "3", "3", "<%fdata13%>", "fdata13=", null, false, "ChangeData13()"), //
+                fdata14 : new Ctrl_Text("fdata14", "3", "3", "<%fdata14%>", "fdata14=", null, false, "ChangeData14()"), //
+                fdata15 : new Ctrl_Text("fdata15", "3", "3", "<%fdata15%>", "fdata15=", null, false, "ChangeData15()"), //
+                fdata16 : new Ctrl_Text("fdata16", "3", "3", "<%fdata16%>", "fdata16=", null, false, "ChangeData16()"), //
+                fdata17 : new Ctrl_Text("fdata17", "3", "3", "<%fdata17%>", "fdata17=", null, false, "ChangeData17()"), //
+                fdata18 : new Ctrl_Text("fdata18", "3", "3", "<%fdata18%>", "fdata18=", null, false, "ChangeData18()"), //
+                fdata19 : new Ctrl_Text("fdata19", "3", "3", "<%fdata19%>", "fdata19=", null, false, "ChangeData19()"), //
+                fdata20 : new Ctrl_Text("fdata20", "3", "3", "<%fdata20%>", "fdata20=", null, false, "ChangeData20()"), //
+                fdata21 : new Ctrl_Text("fdata21", "3", "3", "<%fdata21%>", "fdata21=", null, false, "ChangeData21()"), //
+                fdata22 : new Ctrl_Text("fdata22", "3", "3", "<%fdata22%>", "fdata22=", null, false, "ChangeData22()"), //
+                fdata23 : new Ctrl_Text("fdata23", "3", "3", "<%fdata23%>", "fdata23=", null, false, "ChangeData23()"), //
+                fdata24 : new Ctrl_Text("fdata24", "3", "3", "<%fdata24%>", "fdata24=", null, false, "ChangeData24()"), //
+                fdata25 : new Ctrl_Text("fdata25", "3", "3", "<%fdata25%>", "fdata25=", null, false, "ChangeData25()"), //
+                //=============================================================================================================================
+                ndata1 : new Ctrl_Text("ndata1", "3", "3", "<%ndata1%>", "ndata1=", null, false, "ChangeData1()"), //
+                ndata2 : new Ctrl_Text("ndata2", "3", "3", "<%ndata2%>", "ndata2=", null, false, "ChangeData2()"), //
+                ndata3 : new Ctrl_Text("ndata3", "3", "3", "<%ndata3%>", "ndata3=", null, false, "ChangeData3()"), //
+                ndata4 : new Ctrl_Text("ndata4", "3", "3", "<%ndata4%>", "ndata4=", null, false, "ChangeData4()"), //
+                ndata5 : new Ctrl_Text("ndata5", "3", "3", "<%ndata5%>", "ndata5=", null, false, "ChangeData5()"), //
+                ndata6 : new Ctrl_Text("ndata6", "3", "3", "<%ndata6%>", "ndata6=", null, false, "ChangeData6()"), //
+                ndata7 : new Ctrl_Text("ndata7", "3", "3", "<%ndata7%>", "ndata7=", null, false, "ChangeData7()"), //
+                ndata8 : new Ctrl_Text("ndata8", "3", "3", "<%ndata8%>", "ndata8=", null, false, "ChangeData8()"), //
+                ndata9 : new Ctrl_Text("ndata9", "3", "3", "<%ndata9%>", "ndata9=", null, false, "ChangeData9()"), //
+                ndata10 : new Ctrl_Text("ndata10", "3", "3", "<%ndata10%>", "ndata10=", null, false, "ChangeData10()"), //
+                ndata11 : new Ctrl_Text("ndata11", "3", "3", "<%ndata11%>", "ndata11=", null, false, "ChangeData11()"), //
+                ndata12 : new Ctrl_Text("ndata12", "3", "3", "<%ndata12%>", "ndata12=", null, false, "ChangeData12()"), //
+                ndata13 : new Ctrl_Text("ndata13", "3", "3", "<%ndata13%>", "ndata13=", null, false, "ChangeData13()"), //
+                ndata14 : new Ctrl_Text("ndata14", "3", "3", "<%ndata14%>", "ndata14=", null, false, "ChangeData14()"), //
+                ndata15 : new Ctrl_Text("ndata15", "3", "3", "<%ndata15%>", "ndata15=", null, false, "ChangeData15()"), //
+                ndata16 : new Ctrl_Text("ndata16", "3", "3", "<%ndata16%>", "ndata16=", null, false, "ChangeData16()"), //
+                ndata17 : new Ctrl_Text("ndata17", "3", "3", "<%ndata17%>", "ndata17=", null, false, "ChangeData17()"), //
+                ndata18 : new Ctrl_Text("ndata18", "3", "3", "<%ndata18%>", "ndata18=", null, false, "ChangeData18()"), //
+                ndata19 : new Ctrl_Text("ndata19", "3", "3", "<%ndata19%>", "ndata19=", null, false, "ChangeData19()"), //
+                ndata20 : new Ctrl_Text("ndata20", "3", "3", "<%ndata20%>", "ndata20=", null, false, "ChangeData20()"), //
+                ndata21 : new Ctrl_Text("ndata21", "3", "3", "<%ndata21%>", "ndata21=", null, false, "ChangeData21()"), //
+                ndata22 : new Ctrl_Text("ndata22", "3", "3", "<%ndata22%>", "ndata22=", null, false, "ChangeData22()"), //
+                ndata23 : new Ctrl_Text("ndata23", "3", "3", "<%ndata23%>", "ndata23=", null, false, "ChangeData23()"), //
+                ndata24 : new Ctrl_Text("ndata24", "3", "3", "<%ndata24%>", "ndata24=", null, false, "ChangeData24()"), //
+                ndata25 : new Ctrl_Text("ndata25", "3", "3", "<%ndata25%>", "ndata25=", null, false, "ChangeData25()"), //
+
+                // IP ratio1
+                ipratio1 : new Ctrl_Text("ipratio1", "4", "4", "<%ipratio1%>", "ipratio1="),
+                // IP ratio2
+                ipratio2 : new Ctrl_Text("ipratio2", "4", "4", "<%ipratio2%>", "ipratio2="),
+                // IP ratio3
+                // ipratio3: new Ctrl_Text("ipratio3", "4", "4", "<%ipratio3%>", "ipratio3="),
+                // qp value 1
+                qpinit1 : new Ctrl_Text("qpinit1", "4", "4", "<%qpinit1%>", "qpinit1="),
+                qpmin1 : new Ctrl_Text("qpmin1", "4", "4", "<%qpmin1%>", "qpmin1="),
+                qpmax1 : new Ctrl_Text("qpmax1", "4", "4", "<%qpmax1%>", "qpmax1="),
+                // qp value 2
+                qpinit2 : new Ctrl_Text("qpinit2", "4", "4", "<%qpinit2%>", "qpinit2="),
+                qpmin2 : new Ctrl_Text("qpmin2", "4", "4", "<%qpmin2%>", "qpmin2="),
+                qpmax2 : new Ctrl_Text("qpmax2", "4", "4", "<%qpmax2%>", "qpmax2="),
+                // qp value 3
+                // qpinit3: new Ctrl_Text("qpinit3", "4", "4", "<%qpinit3%>", "qpinit3="),
+                // qpmin3: new Ctrl_Text("qpmin3", "4", "4", "<%qpmin3%>", "qpmin3="),
+                // qpmax3: new Ctrl_Text("qpmax3", "4", "4", "<%qpmax3%>", "qpmax3="),
+
+                //noise fileter
+                tnfltctrl : new Ctrl_Radio("tnfltctrl", "<%tnfltctrl%>", "tnfltctrl="),
+                // vnf strength
+                maxexposuretime : new Ctrl_Select("maxexposuretime", "<%maxexposuretimename%>", "<%maxexposuretime%>", "maxexposuretime="),
+                // meconfig 1
+                meconfig1 : new Ctrl_Select("meconfig1", "<%meconfigname%>", "<%meconfig1%>", "meconfig1="),
+                // meconfig 2
+                meconfig2 : new Ctrl_Select("meconfig2", "<%meconfigname%>", "<%meconfig2%>", "meconfig2="),
+
+                // vnf mode
+                nfltctrl : new Ctrl_Select("nfltctrl", "<%nfltctrlname%>", "<%nfltctrl%>", "nfltctrl="),
+                // meconfig 3, h264 HP, MP, BP
+                meconfig3 : new Ctrl_Select("meconfig3", h264list, "<%meconfig3%>", "meconfig3=")
+
+            }
+		</script>
+
+		<script>
+            function ChangeIr() {
+                //irdata_display();
+                SendHttp(c_iniUrl + GetSetterCmdKV("irmodule_change", GetCCV("iR_module")), false, SendImgCallBack);
+            }
+
+            function ChangeData1() {
+                //alert(GetCCV("fdata1"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata1_change", GetCCV("fdata1")), false, SendImgCallBack);
+            }
+
+            function ChangeData2() {
+                //alert(GetCCV("fdata2"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata2_change", GetCCV("fdata2")), false, SendImgCallBack);
+            }
+
+            function ChangeData3() {
+                //alert(GetCCV("fdata3"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata3_change", GetCCV("fdata3")), false, SendImgCallBack);
+            }
+
+            function ChangeData4() {
+                //alert(GetCCV("fdata4"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata4_change", GetCCV("fdata4")), false, SendImgCallBack);
+            }
+
+            function ChangeData5() {
+                //alert(GetCCV("fdata5"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata5_change", GetCCV("fdata5")), false, SendImgCallBack);
+            }
+
+            function ChangeData6() {
+                //alert(GetCCV("fdata6"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata6_change", GetCCV("fdata6")), false, SendImgCallBack);
+            }
+
+            function ChangeData7() {
+                //alert(GetCCV("fdata7"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata7_change", GetCCV("fdata7")), false, SendImgCallBack);
+            }
+
+            function ChangeData8() {
+                //alert(GetCCV("fdata8"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata8_change", GetCCV("fdata8")), false, SendImgCallBack);
+            }
+
+            function ChangeData9() {
+                //alert(GetCCV("fdata8"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata8_change", GetCCV("fdata8")), false, SendImgCallBack);
+            }
+
+            function ChangeData10() {
+                //alert(GetCCV("fdata10"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata10_change", GetCCV("fdata10")), false, SendImgCallBack);
+            }
+
+            function ChangeData11() {
+                //alert(GetCCV("fdata11"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata11_change", GetCCV("fdata11")), false, SendImgCallBack);
+            }
+
+            function ChangeData12() {
+                //alert(GetCCV("fdata12"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata12_change", GetCCV("fdata12")), false, SendImgCallBack);
+            }
+
+            function ChangeData13() {
+                //alert(GetCCV("fdata13"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata13_change", GetCCV("fdata13")), false, SendImgCallBack);
+            }
+
+            function ChangeData14() {
+                //alert(GetCCV("fdata14"));
+                // SendHttp(c_iniUrl + GetSetterCmdKV("irfdata14_change", GetCCV("fdata14")), false, SendImgCallBack);
+            }
+
+            function ChangeData15() {
+                //alert(GetCCV("fdata15"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata15_change", GetCCV("fdata15")), false, SendImgCallBack);
+            }
+
+            function ChangeData16() {
+                //alert(GetCCV("fdata16"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata16_change", GetCCV("fdata16")), false, SendImgCallBack);
+            }
+
+            function ChangeData17() {
+                //alert(GetCCV("fdata17"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata17_change", GetCCV("fdata17")), false, SendImgCallBack);
+            }
+
+            function ChangeData18() {
+                //alert(GetCCV("fdata18"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata18_change", GetCCV("fdata18")), false, SendImgCallBack);
+            }
+
+            function ChangeData19() {
+                //alert(GetCCV("fdata19"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata19_change", GetCCV("fdata19")), false, SendImgCallBack);
+            }
+
+            function ChangeData20() {
+                //alert(GetCCV("fdata20"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata20_change", GetCCV("fdata20")), false, SendImgCallBack);
+            }
+
+            function ChangeData21() {
+                //alert(GetCCV("fdata21"));
+                // SendHttp(c_iniUrl + GetSetterCmdKV("irfdata21_change", GetCCV("fdata21")), false, SendImgCallBack);
+            }
+
+            function ChangeData22() {
+                //alert(GetCCV("fdata22"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata22_change", GetCCV("fdata22")), false, SendImgCallBack);
+            }
+
+            function ChangeData23() {
+                //alert(GetCCV("fdata23"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata23_change", GetCCV("fdata23")), false, SendImgCallBack);
+            }
+
+            function ChangeData24() {
+                //alert(GetCCV("fdata24"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata24_change", GetCCV("fdata24")), false, SendImgCallBack);
+            }
+
+            function ChangeData25() {
+                //alert(GetCCV("fdata25"));
+                //SendHttp(c_iniUrl + GetSetterCmdKV("irfdata25_change", GetCCV("fdata25")), false, SendImgCallBack);
+            }
+
+            function IRSave() {
+                // ir_data_display();
+                var IR_N = GetCCV("ndata1") + ',' + GetCCV("ndata2") + ',' + GetCCV("ndata3") + ',' + GetCCV("ndata4") + ',' + GetCCV("ndata5") + ',' + GetCCV("ndata6") + ',' + GetCCV("ndata7") + ',' + GetCCV("ndata8") + ',' + GetCCV("ndata9") + ',' + GetCCV("ndata10") + ',' + GetCCV("ndata11") + ',' + GetCCV("ndata12") + ',' + GetCCV("ndata13") + ',' + GetCCV("ndata14") + ',' + GetCCV("ndata15") + ',' + GetCCV("ndata16") + ',' + GetCCV("ndata17") + ',' + GetCCV("ndata18") + ',' + GetCCV("ndata19") + ',' + GetCCV("ndata20") + ',' + GetCCV("ndata21") + ',' + GetCCV("ndata22") + ',' + GetCCV("ndata23") + ',' + GetCCV("ndata24") + ',' + GetCCV("ndata25");
+
+                var IR_F = GetCCV("fdata1") + ',' + GetCCV("fdata2") + ',' + GetCCV("fdata3") + ',' + GetCCV("fdata4") + ',' + GetCCV("fdata5") + ',' + GetCCV("fdata6") + ',' + GetCCV("fdata7") + ',' + GetCCV("fdata8") + ',' + GetCCV("fdata9") + ',' + GetCCV("fdata10") + ',' + GetCCV("fdata11") + ',' + GetCCV("fdata12") + ',' + GetCCV("fdata13") + ',' + GetCCV("fdata14") + ',' + GetCCV("fdata15") + ',' + GetCCV("fdata16") + ',' + GetCCV("fdata17") + ',' + GetCCV("fdata18") + ',' + GetCCV("fdata19") + ',' + GetCCV("fdata20") + ',' + GetCCV("fdata21") + ',' + GetCCV("fdata22") + ',' + GetCCV("fdata23") + ',' + GetCCV("fdata24") + ',' + GetCCV("fdata25");
+                var IR_data = GetCCV("iR_module") + '|' + IR_N + '|' + IR_F;
+                SendHttp(c_iniUrl + GetSetterCmdKV("irdata_save", IR_data), false, SendImgCallBack);
+            }
+
+            function IRAdd() {
+                ir_data_display();
+                var IR_N = GetCCV("ndata1") + ',' + GetCCV("ndata2") + ',' + GetCCV("ndata3") + ',' + GetCCV("ndata4") + ',' + GetCCV("ndata5") + ',' + GetCCV("ndata6") + ',' + GetCCV("ndata7") + ',' + GetCCV("ndata8") + ',' + GetCCV("ndata9") + ',' + GetCCV("ndata10") + ',' + GetCCV("ndata11") + ',' + GetCCV("ndata12") + ',' + GetCCV("ndata13") + ',' + GetCCV("ndata14") + ',' + GetCCV("ndata15") + ',' + GetCCV("ndata16") + ',' + GetCCV("ndata17") + ',' + GetCCV("ndata18") + ',' + GetCCV("ndata19") + ',' + GetCCV("ndata20") + ',' + GetCCV("ndata21") + ',' + GetCCV("ndata22") + ',' + GetCCV("ndata23") + ',' + GetCCV("ndata24") + ',' + GetCCV("ndata25");
+
+                var IR_F = GetCCV("fdata1") + ',' + GetCCV("fdata2") + ',' + GetCCV("fdata3") + ',' + GetCCV("fdata4") + ',' + GetCCV("fdata5") + ',' + GetCCV("fdata6") + ',' + GetCCV("fdata7") + ',' + GetCCV("fdata8") + ',' + GetCCV("fdata9") + ',' + GetCCV("fdata10") + ',' + GetCCV("fdata11") + ',' + GetCCV("fdata12") + ',' + GetCCV("fdata13") + ',' + GetCCV("fdata14") + ',' + GetCCV("fdata15") + ',' + GetCCV("fdata16") + ',' + GetCCV("fdata17") + ',' + GetCCV("fdata18") + ',' + GetCCV("fdata19") + ',' + GetCCV("fdata20") + ',' + GetCCV("fdata21") + ',' + GetCCV("fdata22") + ',' + GetCCV("fdata23") + ',' + GetCCV("fdata24") + ',' + GetCCV("fdata25");
+                var IR_data = IR_N + '|' + IR_F;
+                //alert(IR_data);
+                SendHttp(c_iniUrl + GetSetterCmdKV("irdata_add", IR_data), false, SendImgCallBack);
+            }
+
+            function fixlab() {
+                CTRLARY["irnpower"].Disable(1);
+                CTRLARY["irfpower"].Disable(1);
+                CTRLARY["ircoordinate"].Disable(1);
+            }
+
+            function irdata_display() {
+                //alert((GetCCV("iR_module")));
+                if (GetCCV("iR_module") > 2) {
+                    CTRLARY["fdata1"].Disable(0);
+                    CTRLARY["fdata2"].Disable(0);
+                    CTRLARY["fdata3"].Disable(0);
+                    CTRLARY["fdata4"].Disable(0);
+                    CTRLARY["fdata5"].Disable(0);
+                    CTRLARY["fdata6"].Disable(0);
+                    CTRLARY["fdata7"].Disable(0);
+                    CTRLARY["fdata8"].Disable(0);
+                    CTRLARY["fdata9"].Disable(0);
+                    CTRLARY["fdata10"].Disable(0);
+                    CTRLARY["fdata11"].Disable(0);
+                    CTRLARY["fdata12"].Disable(0);
+                    CTRLARY["fdata13"].Disable(0);
+                    CTRLARY["fdata14"].Disable(0);
+                    CTRLARY["fdata15"].Disable(0);
+                    CTRLARY["fdata16"].Disable(0);
+                    CTRLARY["fdata17"].Disable(0);
+                    CTRLARY["fdata18"].Disable(0);
+                    CTRLARY["fdata19"].Disable(0);
+                    CTRLARY["fdata20"].Disable(0);
+                    CTRLARY["fdata21"].Disable(0);
+                    CTRLARY["fdata22"].Disable(0);
+                    CTRLARY["fdata23"].Disable(0);
+                    CTRLARY["fdata24"].Disable(0);
+                    CTRLARY["fdata25"].Disable(0);
+
+                    CTRLARY["ndata1"].Disable(0);
+                    CTRLARY["ndata2"].Disable(0);
+                    CTRLARY["ndata3"].Disable(0);
+                    CTRLARY["ndata4"].Disable(0);
+                    CTRLARY["ndata5"].Disable(0);
+                    CTRLARY["ndata6"].Disable(0);
+                    CTRLARY["ndata7"].Disable(0);
+                    CTRLARY["ndata8"].Disable(0);
+                    CTRLARY["ndata9"].Disable(0);
+                    CTRLARY["ndata10"].Disable(0);
+                    CTRLARY["ndata11"].Disable(0);
+                    CTRLARY["ndata12"].Disable(0);
+                    CTRLARY["ndata13"].Disable(0);
+                    CTRLARY["ndata14"].Disable(0);
+                    CTRLARY["ndata15"].Disable(0);
+                    CTRLARY["ndata16"].Disable(0);
+                    CTRLARY["ndata17"].Disable(0);
+                    CTRLARY["ndata18"].Disable(0);
+                    CTRLARY["ndata19"].Disable(0);
+                    CTRLARY["ndata20"].Disable(0);
+                    CTRLARY["ndata21"].Disable(0);
+                    CTRLARY["ndata22"].Disable(0);
+                    CTRLARY["ndata23"].Disable(0);
+                    CTRLARY["ndata24"].Disable(0);
+                    CTRLARY["ndata25"].Disable(0);
+
+                    //document.getElementById("ir_allf_data").style.display = "";
+                    //document.getElementById("ir_alln_data").style.display = "";
+                }
+                if (GetCCV("iR_module") <= 2) {
+                    CTRLARY["fdata1"].Disable(1);
+                    CTRLARY["fdata2"].Disable(1);
+                    CTRLARY["fdata3"].Disable(1);
+                    CTRLARY["fdata4"].Disable(1);
+                    CTRLARY["fdata5"].Disable(1);
+                    CTRLARY["fdata6"].Disable(1);
+                    CTRLARY["fdata7"].Disable(1);
+                    CTRLARY["fdata8"].Disable(1);
+                    CTRLARY["fdata9"].Disable(1);
+                    CTRLARY["fdata10"].Disable(1);
+                    CTRLARY["fdata11"].Disable(1);
+                    CTRLARY["fdata12"].Disable(1);
+                    CTRLARY["fdata13"].Disable(1);
+                    CTRLARY["fdata14"].Disable(1);
+                    CTRLARY["fdata15"].Disable(1);
+                    CTRLARY["fdata16"].Disable(1);
+                    CTRLARY["fdata17"].Disable(1);
+                    CTRLARY["fdata18"].Disable(1);
+                    CTRLARY["fdata19"].Disable(1);
+                    CTRLARY["fdata20"].Disable(1);
+                    CTRLARY["fdata21"].Disable(1);
+                    CTRLARY["fdata22"].Disable(1);
+                    CTRLARY["fdata23"].Disable(1);
+                    CTRLARY["fdata24"].Disable(1);
+                    CTRLARY["fdata25"].Disable(1);
+
+                    CTRLARY["ndata1"].Disable(1);
+                    CTRLARY["ndata2"].Disable(1);
+                    CTRLARY["ndata3"].Disable(1);
+                    CTRLARY["ndata4"].Disable(1);
+                    CTRLARY["ndata5"].Disable(1);
+                    CTRLARY["ndata6"].Disable(1);
+                    CTRLARY["ndata7"].Disable(1);
+                    CTRLARY["ndata8"].Disable(1);
+                    CTRLARY["ndata9"].Disable(1);
+                    CTRLARY["ndata10"].Disable(1);
+                    CTRLARY["ndata11"].Disable(1);
+                    CTRLARY["ndata12"].Disable(1);
+                    CTRLARY["ndata13"].Disable(1);
+                    CTRLARY["ndata14"].Disable(1);
+                    CTRLARY["ndata15"].Disable(1);
+                    CTRLARY["ndata16"].Disable(1);
+                    CTRLARY["ndata17"].Disable(1);
+                    CTRLARY["ndata18"].Disable(1);
+                    CTRLARY["ndata19"].Disable(1);
+                    CTRLARY["ndata20"].Disable(1);
+                    CTRLARY["ndata21"].Disable(1);
+                    CTRLARY["ndata22"].Disable(1);
+                    CTRLARY["ndata23"].Disable(1);
+                    CTRLARY["ndata24"].Disable(1);
+                    CTRLARY["ndata25"].Disable(1);
+
+                    //document.getElementById("ir_allf_data").style.display = "none";
+                    //document.getElementById("ir_alln_data").style.display = "none";
+                }
+            }
+
+            function ir_data_display() {
+                //document.getElementById("ir_allf_data").style.display = "";
+                //document.getElementById("ir_alln_data").style.display = "";
+            }
+
+            function ready() {
+                $("ul.menu li:first-child").addClass("current");
+                $("div.content").find("div.layout:not(:first-child)").hide();
+                $("div.content div.layout").attr("id", function() {
+                    return idNumber("No") + $("div.content div.layout").index(this)
+                });
+            }
+
+            function show(controlMenu, num, prefix) {
+                var content = prefix + num;
+                $('#' + content).siblings().hide();
+                $('#' + content).show();
+                controlMenu.eq(num).addClass("current").siblings().removeClass("current");
+            };
+
+            function idNumber(prefix) {
+                var idNum = prefix;
+                return idNum;
+            };
+            function click1() {
+                var c = $("ul.menu li");
+                var index = 0;
+                var p = idNumber("No");
+                show(c, index, p);
+                $("#tabs-1").show();
+                $("#tabs-2").hide();
+            };
+
+            function click2() {
+                var c = $("ul.menu li");
+                var index = 1;
+                var p = idNumber("No");
+                show(c, index, p);
+                $("#tabs-2").show();
+                $("#tabs-1").hide();
+            }
+
+            function ParaCheck() {
+                var flag = false;
+
+                var tnfltctrl1 = GetCCV("tnfltctrl");
+                if (tnfltctrl1 == "<%tnfltctrl%>") {
+                    CTRLARY["tnfltctrl"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var nfltctrl1 = GetCCV("nfltctrl");
+                if (nfltctrl1 == "<%nfltctrl%>") {
+                    CTRLARY["nfltctrl"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var maxexposuretime1 = GetCCV("maxexposuretime");
+                if (maxexposuretime1 == "<%maxexposuretime%>") {
+                    CTRLARY["maxexposuretime"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var ipratio11 = GetCCV("ipratio1");
+                if (ipratio11 == "<%ipratio1%>") {
+                    CTRLARY["ipratio1"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var ipratio21 = GetCCV("ipratio2");
+                if (ipratio21 == "<%ipratio2%>") {
+                    CTRLARY["ipratio2"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var qpinit11 = GetCCV("qpinit1");
+                if (qpinit11 == "<%qpinit1%>") {
+                    CTRLARY["qpinit1"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var qpmin11 = GetCCV("qpmin1");
+                if (qpmin11 == "<%qpmin1%>") {
+                    CTRLARY["qpmin1"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var qpmax11 = GetCCV("qpmax1");
+                if (qpmax11 == "<%qpmax1%>") {
+                    CTRLARY["qpmax1"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var qpinit21 = GetCCV("qpinit2");
+                if (qpinit21 == "<%qpinit2%>") {
+                    CTRLARY["qpinit2"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var qpmin21 = GetCCV("qpmin2");
+                if (qpmin21 == "<%qpmin2%>") {
+                    CTRLARY["qpmin2"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var qpmax21 = GetCCV("qpmax2");
+                if (qpmax21 == "<%qpmax2%>") {
+                    CTRLARY["qpmax2"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var meconfig11 = GetCCV("meconfig1");
+                if (meconfig11 == "<%meconfig1%>") {
+                    CTRLARY["meconfig1"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var meconfig21 = GetCCV("meconfig2");
+                if (meconfig21 == "<%meconfig2%>") {
+                    CTRLARY["meconfig2"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var meconfig31 = GetCCV("meconfig3");
+                if (meconfig31 == "<%meconfig3%>") {
+                    CTRLARY["meconfig3"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var contrast1 = GetCCV("contrast");
+                if (contrast1 == "<%contrast%>") {
+                    CTRLARY["contrast"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var brightness1 = GetCCV("brightness");
+                if (brightness1 == "<%brightness%>") {
+                    CTRLARY["brightness"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                var sharpness1 = GetCCV("sharpness");
+                if (sharpness1 == "<%sharpness%>") {
+                    CTRLARY["sharpness"].active = 0;
+                } else if (flag == false)
+                    flag = true;
+
+                return flag;
+            }
+
+            function MY_ONLOAD() {
+                g_lockLink = false;
+                fixlab();
+                click1();
+                //主动获取参数
+            }
+
+            function MY_BEFORE_SUBMIT() {
+
+                if (ParaCheck() == false) {
+                    alert(GL("para_not_change"));
+                    ChangeActive();
+                    return false;
+                }
+
+                return true;
+            }
+
+            function MY_SUBMIT_OK() {
+                alert(GL("submit_success"));
+                window.location.reload();
+            }
+		</script>
+
+		<script>
+            DW('<div id="imgadv" style="border-width:1px; border-style:solid; width:500">');
+            DW('<table>');
+            DW('<tr><td colspan=2>');
+            DW('对比度' + '&nbsp;');
+            DW('</td><td>');
+            WH("contrast");
+            DW("[0-255]");
+            DW('</td></tr>');
+
+            DW('<tr><td colspan=2>');
+            DW('亮度' + '&nbsp;');
+            DW('</td><td>');
+            WH("brightness");
+            DW("[0-255]");
+            DW('</td></tr>');
+
+            DW('<tr><td colspan=2>');
+            DW('锐度' + '&nbsp;');
+            DW('</td><td>');
+            WH("sharpness");
+            DW("[0-255]");
+            DW('</td></tr>');
+
+            DW('</table>');
+            DW('</div>');
+
+            DW('<BR><div id="imgadv" style="border-width:1px; border-style:solid; width:500">');
+            DW('<table>');
+
+            DW('<tr><td colspan=2>');
+            DW('降噪开关' + '&nbsp;');
+            DW('</td><td>');
+            WH("tnfltctrl");
+            DW('</td></tr>');
+
+            DW('<tr><td colspan=2>');
+            DW('降噪模式' + '&nbsp;');
+            DW('</td><td>');
+            WH("nfltctrl");
+            DW('</td></tr>');
+
+            DW('<tr><td colspan=2>');
+            DW('降噪强度' + '&nbsp;');
+            DW('</td><td>');
+            WH("maxexposuretime");
+            DW('</td></tr>');
+
+            DW('</table>');
+            DW('</div>');
+            /*
+            DW('<div class="box">');
+            DW('<div class="tagMenu">');
+            DW('<ul class="menu">');
+            DW('<li id="li1" onclick="click1()">' + GL("stream1") + '</li>');
+            DW('<li id="li2" onclick="click2()">' + GL("stream2") + '</li>');
+            DW('</ul>');
+            DW('</div>');
+            */
+            //  DW('<div class="content">');
+
+            //div stream1
+            DW('<BR><div style="border-width:1px; border-style:solid; width:500" >');
+            DW('<table>');
+            DW('<tr><td colspan=2>');
+            DW('H264 Profile' + '&nbsp;');
+            DW('</td><td>');
+            WH("meconfig3");
+            DW('</td></tr>');
+            DW('</table><BR>');
+
+            DW('码流1：<BR><table>');
+            DW('<tr><td colspan=2>');
+            DW('GOP长度' + '&nbsp;');
+            DW('</td><td>');
+            WH("ipratio1");
+            DW("[1-60]");
+            DW('</td></tr>');
+
+            DW('<tr><td colspan=2>');
+            DW('初始QP' + '&nbsp;');
+            DW('</td><td>');
+            WH("qpinit1");
+            DW('</td><td>');
+
+            DW('最小QP');
+            DW('</td><td>');
+            WH("qpmin1");
+            DW('</td><td>');
+            DW('最大QP');
+            DW('</td><td>');
+            WH("qpmax1");
+            DW('</td></tr>');
+
+            DW('<tr><td colspan=2>');
+            DW('编码模式');
+            DW('</td><td>');
+            WH("meconfig1");
+            DW('</td></tr>');
+            DW('</table>');
+            DW('<BR>');
+
+            DW('码流2：<BR><table>');
+            DW('<tr><td colspan=2>');
+            DW('GOP长度' + '&nbsp;');
+            DW('</td><td>');
+            WH("ipratio2");
+            DW("[1-60]");
+            DW('</td></tr>');
+
+            DW('<tr><td colspan=2>');
+            DW('初始QP');
+            DW('</td><td>');
+            WH("qpinit2");
+            DW('</td><td>');
+            DW('最小QP');
+            DW('</td><td>');
+            WH("qpmin2");
+            DW('</td><td>');
+            DW('最大QP');
+            DW('</td><td>');
+            WH("qpmax2");
+            DW('</td></tr>');
+
+            DW('<tr><td colspan=2>');
+            DW('编码模式');
+            DW('</td><td>');
+            WH("meconfig2");
+            DW('</td></tr>');
+            DW('</table>');
+
+            DW('</div>');
+
+            DW('<BR><div>');
+            DW('<table><tr><td colspan=4 align="center">');
+            CreateSubmitButton();
+            DW('</td></tr></table>');
+            DW('</div>');
+
+            // 红外
+
+            DW('<div id="irdata" style="border-width:1px; border-style:solid; width:500">');
+            DW('<table>');
+            DW('<tr><td colspan=2>');
+            DW('红外灯配置:' + '&nbsp;');
+            DW('</td><td>');
+            WH("iR_module");
+            DW('</td></tr>');
+
+            DW('<tr><td colspan=2>');
+            DW('红外远光功率');
+            DW('</td><td>');
+            WH("irfpower");
+            DW('</td></tr>');
+
+            DW('<tr><td colspan=2>');
+            DW('红外近光功率');
+            DW('</td><td>');
+            WH("irnpower");
+            DW('</td></tr>');
+
+            DW('<tr><td colspan=2>');
+            DW('当前码表坐标');
+            DW('</td><td>');
+            WH("ircoordinate");
+            DW('</td></tr>');
+
+            DW('<tr id="ir_allf_data"><td colspan=2>');
+            DW('手动配置远光');
+            DW('</td><td>');
+            WH("fdata1");
+            WH("fdata2");
+            WH("fdata3");
+            WH("fdata4");
+            WH("fdata5");
+            DW('(0-4)');
+            DW('<br>');
+            WH("fdata6");
+            WH("fdata7");
+            WH("fdata8");
+            WH("fdata9");
+            WH("fdata10");
+            DW('(5-9)');
+            DW('<br>');
+            WH("fdata11");
+            WH("fdata12");
+            WH("fdata13");
+            WH("fdata14");
+            WH("fdata15");
+            DW('(10-14)');
+            DW('<br>');
+            WH("fdata16");
+            WH("fdata17");
+            WH("fdata18");
+            WH("fdata19");
+            WH("fdata20");
+            DW('(15-19)');
+            DW('<br>');
+            WH("fdata21");
+            WH("fdata22");
+            WH("fdata23");
+            WH("fdata24");
+            WH("fdata25");
+            DW('(20-24)');
+            DW('</br>');
+            DW('</td></tr>');
+
+            DW('<tr><td colspan=2>');
+            DW('<br><br>');
+            DW('</td><td>');
+            DW('</td></tr>');
+
+            DW('<tr id="ir_alln_data"><td colspan=2>');
+            DW('手动配置近光');
+            DW('</td><td>');
+            WH("ndata1");
+            WH("ndata2");
+            WH("ndata3");
+            WH("ndata4");
+            WH("ndata5");
+            DW('(0-4)');
+            DW('<br>');
+            WH("ndata6");
+            WH("ndata7");
+            WH("ndata8");
+            WH("ndata9");
+            WH("ndata10");
+            DW('(5-9)');
+            DW('<br>');
+            WH("ndata11");
+            WH("ndata12");
+            WH("ndata13");
+            WH("ndata14");
+            WH("ndata15");
+            DW('(10-14)');
+            DW('<br>');
+            WH("ndata16");
+            WH("ndata17");
+            WH("ndata18");
+            WH("ndata19");
+            WH("ndata20");
+            DW('(15-19)');
+            DW('<br>');
+            WH("ndata21");
+            WH("ndata22");
+            WH("ndata23");
+            WH("ndata24");
+            WH("ndata25");
+            DW('(20-24)');
+            DW('<br>');
+
+            DW('</td></tr>');
+            DW('</table>');
+            DW('<input type="button" style="width:80px;height:20px" value="' + '添加' + '" onclick="IRAdd()">');
+            //--add by jackie
+            DW('<input type="button" style="width:80px;height:20px" value="' + '应用' + '" onclick="IRSave()">');
+            //--add by jackie
+            DW('</div>');
+		</script>
+
+		<div id="ocx_cache_config">
+			<p>视频缓存设置</p>
+			<br/>
+			&nbsp;缓存时间
+			<input type="text" id="cache" value="300" style="width:100px;"/>
+			<input type="button" onClick="set_ocx_cache()" value="保存"/>
+		</div>
+		
+		<div id="analog_videoconfig">
+			<table style="width:100%;">
+				<tr>
+					<td class="header" colspan="2">模拟视频参数</td>
+				</tr>
+				<tr>
+					<td style="width:80px;">亮度</td>
+					<td><input id="av_brightness" type="text" style="width:100px;"/></td>
+				</tr>
+				<tr>
+					<td>对比度</td>
+					<td><input id="av_contrast" type="text" style="width:100px;"/></td>
+				</tr>
+				<tr>
+					<td>饱和度</td>
+					<td><input id="av_saturation" type="text" style="width:100px;"/></td>
+				</tr>
+				<tr>
+					<td>色相</td>
+					<td><input id="av_hue" type="text" style="width:100px;"/></td>
+				</tr>
+				<tr style="border-top:1px solid #999">
+					<td colspan="2" style="text-align:center">
+						<input type="button" onClick="save_av_config()" value="保存"/>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</body>
+</html>

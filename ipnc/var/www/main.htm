@@ -1,0 +1,308 @@
+<script>
+    var tick = 0;
+    var xhttp = null;
+    var daylight = "<%daylight%>";
+    var audioSupport = "<%audioenable%>";
+    var useActiveX = 1;//"<%layoutnum.0%>";
+    var timerID = null;
+    var timeFormat = 0;//parseInt("<%dateformatname%>");//parseInt("<%timeformat%>");
+    var camDate;
+    var imagesource = 0;//"<%imagesource%>";
+    var timerID2 = null;
+    var mySize = new SIZE(g_viewXSize, g_viewYSize);
+    var DCL_1 = {
+        zoom: "1",
+        width: 640,//"<%jpegxsize.1%>",
+        height: 360//"<%jpegysize.1%>"
+    };
+    var DCL_2 = {
+        zoom: "1",
+        width: 640,//"<%jpegxsize.2%>",
+        height: 480//"<%jpegysize.2%>"
+    };
+    var DCL_3 = {
+        zoom: "1",
+        width: 640,//"<%jpegxsize.3%>",
+        height: 480//"<%jpegysize.3%>"
+    };
+    var DCL_4 = {
+        zoom: "1",
+        width: 640,//"<%jpegxsize.4%>",
+        height: 480//"<%jpegysize.4%>"
+    };
+    if (Is2114()) {
+        DCL_1.height *= 2;
+        DCL_2.height *= 2;
+        DCL_3.height *= 2;
+        DCL_4.height *= 2;
+    }
+    if (IsMpeg4()) {
+        if (Chk_Audio()) {
+            AddLightBtn("audioBtn", -100, -100, 15, 18, "skin/on.gif", "skin/off.gif", AudioProcess, GL("audio_switch"));
+        }
+        AddLightBtn("recBtn", -100, -100, 15, 18, "skin/onRec.gif", "skin/offRec.gif", RecProcess, GL("record_switch"));
+        AddLightBtn("speedBtn", -100, -100, 15, 18, "skin/lowSpeed.gif", "skin/highSpeed.gif", SpeedProcess, GL("speed_switch"));
+    }
+
+    function SIZE(w, h) {
+        this.w = parseInt(w);
+        this.h = parseInt(h);
+    }
+
+    function AudioProcess() {
+        StartActiveXEx(GetLight("speedBtn"), GetLight("audioBtn"));
+    }
+
+    function RecProcess() {
+        if (IsMpeg4()) {
+            var ctrl = GE(AxID);
+            if (ctrl != null) {
+                if (GetLight("recBtn") == 1) {
+                    var y, M, d, h, m, s;
+                    y = FixNum(camDate.getYear(), 2);
+                    M = FixNum(camDate.getMonth() + 1, 2);
+                    d = FixNum(camDate.getDate(), 2);
+                    h = FixNum(camDate.getHours(), 2);
+                    m = FixNum(camDate.getMinutes(), 2);
+                    s = FixNum(camDate.getSeconds(), 2);
+                    var filename = "Clip_<%title%>_" + y + M + d + h + m + s + ".avi";
+                    ctrl.RecordStart(filename);
+                } else {
+                    ctrl.RecordStop();
+                }
+            }
+        }
+    }
+
+    function Chk_Audio() {
+        return (g_isSupportAudio && ("<%audioenable%>" == 1));
+    }
+
+    function SpeedProcess() {
+        var auOn = 0;
+        if (Chk_Audio()) {
+            auOn = GetLight("audioBtn");
+        }
+        StartActiveXEx(GetLight("speedBtn"), auOn);
+    }
+
+    function ChangeDateFormat() {
+        timeFormat++;
+        if (timeFormat > 2) timeFormat = 0;
+    }
+
+    function GetCHSize() {
+        var w = myDCL.width;
+        var h = myDCL.height;
+        if ((w > 700 || w == 640) && (h == 240 || h == 288)) h *= 2;
+        return new SIZE(w, h);
+    }
+
+    function MY_CH_CHANGE() {
+        myDCL = eval("DCL_" + g_CHID);
+        mySize = GetCHSize();
+        FixZoomPos();
+        SetValue("zoomSel", myDCL.zoom);
+        CtrlSizeChange(0, 0, mySize.w * myDCL.zoom, mySize.h * myDCL.zoom);
+    }
+
+    function MY_ONLOAD() {
+//    alert("main");
+        var obj = GE("viewCHSel");
+        if (obj != null) {
+            obj.options[0].text = "ALL";
+        }
+        LoadClock();
+        CallOnResize();
+        if (Chk_Audio()) {
+            SetLight("audioBtn", 0);
+        }
+        SetLight("recBtn", 0);
+        SetLight("speedBtn", 0);
+        if (useActiveX == 1 || IsMpeg4()) {
+            if (IsVS()) {
+                if (g_CHID == 0) {
+                    for (var i = 1; i <= g_maxCH; i++) {
+                        StartActiveXEx(0, 0, i, i);
+                    }
+                } else {
+                    MY_CH_CHANGE();
+                }
+            } else {
+                var auOn = 0;
+                if (Chk_Audio()) {
+                    auOn = GetLight("audioBtn");
+                }
+                StartActiveXEx(GetLight("speedBtn"), auOn);
+            }
+        } else {
+            imgFetcher.RunDms();
+        }
+        g_lockLink = false;
+    }
+
+    function MY_ONUNLOAD() {
+        clearTimeout(timerID);
+        clearTimeout(timerID2);
+        StopActiveX();
+        var obj = GE("viewCHSel");
+        if (obj != null) {
+            obj.options[0].text = "---";
+        }
+    }
+
+    function MY_ONRESIZE() {
+        FixButtonPos();
+    }
+
+    function GetZoomHtml() {
+        var o = '';
+        o += '<div id="zoomLayer" class="cssViewChLayer">';
+        o += '</div>';
+        return o;
+    }
+
+    function GetZoomCtx() {
+        var o = '';
+        o += GL('zoom') + ': ';
+        o += "<select onChange='ZoomChange(this.value)' id='zoomSel' class='m1'>";
+        o += "<option value='1' selected >1X</option>";
+        if (mySize.w < 600) o += "<option value='2' >2X</option>";
+        if (mySize.w < 300) o += "<option value='4' >4X</option>";
+        o += "</select>";
+        return o;
+    }
+
+    function ZoomChange(z) {
+        z = parseInt(z);
+        if (IsVS()) {
+            myDCL.zoom = z;
+            CtrlSizeChange(0, 0, mySize.w * z, mySize.h * z);
+        } else {
+            var auOn = 0;
+            if (Chk_Audio()) {
+                auOn = GetLight("audioBtn");
+            }
+            CtrlSizeChange(GetLight("speedBtn"), auOn, mySize.w * z, mySize.h * z);
+        }
+    }
+
+    function CtrlSizeChange(iframe, audio, w, h) {
+        var exID = (IsVS() ? "1" : "");
+        var ax = (IsMpeg4() || useActiveX == 1);
+        try {
+            GE(AxID + exID).ForceStop();
+            GE(AxID + exID).width = w;
+            GE(AxID + exID).height = h;
+        } catch (e) {};
+        if (ax) {
+            timerID2 = setTimeout("StartActiveXEx(" + iframe + "," + audio + (IsVS() ? ",g_CHID,1" : "") + ")", 500);
+        }
+    }
+
+    function FixZoomPos() {
+        var halfWidth = document.body.offsetWidth / 2;
+        var obj = GE("zoomLayer");
+        if (obj != null) {
+            if ((IsVS() && g_CHID == 0) || (mySize.w >= 600)) {
+                obj.style.left = -600;
+            } else {
+                obj.style.left = halfWidth + 70;
+                obj.style.top = 40;
+                obj.innerHTML = GetZoomCtx();
+            }
+        }
+    }
+
+    function FixButtonPos() {
+        var halfWidth = document.body.offsetWidth / 2;
+        if (Chk_Audio()) {
+            SetLightPos("audioBtn", halfWidth + 280, 10);
+        }
+        SetLightPos("recBtn", halfWidth + 340, 10);
+        SetLightPos("speedBtn", halfWidth + 310, 10);
+        var obj = GE("timeLayer");
+        if (obj != null) {
+            obj.style.left = halfWidth - 140;
+        }
+        FixZoomPos();
+    }
+
+    function LoadClock() {
+        xhttp = InitXHttp();
+        xhttp.onreadystatechange = OnReadyClockProcess;
+        try {
+            xhttp.open("GET", "datetime.htm", true);
+            xhttp.send(null);
+        } catch (e) {};
+    }
+
+    function OnReadyClockProcess() {
+        if (xhttp.readyState == 4 && xhttp.status == 200) {
+            camDate = new Date(xhttp.responseText);
+            RunClock();
+        }
+    }
+
+    function RunClock() {
+        if (tick > 150) {
+            tick = 0;
+            LoadClock();
+        } else {
+            ShowClock();
+            timerID = setTimeout("RunClock()", 1000);
+            camDate.setTime(camDate.getTime() + 1000);
+        }
+        tick++;
+    }
+
+    function ShowClock() {
+        var o = GiveMeDateTimeString(camDate, timeFormat, daylight);
+        if (daylight != 1) {
+            o = "    " + o;
+        }
+        GE("currentCameraTime").value = o;
+    }
+    DW(GetZoomHtml());
+</script>
+<div id=timeLayer class=cssTimerLayer align=right>
+    <a href="javascript:ChangeDateFormat()" onMouseMove="WS(GL('click_to_change_mode'));" onMouseLeave="WS();"> <input id=currentCameraTime class=watch alt='{$click_to_change_mode}' disabled size=24> </a>
+</div>
+<center>
+    <script>
+        var o = "";
+        if (IsVS()) {
+            useActiveX = 1;
+        }
+        if (IsMpeg4() || useActiveX == 1) {
+            if (IsVS()) {
+                if (g_CHID == 0) {
+                    o += "<table><tr><td>";
+                    o += GetTagAX1AndFixSize(1);
+                    o += "</td><td>";
+                    o += GetTagAX1AndFixSize(2);
+                    o += "</td></tr><tr><td>";
+                    o += GetTagAX1AndFixSize(3);
+                    o += "</td><td>";
+                    o += GetTagAX1AndFixSize(4);
+                    o += "</td></tr></table>";
+                } else {
+                    o += "<table ><tr><td height='480' valign='middle'>";
+                    o += GetTagAX1AndFixSize(1);
+                    o += "</td><td></table>";
+                }
+            } else {
+                o += "<table ><tr><td height='480' valign='middle'>";
+                o += GetTagAX1AndFixSize();
+                o += "</td><td></table>";
+            }
+        } else {
+            DW('<table ><tr><td height="480" valign="middle" ><table bordercolor="#99CCFF" border="3"><tr><td>');
+            //DW(imgFetcher.GetDmsImgStr("<%jpegxsize%>", "<%jpegysize%>"));
+            DW("</td></tr></table></td></tr></table>");
+        }
+        DW(o);
+    </script>
+    <script>
+        ALC();
+    </script>

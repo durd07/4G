@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<root xmlns="urn:schemas-upnp-org:device-1-0">
+  <specVersion>
+    <major>1</major>
+    <minor>0</minor>
+  </specVersion>
+  <device>
+    <deviceType>urn:schemas-upnp-org:device:tvdevice:1</deviceType>
+    <friendlyName>NETCAM_192.168.008.008</friendlyName>
+    <manufacturer>IPNC</manufacturer>
+    <manufacturerURL>/</manufacturerURL>
+    <modelDescription>IP NetCam</modelDescription>
+    <modelName>IPNC</modelName>
+    <modelNumber>1.0</modelNumber>
+    <modelURL>/</modelURL>
+    <serialNumber>1234567890</serialNumber>
+    <UDN>uuid:Upnp-IPNC-1_0-1234567890</UDN>
+    <UPC>123456789</UPC>
+    <serviceList>
+      <service>
+        <serviceType>urn:schemas-upnp-org:service:tvcontrol:1</serviceType>
+        <serviceId>urn:upnp-org:serviceId:tvcontrol1</serviceId>
+        <controlURL>/</controlURL>
+        <eventSubURL>/</eventSubURL>
+        <SCPDURL>/</SCPDURL>
+      </service>
+      <service>
+        <serviceType>urn:schemas-upnp-org:service:tvpicture:1</serviceType>
+        <serviceId>urn:upnp-org:serviceId:tvpicture1</serviceId>
+        <controlURL>/</controlURL>
+        <eventSubURL>/</eventSubURL>
+        <SCPDURL>/</SCPDURL>
+      </service>
+    </serviceList>
+   <presentationURL>/</presentationURL>
+</device>
+</root>

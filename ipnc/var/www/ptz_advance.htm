@@ -1,0 +1,528 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<META http-equiv="Cache-Control" content="no-cache, must-revalidate">
+<title>advance</title>
+<script src="jquery/jquery-1.9.1.js" language="javascript"></script>
+<style>
+*{
+	font-size:12px;
+	padding:0;
+	margin:0;
+}
+input
+{
+	padding:5px 8px 5px 8px;
+	margin-top:5px;
+	margin-left:5px;
+}
+body
+{
+	width:100%;
+	height:100%;
+	background-color:#999;
+}
+table
+{
+	border-collapse: collapse; width:100%; height:100%; vertical-align:middle; text-align:center;
+}
+table td
+{
+	border-width: 1px;
+	border-style: solid;
+	border-color: #666666;
+}
+
+.ptz_control td
+{
+	border:none;
+}
+</style>
+
+<script LANGUAGE="JavaScript",type="text/javascript">	
+	var cmdList = new Array("ls", "pwd", "ls -l", "ps");
+	var i = cmdList.length;
+
+	function isPrevPress()
+	{
+		if(window.event.keyCode == 38) //UP
+		{
+			if(i > 0)
+			{
+				i = i - 1;
+				cmdarea.value = cmdList[i].toString();			
+			}
+		}	
+		else if(window.event.keyCode == 40) //Down
+		{
+			if(i < cmdList.length - 1)
+			{
+				i = i + 1;
+				cmdarea.value = cmdList[i].toString();			
+			}
+		}		
+	}
+    function Play()		// 播放视频
+    {
+	vlc.MediaURL ="rtsp://"+document.domain+":8557/h264";
+	vlc.bRtspTcp = 1;
+	vlc.IsDrawRect = 1;
+	vlc.Play();
+    }
+	function Stop()		// 停止视频播放
+    {
+	vlc.Stop();
+    }
+	function isEnterPress()
+	{	
+		if(window.event.keyCode == 13) //Enter
+		{
+			cmdList[cmdList.length] = cmdarea.value;
+			i = cmdList.length;
+				
+			AjaxFunction();
+		}
+	}
+	// 根据ID取得对象
+    function getCtrl(id)
+    {
+    return document.getElementById(id);
+    }
+	function alg_select_change()
+    {
+	alg_index = getCtrl("alg_select").value;
+	Position(); 
+
+	WriteLog2("x1="+x1+",y1="+y1+";x2="+x2+",y2="+y2+ ";alg="+ alg_index + ";Width="+document.getElementById("vlc").VideoWidth+",Height="+document.getElementById("vlc").VideoHeight+".");
+    }
+
+
+
+
+
+	function AjaxFunction()
+	{
+		var xmlHttp;
+		try
+		{
+			// Firefox, Opera 8.0+, Safari
+			xmlHttp=new XMLHttpRequest();
+		}
+		catch (e)
+		{
+			// Internet Explorer
+			try
+			{
+				xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
+			}
+			catch (e)
+			{
+
+				try
+				{
+					xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				catch (e)
+				{
+					alert("浏览器不支持AJAX！");
+					return false;
+				}
+			}
+		}
+
+		xmlHttp.onreadystatechange=function()
+		{
+			if(xmlHttp.readyState==4)
+			{					
+				cmdResults.value += "\nroot@DM8127 # " + cmdarea.value + "\n";				
+				cmdResults.value += xmlHttp.responseText;
+				cmdResults.scrollTop = cmdResults.scrollHeight;				
+				cmdarea.value = "";				
+			}
+		}
+		
+		//hicmdurl = "http://192.168.0.12/cgi-bin/lcmd?cmd=" + cmdarea.value ;
+		hicmdurl = "/cgi-bin/lcmd?" + cmdarea.value ;
+		xmlHttp.open("GET", hicmdurl, true);
+		xmlHttp.send(null);
+	}	
+	function Position()
+      {
+	var width = document.getElementById("vlc").VideoWidth;
+	var height = document.getElementById("vlc").VideoHeight;
+	var purl;
+	purl="vb.htm?3d_ptz_contral="+(x1 | (alg_index << 8))+","+y1+","+x2+","+y2;
+	getCtrl("vbcmd").value = purl;
+	alert(purl);
+	window.frames["PTZ_IFrame_3D"].window.location.href = purl;
+     }
+	function light_control_Function(name)
+	{
+		cmdarea.value=name;
+		var s=parseInt(step.value);
+		var a=s.toString(16);
+		switch(name)
+		{
+		case "left": 
+			cmdarea.value="bit_dlsx bb 01 04 53 01 " + a + " ff" ;break;
+		case "right": 
+			cmdarea.value="bit_dlsx bb 01 04 53 02 " + a + " ff" ;break;
+		case "up" :  
+			cmdarea.value="bit_dlsx bb 01 04 53 03 " + a + " ff" ;break;
+		case "down":  
+			cmdarea.value="bit_dlsx bb 01 04 53 04 " + a + " ff" ;break;
+		case "Location":
+		    {
+		    var temp_Location=parseInt(LocationNum.value);
+			var temp_1=1;
+			var temp_2=0;
+			var temp_3=3;
+			var temp_4=0;
+		    var Location_hex=temp_1^temp_2^temp_3^temp_4^temp_Location;
+		    cmdarea.value="seri_wxy ea d5 05 fa 01 00 03 00 " + temp_Location.toString(16) + " " + Location_hex.toString(16);
+			}
+			break;
+		case "AddCruisePoint":
+		    {
+		    var temp_AddCruisePoint=parseInt(Num.value);
+			var temp_1=1;
+			var temp_2=0;
+			var temp_3=35;
+			var temp_4=5;
+			var AddCruisePoint_cs=temp_1^temp_2^temp_3^temp_4^temp_AddCruisePoint;
+		    cmdarea.value="seri_wxy ea d5 05 fa 01 00 23 "+ temp_AddCruisePoint.toString(16) + " 05 " + AddCruisePoint_cs.toString(16);
+			}
+			break;
+			
+	    case "ClearLocation":
+		    {
+		    var temp_ClearLocation=parseInt(LocationNum.value);
+			
+			var temp_1=1;
+			var temp_2=0;
+			var temp_3=5;
+			var temp_4=0;
+			var ClearLocation_cs=temp_1^temp_2^temp_3^temp_4^temp_ClearLocation;
+			
+			cmdarea.value="seri_wxy ea d5 05 fa 01 00 05 00 " + temp_ClearLocation.toString(16) + " " + ClearLocation_cs.toString(16);
+			}
+			break;
+		case "ToLocation":
+		    {
+		    var temp_ToLocation=parseInt(LocationNum.value);
+		    var temp_1=1;
+		    var temp_2=0;
+		    var temp_3=7;
+		    var temp_4=0;
+		    var ToLocation_cs=temp_1^temp_2^temp_3^temp_4^temp_ToLocation;
+	
+			cmdarea.value= "seri_wxy ea d5 05 fa 01 00 07 00 " + temp_ToLocation.toString(16) + " " + ToLocation_cs.toString(16); 
+		    }
+		    break;
+		case "HomingSetting":
+		    {
+		    var temp_HomingSetting=parseInt(Hsetting.value);
+			
+			if (temp_HomingSetting==1)
+			{
+			    var temp_HomingLocation=parseInt(LocationNum.value);
+			   // var temp_hex=temp_HomingLocation.toString(16);
+				var temp_1=1;
+				var temp_2=0;
+				var temp_3=67;
+				var temp_4=1;
+				var temp_HomingSetting_cs=temp_1^temp_2^temp_3^temp_4^temp_HomingLocation;
+				
+			  
+			    cmdarea.value="seri_wxy ea d5 05 fa 01 00 43 " + temp_HomingLocation.toString(16) + " " + "01" +" "+ temp_HomingSetting_cs.toString(16);
+			}
+			else
+			  {
+			    var HomingSetting_hex=temp_HomingSetting.toString(16);
+			    //var HomingSetting_final=0x01^0x00^0x043^0x0^HomingSetting_hex;
+				var temp_1=1;
+				var temp_2=0;
+				var temp_3=67;
+				var temp_4=0;
+				var HomingSetting_cs=temp_HomingSetting^temp_1^temp_2^temp_3^temp_4;
+				
+				
+		        cmdarea.value="seri_wxy ea d5 05 fa 01 00 43 00 " + HomingSetting_hex + " " + HomingSetting_cs.toString(16);
+			   }
+			}
+			break;
+		case "HomingTimeSetting":
+		     {
+			    var  temp_HomingTime=parseInt(WaitingTime.value);
+			
+				var temp_1=1;
+				var temp_2=0;
+				var temp_3=69;
+				var temp_4=0;
+				var HomingTimeSetting_cs=temp_1^temp_2^temp_3^temp_4^temp_HomingTime;
+				cmdarea.value="seri_wxy ea d5 05 fa 01 00 45 00 "+ temp_HomingTime.toString(16) + " " + HomingTimeSetting_cs.toString(16) ;
+			 }
+		    break;
+		case "StartRecordStudy":
+		     {
+			   //ea d5 05 fa 01 00 11 00 01 11
+			    var temp_StartRecordStudy=parseInt(RecordNum.value);
+				var temp_1=1;
+				var temp_2=0;
+				var temp_3=17;
+				var temp_4=0;
+				var StartRecordStudy_cs=temp_1^temp_2^temp_3^temp_4^temp_StartRecordStudy;
+				cmdarea.value="seri_wxy ea d5 05 fa 01 00 11 00 " + temp_StartRecordStudy.toString(16) + " " + StartRecordStudy_cs.toString(16);
+			 }
+			 break;
+		case "ReplayStudy":
+		     {
+			   //ea d5 05 fa 01 00 15 00 01 15
+			   var temp_ReplayStudy=parseInt(ReplayNum.value);
+			   var ReplayStudy_hex=temp_ReplayStudy.toString(16);
+			   var temp_1=1;
+			   var temp_2=0;
+			   var temp_3=21;
+			   var temp_4=0;
+			   var ReplayStudy_cs=temp_1^temp_2^temp_3^temp_4^temp_ReplayStudy;
+			   cmdarea.value="seri_wxy ea d5 05 fa 01 00 15 00 " + ReplayStudy_hex + " " + ReplayStudy_cs.toString(16);
+			 }
+			 break;
+		case "CruiseSetting":
+            {
+			//ea d5 05 fa 01 00 21 00 01 21 
+			 var temp_CruiseSetting=parseInt(CruiseNum.value);
+			 var CruiseSetting_hex=temp_CruiseSetting.toString(16);
+			 var temp_1=1;
+			 var temp_2=0;
+			 var temp_3=33;
+			 var temp_4=0;
+			 var CruiseSetting_cs=temp_1^temp_2^temp_3^temp_4^temp_CruiseSetting;
+			 
+			 cmdarea.value="seri_wxy ea d5 05 fa 01 00 21 00 " + CruiseSetting_hex + " " + CruiseSetting_cs.toString(16);
+			}
+			break;		
+		case "StartCruise":
+		     {
+			 //ea d5 05 fa 01 00 29 00 01 29
+			 var temp_StartCruise=parseInt(StartCruiseNum.value);
+			 var StartCruise_hex=temp_StartCruise.toString(16);
+			 var temp_1=1;
+			 var temp_2=0;
+			 var temp_3=41;
+			 var temp_4=0;
+			 var StartCruise_cs=temp_1^temp_2^temp_3^temp_4^temp_StartCruise;
+			 
+			 cmdarea.value="seri_wxy ea d5 05 fa 01 00 29 00 " + StartCruise_hex + " " + StartCruise_cs.toString(16);
+			 }
+			 break;
+	    case "ClearCruise":
+		     {
+			   //ea d5 05 fa 01 00 27 00 01 27
+			 var temp_ClearCruise=parseInt(StartCruiseNum.value);
+			 var ClearCruise_hex=temp_ClearCruise.toString(16);
+			 var temp_1=1;
+			 var temp_2=0;
+			 var temp_3=39;
+			 var temp_4=0;
+			 var ClearCruise_cs=temp_1^temp_2^temp_3^temp_4^temp_ClearCruise;
+			 
+			 
+			 cmdarea.value="seri_wxy ea d5 05 fa 01 00 27 00 " + ClearCruise_hex + " " + ClearCruise_cs.toString(16);
+			 }break;
+		
+		default:   ;break;
+		}
+		
+		//alert(cmdarea.value);
+		AjaxFunction();
+	}
+</script>
+</head>
+<body onLoad="Play()">
+
+<select name="step" style="display:none;">
+<script LANGUAGE="JavaScript", type="text/javascript">	
+for(var i=1;i<255;i++)
+{
+document.write('<option value=' + i +'>' + i +'</option>');
+}
+</script>
+</select>
+<div id="outer_div" style="width:100px; min-width:1280px; height:100%; min-width:770px; ">
+	<div id="left_div" style="position:absolute; top:0; left:0; width:800px; height:100%;  ">
+    	<div id="ocx_div_top"  style="position:relative; top:0; left:0; width:800px; height:70%;">
+        	<OBJECT id="vlc" height="100%" width="100%" classid="clsid:A2D1277C-2CC2-4A1A-B715-C6BAB17661D6"  events="True">
+                <PARAM NAME="_Version" VALUE="65536">
+                <PARAM NAME="_ExtentX" VALUE="9419">
+                <PARAM NAME="_ExtentY" VALUE="7064">
+                <PARAM NAME="_StockProps" VALUE="1">
+                <PARAM NAME="BackColor" VALUE="16777215">
+            </OBJECT>
+        </div>
+        
+        <div id="blow" style=" float:left; width:100%; height:30%;">
+        	<table>
+            	<tr style="  height:20px; background:#333; font-weight:bold; color:#CCC;">
+                	<td  style="width:300px;">云台控制 / 变焦控制</td><td>巡航配置</td>
+                </tr>
+                <tr>
+                	<td>
+                    	<table class="ptz_control">
+                        	<tr>
+                            	<td></td><td><input type="button" name="up_yuntai" value="上" onMouseDown="light_control_Function(this.name)" onMouseUp="light_control_Function('stop_yuntai')"></td><td></td>
+                            </tr>
+                            <tr>
+                            	<td><input type="button" name="left_yuntai" value="左" onMouseDown="light_control_Function(this.name)" onMouseUp="light_control_Function('stop_yuntai')"></td><td></td>
+                                <td><input type="button" name="right_yuntai" value="右" onMouseDown="light_control_Function(this.name)" onMouseUp="light_control_Function('stop_yuntai')"></td>
+                            </tr>
+                            <tr>
+                            	<td></td><td><input type="button" name="down_yuntai" value="下" onMouseDown="light_control_Function(this.name)" onMouseUp="light_control_Function('stop_yuntai')"></td><td></td>
+                            </tr>
+                            <tr style="border-width: 1px; border-style: solid; border-color: #666666;">
+                            	<td colspan="3" style="text-align:center">
+                                	<input type="button" name="near" value="拉近" style=display:none onMouseDown="light_control_Function(this.name)" onMouseUp="light_control_Function('stop')">
+                                    <input type="button" name="far" value="拉远" style=display:none onMouseDown="light_control_Function(this.name)" onMouseUp="light_control_Function('stop')">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td>
+                    	<table>
+                        	<tr>
+                            	<td style="width:60%; text-align:left; vertical-align:top;">
+                                	<table>
+                                    	<tr><td>巡航线路:</td><td><select name="CruiseNum">
+												<script LANGUAGE="JavaScript",type="text/javascript">	
+                                                for(var i=1;i<7;i++)
+                                                {
+                                                	document.write('<option value=' + i +'>' + i +'</option>');
+                                                }
+                                                </script>
+                                            </select></td></tr>
+                                        <tr><td> 新增巡航点： </td><td><select name="Num">
+												<script LANGUAGE="JavaScript",type="text/javascript">	
+                                                for(var i=1;i<65;i++)
+                                                {
+                                                document.write('<option value=' + i +'>' + i +'</option>');
+                                                }
+                                                </script>
+                                            </select></td></tr>
+                                        <tr><td colspan="2">
+                                        <input type="button" name="CruiseSetting" value="开始设置" onClick="light_control_Function(this.name)">
+                                        <input type="button" name="AddCruisePoint" value="追加巡航点" onClick="light_control_Function(this.name)">
+                                        <input type="button" name="EndCruiseSetting" value="保存设置" onClick="light_control_Function(this.name)"></td></tr>
+                                    </table>
+                                	
+                                           
+                                        
+                                </td>
+                                <td>
+                                	巡航线路:<select name="StartCruiseNum">
+												<script LANGUAGE="JavaScript",type="text/javascript">	
+                                                for(var i=1;i<7;i++)
+                                                {
+                                                document.write('<option value=' + i +'>' + i +'</option>');
+                                                }
+                                                </script>
+                                            </select>
+                                           	</br>
+											<input type="button" name="StartCruise" value="启动巡航" onclick="light_control_Function(this.name)">
+                                            <input type="button" name="EndCruise" value="终止巡航" onClick="light_control_Function(this.name)">
+											<input type="button" name="ClearCruise" value="清除巡航" onClick="light_control_Function(this.name)">
+                                
+                                </td>
+                            </tr>
+                        </table>
+                    	
+                    </td>
+                </tr>
+            </table>
+        </div>
+       
+    </div>
+    
+    
+    
+<div id="right_div" style=" position:absolute; top:0; left:800px;height:100%; width:300px;">
+<table>
+	<tr><td colspan="2" style="height:20px; background:#333; font-weight:bold; color:#CCC;">预置位配置</td></tr>
+    <tr><td>预置位：</td><td><select name="LocationNum">
+		<script LANGUAGE="JavaScript",type="text/javascript">	
+        for(var i=1;i<251;i++)
+        {
+        document.write('<option value=' + i +'>' + i +'</option>');
+        }
+        </script>
+        </select></td></tr>
+    <tr><td colspan="2"><input type="button" name="Location" value="设置预置位" onClick="light_control_Function(this.name)">
+<input type="button" name="ClearLocation" value="清除预置位" onClick="light_control_Function(this.name)">
+<input type="button" name="ToLocation" value="调用预置位" onClick="light_control_Function(this.name)"></td></tr>
+    <tr><td colspan="2"  style="height:20px; background:#333; font-weight:bold; color:#CCC;">自动扫描</td></tr>
+    <tr><td colspan="2"><input type="button" name="LineStartPoint" value="设置扫描起点" onClick="light_control_Function(this.name)">
+<input type="button" name="LineEndPoint" value="设置扫描终点" onClick="light_control_Function(this.name)">
+</td></tr>
+    <tr><td colspan="2"><input type="button" name="StartLine" value="启动扫描" onClick="light_control_Function(this.name)">
+<input type="button" name="StopLine" value="停止扫描" onClick="light_control_Function(this.name)"></td></tr>
+    <tr><td colspan="2"  style="height:20px; background:#333; font-weight:bold; color:#CCC;">自学习功能</td></tr>
+    <tr><td>录制到线路:</td><td><select name="RecordNum">
+								<script LANGUAGE="JavaScript",type="text/javascript">	
+                                for(var i=1;i<4;i++)
+                                {
+                                document.write('<option value=' + i +'>' + i +'</option>');
+                                }
+                                </script>
+                                </select>
+                                <input type="button" name="StartRecordStudy" value="开始录制" onClick="light_control_Function(this.name)">
+                                <input type="button" name="StopRecordStudy" value="停止录制" onClick="light_control_Function(this.name)"></td></tr>
+    <tr><td>调用线路：</td><td><select name="ReplayNum">
+							<script LANGUAGE="JavaScript",type="text/javascript">	
+                            for(var i=1;i<4;i++)
+                            {
+                            document.write('<option value=' + i +'>' + i +'</option>');
+                            }
+                            </script>
+                            </select>
+                            <input type="button" name="ReplayStudy" value="开始回放" onClick="light_control_Function(this.name)">
+                            <input type="button" name="StopReplay" value="停止回放" onClick="light_control_Function(this.name)"></td></tr>
+    <tr><td colspan="2" style="height:20px; background:#333; font-weight:bold; color:#CCC;">守望设置</td></tr>
+    <tr><td>归位时间：</td><td><select name="WaitingTime">
+<script LANGUAGE="JavaScript",type="text/javascript">	
+for(var i=1;i<100;i++)
+{
+document.write('<option value=' + i +'>' + i +'</option>');
+}
+</script>
+</select>
+<label>分钟</label><input type="button" name="HomingTimeSetting" value="设置守望等待时间" onClick="light_control_Function(this.name)"></td></tr>
+    <tr><td>守望联动：</td><td><select name="Hsetting">
+			<option value="1">预置位</option>  
+			<option value="2">线扫1</option>  
+			<option value="3">巡航1</option>  
+			<option value="4">自学习1</option>  
+			<option value="5">智能1</option>  
+		</select><input type="button" name="HomingSetting" value="守望联动功能设置" onClick="light_control_Function(this.name)"></td></tr>
+    <tr><td colspan="2"><input type="button" name="HomingSwitchOpen" value="守望开" onClick="light_control_Function(this.name)">
+<input type="button" name="HomingSwitchClose" value="守望关" onClick="light_control_Function(this.name)"></td></tr>
+</table>
+
+</div>
+</div>
+
+
+<div  style="position:absolute; top:800px; left:100px;height:300px; background:red; display:none;">
+<textarea rows=23  cols=60 readonly name="cmdResults" >root@DM8127 # </textarea>
+<BR><BR>
+<label >root@DM8127 # </label>
+<input type="text"  name="cmdarea" size=80 value=""  onKeyDown="isEnterPress();isPrevPress()" />
+</div>
+
+<BR><BR>
+</body>
+</html>
+
+
+
+
+

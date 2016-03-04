@@ -1,0 +1,275 @@
+#######################dsp reboot, algorithm version:v_ve 2.1.6-r4.1.1.#######################
+[dsp log 1]================================================================
+dsp run 0day 0hour 0min
+total memory heap = 33554432, free heap = 25702800
+frame rate = 0fps, lost frames = 0, alg run time:[ave = 146ms, largest = 146ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:0, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 2]================================================================
+dsp run 0day 0hour 20min
+total memory heap = 33554432, free heap = 16241528
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 172ms, largest = 1282ms].
+total capture vehicles = 2, cur cycle vehicles = 2
+environ_info = [intenseAve:72, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 3]================================================================
+dsp run 0day 0hour 40min
+total memory heap = 33554432, free heap = 16241528
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 151ms, largest = 417ms].
+total capture vehicles = 2, cur cycle vehicles = 0
+environ_info = [intenseAve:85, plateIntenseAve:112, charaIntenseAve:129, plateContrastAve:1.37]
+[dsp log 4]================================================================
+dsp run 0day 1hour 0min
+total memory heap = 33554432, free heap = 16241528
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 86ms, largest = 831ms].
+total capture vehicles = 12, cur cycle vehicles = 10
+environ_info = [intenseAve:88, plateIntenseAve:102, charaIntenseAve:120, plateContrastAve:1.46]
+[dsp log 5]================================================================
+dsp run 0day 1hour 20min
+total memory heap = 33554432, free heap = 16241528
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 57ms, largest = 422ms].
+total capture vehicles = 13, cur cycle vehicles = 1
+environ_info = [intenseAve:90, plateIntenseAve:95, charaIntenseAve:111, plateContrastAve:1.43]
+[dsp log 6]================================================================
+dsp run 0day 1hour 40min
+total memory heap = 33554432, free heap = 16241528
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 64ms, largest = 682ms].
+total capture vehicles = 15, cur cycle vehicles = 2
+environ_info = [intenseAve:100, plateIntenseAve:106, charaIntenseAve:130, plateContrastAve:1.61]
+[dsp log 7]================================================================
+dsp run 0day 2hour 0min
+total memory heap = 33554432, free heap = 16241528
+frame rate = 5fps, lost frames = 0, alg run time:[ave = 44ms, largest = 124ms].
+total capture vehicles = 17, cur cycle vehicles = 2
+environ_info = [intenseAve:85, plateIntenseAve:119, charaIntenseAve:154, plateContrastAve:1.84]
+[dsp log 8]================================================================
+dsp run 0day 2hour 20min
+total memory heap = 33554432, free heap = 16241528
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 76ms, largest = 456ms].
+total capture vehicles = 20, cur cycle vehicles = 3
+environ_info = [intenseAve:80, plateIntenseAve:120, charaIntenseAve:132, plateContrastAve:1.24]
+[dsp log 9]================================================================
+dsp run 0day 2hour 40min
+total memory heap = 33554432, free heap = 16241528
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 57ms, largest = 446ms].
+total capture vehicles = 24, cur cycle vehicles = 4
+environ_info = [intenseAve:87, plateIntenseAve:95, charaIntenseAve:107, plateContrastAve:1.31]
+[dsp log 10]================================================================
+dsp run 0day 3hour 0min
+total memory heap = 33554432, free heap = 16241528
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 58ms, largest = 508ms].
+total capture vehicles = 27, cur cycle vehicles = 3
+environ_info = [intenseAve:83, plateIntenseAve:111, charaIntenseAve:149, plateContrastAve:2.08]
+[dsp log 11]================================================================
+dsp run 0day 3hour 20min
+total memory heap = 33554432, free heap = 16241528
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 51ms, largest = 496ms].
+total capture vehicles = 28, cur cycle vehicles = 1
+environ_info = [intenseAve:106, plateIntenseAve:111, charaIntenseAve:149, plateContrastAve:2.08]
+[dsp log 12]================================================================
+dsp run 0day 3hour 40min
+total memory heap = 33554432, free heap = 16241528
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 55ms, largest = 349ms].
+total capture vehicles = 28, cur cycle vehicles = 0
+environ_info = [intenseAve:107, plateIntenseAve:111, charaIntenseAve:149, plateContrastAve:2.08]
+#######################dsp reboot, algorithm version:v_ve 2.1.6-r4.1.1.#######################
+[dsp log 1]================================================================
+dsp run 0day 0hour 0min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 0fps, lost frames = 0, alg run time:[ave = 128ms, largest = 128ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:0, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 2]================================================================
+dsp run 0day 0hour 20min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 44ms, largest = 49ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:94, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 3]================================================================
+dsp run 0day 0hour 40min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 5fps, lost frames = 0, alg run time:[ave = 44ms, largest = 48ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:92, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 4]================================================================
+dsp run 0day 1hour 0min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 5fps, lost frames = 0, alg run time:[ave = 44ms, largest = 48ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:91, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 5]================================================================
+dsp run 0day 1hour 20min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 5fps, lost frames = 0, alg run time:[ave = 44ms, largest = 48ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:95, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 6]================================================================
+dsp run 0day 1hour 40min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 5fps, lost frames = 0, alg run time:[ave = 44ms, largest = 48ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:95, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 7]================================================================
+dsp run 0day 2hour 0min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 5fps, lost frames = 0, alg run time:[ave = 44ms, largest = 49ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:95, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 8]================================================================
+dsp run 0day 2hour 20min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 5fps, lost frames = 0, alg run time:[ave = 44ms, largest = 49ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:95, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 9]================================================================
+dsp run 0day 2hour 40min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 5fps, lost frames = 0, alg run time:[ave = 45ms, largest = 49ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:95, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 10]================================================================
+dsp run 0day 3hour 0min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 5fps, lost frames = 0, alg run time:[ave = 45ms, largest = 49ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:95, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 11]================================================================
+dsp run 0day 3hour 20min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 5fps, lost frames = 0, alg run time:[ave = 45ms, largest = 49ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:95, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 12]================================================================
+dsp run 0day 3hour 40min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 5fps, lost frames = 0, alg run time:[ave = 45ms, largest = 49ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:95, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 13]================================================================
+dsp run 0day 4hour 0min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 5fps, lost frames = 0, alg run time:[ave = 45ms, largest = 49ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:95, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 14]================================================================
+dsp run 0day 4hour 20min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 5fps, lost frames = 0, alg run time:[ave = 45ms, largest = 49ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:95, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 15]================================================================
+dsp run 0day 4hour 40min
+total memory heap = 33554432, free heap = 27776408
+frame rate = 5fps, lost frames = 0, alg run time:[ave = 45ms, largest = 49ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:95, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+#######################dsp reboot, algorithm version:v_entrance 2.2.1-r5.4.1.#######################
+[dsp log 1]================================================================
+dsp run 0day 0hour 0min
+total memory heap = 33554432, free heap = 20320680
+frame rate = 0fps, lost frames = 0, alg run time:[ave = 541ms, largest = 541ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:0, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 2]================================================================
+dsp run 0day 0hour 20min
+total memory heap = 33554432, free heap = 7320520
+frame rate = 3fps, lost frames = 0, alg run time:[ave = 263ms, largest = 465ms].
+total capture vehicles = 4, cur cycle vehicles = 4
+environ_info = [intenseAve:0, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 3]================================================================
+dsp run 0day 0hour 40min
+total memory heap = 33554432, free heap = 2864968
+frame rate = 3fps, lost frames = 0, alg run time:[ave = 292ms, largest = 563ms].
+total capture vehicles = 40, cur cycle vehicles = 36
+environ_info = [intenseAve:0, plateIntenseAve:117, charaIntenseAve:150, plateContrastAve:1.80]
+#######################dsp reboot, algorithm version:v_entrance 2.2.1-r5.4.1.#######################
+[dsp log 1]================================================================
+dsp run 0day 0hour 0min
+total memory heap = 33554432, free heap = 20320680
+frame rate = 0fps, lost frames = 0, alg run time:[ave = 562ms, largest = 562ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:0, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 2]================================================================
+dsp run 0day 0hour 20min
+total memory heap = 33554432, free heap = 10457248
+frame rate = 3fps, lost frames = 0, alg run time:[ave = 257ms, largest = 484ms].
+total capture vehicles = 8, cur cycle vehicles = 8
+environ_info = [intenseAve:0, plateIntenseAve:111, charaIntenseAve:148, plateContrastAve:2.00]
+[dsp log 3]================================================================
+dsp run 0day 0hour 40min
+total memory heap = 33554432, free heap = 10435816
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 235ms, largest = 396ms].
+total capture vehicles = 9, cur cycle vehicles = 1
+environ_info = [intenseAve:0, plateIntenseAve:99, charaIntenseAve:134, plateContrastAve:2.14]
+[dsp log 4]================================================================
+dsp run 0day 1hour 0min
+total memory heap = 33554432, free heap = 10426464
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 235ms, largest = 328ms].
+total capture vehicles = 9, cur cycle vehicles = 0
+environ_info = [intenseAve:0, plateIntenseAve:99, charaIntenseAve:134, plateContrastAve:2.14]
+[dsp log 5]================================================================
+dsp run 0day 1hour 20min
+total memory heap = 33554432, free heap = 10425784
+frame rate = 3fps, lost frames = 0, alg run time:[ave = 286ms, largest = 360ms].
+total capture vehicles = 9, cur cycle vehicles = 0
+environ_info = [intenseAve:0, plateIntenseAve:99, charaIntenseAve:134, plateContrastAve:2.14]
+[dsp log 6]================================================================
+dsp run 0day 1hour 40min
+total memory heap = 33554432, free heap = 10392872
+frame rate = 3fps, lost frames = 0, alg run time:[ave = 292ms, largest = 466ms].
+total capture vehicles = 10, cur cycle vehicles = 1
+environ_info = [intenseAve:0, plateIntenseAve:99, charaIntenseAve:134, plateContrastAve:2.14]
+[dsp log 7]================================================================
+dsp run 0day 2hour 0min
+total memory heap = 33554432, free heap = 5519496
+frame rate = 3fps, lost frames = 0, alg run time:[ave = 303ms, largest = 582ms].
+total capture vehicles = 21, cur cycle vehicles = 11
+environ_info = [intenseAve:0, plateIntenseAve:204, charaIntenseAve:242, plateContrastAve:1.47]
+[dsp log 8]================================================================
+dsp run 0day 2hour 20min
+total memory heap = 33554432, free heap = 897192
+frame rate = 3fps, lost frames = 0, alg run time:[ave = 277ms, largest = 393ms].
+total capture vehicles = 47, cur cycle vehicles = 26
+environ_info = [intenseAve:0, plateIntenseAve:122, charaIntenseAve:185, plateContrastAve:3.19]
+[dsp log 9]================================================================
+dsp run 0day 2hour 40min
+total memory heap = 33554432, free heap = 718760
+frame rate = 3fps, lost frames = 0, alg run time:[ave = 250ms, largest = 377ms].
+total capture vehicles = 55, cur cycle vehicles = 8
+environ_info = [intenseAve:0, plateIntenseAve:89, charaIntenseAve:127, plateContrastAve:2.53]
+#######################dsp reboot, algorithm version:v_entrance 2.2.1-r5.4.1.#######################
+[dsp log 1]================================================================
+dsp run 0day 0hour 0min
+total memory heap = 33554432, free heap = 20320680
+frame rate = 0fps, lost frames = 0, alg run time:[ave = 526ms, largest = 526ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:0, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 2]================================================================
+dsp run 0day 0hour 20min
+total memory heap = 33554432, free heap = 10805400
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 222ms, largest = 371ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:0, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 3]================================================================
+dsp run 0day 0hour 40min
+total memory heap = 33554432, free heap = 10746560
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 220ms, largest = 289ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:0, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 4]================================================================
+dsp run 0day 1hour 0min
+total memory heap = 33554432, free heap = 10746560
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 222ms, largest = 252ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:0, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 5]================================================================
+dsp run 0day 1hour 20min
+total memory heap = 33554432, free heap = 10746560
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 220ms, largest = 251ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:0, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]
+[dsp log 6]================================================================
+dsp run 0day 1hour 40min
+total memory heap = 33554432, free heap = 10746560
+frame rate = 4fps, lost frames = 0, alg run time:[ave = 224ms, largest = 247ms].
+total capture vehicles = 0, cur cycle vehicles = 0
+environ_info = [intenseAve:0, plateIntenseAve:0, charaIntenseAve:0, plateContrastAve:0.00]

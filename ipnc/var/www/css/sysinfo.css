@@ -1,0 +1,38 @@
+body {
+	margin: 0;
+	padding:0;
+	height:100%;
+	min-width:1200px;
+	min-height:580px;
+	background:#D5D5D5;
+}
+
+#sysdiv {
+    height:100%;
+	min-width:1200px;
+	min-height:580px;
+    text-align: left;
+}
+#systable {
+    border: 1px solid #333;
+    border-collapse: collapse;
+}
+.color {
+	font-size:13px;
+	width: 280px;
+	border: 1px solid #333;
+	border-collapse: collapse;
+}
+
+.nocolor {
+    width: 480px;
+	font-size:13px;
+}
+
+table{
+	font-size:13px;
+	margin-left:10px;
+	margin-top:10px;
+	
+}
+

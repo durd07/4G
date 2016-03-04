@@ -1,0 +1,10 @@
+ethaddr=7c:66:9d:6a:7d:d0
+ethact=cpsw
+ipaddr=192.168.1.2
+bootargs=console=ttyO0,115200n8 rootwait=1 rw ubi.mtd=4,2048 rootfstype=ubifs root=ubi0:rootfs init=/init mem=144M vram=4M notifyk.vpssm3_sva=0xBFD00000 ip=192.168.1.192 cmemk.phys_start=0x94000000 cmemk.phys_end=0xB0000000 cmemk.allowOverlap=1 earlyprintk
+bootcmd=ipnc_ff_init 1; sf probe 0; sf read 0x81000000 0xc0000 0x400000; bootm
+stdin=serial
+stdout=serial
+stderr=serial
+ver=U-Boot 2010.06 (Jun 08 2015 - 15:57:35) DM8127_IPNC_3.80.00
+serverip=192.168.1.200

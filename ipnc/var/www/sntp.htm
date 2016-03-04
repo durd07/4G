@@ -1,0 +1,78 @@
+<script>  
+  CTRLARY = {
+    // isSntp: new Ctrl_Select("ntpenable", namelist, "<%ntpenable%>", "ntpenable=", gco_empty, "isSntpEn()"),
+    sntpip: new Ctrl_Text("sntpip", "20", "20", "<%ntpserviceip%>", "ntpserviceip=", gco_empty),
+    newDate: new Ctrl_Text("newDate", "25", "25", "", "newdate="),
+    newTime: new Ctrl_Text("newTime", "25", "25", "", "newtime=")
+
+  };
+  function isSntpEn()
+  {
+    if (document.getElementById("isSntp").selectedIndex == 1)
+      document.getElementById("sntpip").disabled = 1;
+  }
+
+  function timecheck()
+  {
+    var now = new date();
+    var year = now.getYear();
+    var month = now.getMonth() + 1;
+    var day = now.getDate();
+    var hour = now.getHours();
+    var minute = now.getMinutes();
+    var second = now.getSeconds();
+    SetCCV("newDate", (FixNum(year, 4) + "/" + FixNum(month, 2) + "/" + FixNum(day, 2)));
+    SetCCV("newTime", (FixNum(hour, 2) + ":" + FixNum(minute, 2) + ":" + FixNum(second, 2)));
+    var o = c_iniUrl;
+    o += GetSetterCmd("newDate", GetCCV("newDate")) + GetSetterCmd("newTime", GetCCV("newTime"));
+    alert(o);
+    SendHttp(o, false);
+  }
+  function MY_ONLOAD()
+  {
+        isSntpEn();        
+        g_lockLink = false; 
+  }
+
+  function MY_SUBMIT_OK()
+  {
+    ChangeContent();
+  }
+  </script>
+
+  <script>
+  WriteNetPH("sntp_server_set");
+  WriteGroup("sntp_server_set");
+  
+
+  DW('<table><tr><td>');
+  DW('<div id="manulset">');
+  DW('<table><tr><td colspan=2>');
+  DW('<span>' + GL("sntp_enable") + '</span>');
+  </script>
+
+<script>
+var o = '<select id="isSntp" onchange="isSntpEn()">';
+o += '<option selected value="on">{$on}</option>';
+o += '<option value="off">{$off}</option>';
+o += '</select>';
+DW(o);        
+
+</script>
+<script>
+  DW('</td></tr>');
+  DW('<tr><td colspan=2>' + GL("sntpip") + '</td><td>');
+  WH("sntpip");
+  DW('</td></tr></table></div>');
+
+  DW('</td></tr></table>');
+  // WIPSubmit();
+  DW("<tr><td colspan=2 align=center><br>");
+  CreateSubmitButton(null, isAsync);
+  DW("</td><td>");
+  DW('<input type="submit" name="ok" id="sync" onclick="timecheck()" value="' + GL("synctime") + '>');
+  DW('</td></tr>');
+  WTablePB();
+  WriteNetPB();
+  ALC();
+</script>

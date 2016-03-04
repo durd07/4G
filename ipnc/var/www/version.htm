@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<script language="JavaScript">
+    DW(GetHtmlHeaderNoBodyStr(null, "Version description"));
+</script>
+<body>
+    <table border=0 width="53%" id=table1 height=90 class=l1>
+        <tr>
+            <td colspan=2 height=34>
+                <p align=left>
+                    <b>
+                        <font size=4>Version Description</font>
+                    </b>
+                    <hr>
+            </td>
+        </tr>
+        <tr>
+            <td width="35%">Kernel Version</td>
+            <td width="63%">
+                <b>
+                    <%KernelVersion%>
+                </b>
+            </td>
+        </tr>
+        <tr>
+            <td width="35%">BIOS Version</td>
+            <td width="63%">
+                <b>
+                    <%biosversion%>
+                </b>
+            </td>
+        </tr>
+        <tr>
+            <td width="35%">Software Version</td>
+            <td width="63%">
+                <b>
+                    <%SoftwareVersion%>
+                </b>
+            </td>
+        </tr>
+        <tr>
+            <td width="35%">OEM Model</td>
+            <td width="63%">
+                <b>
+                    <%OEMModel%>
+                </b>
+            </td>
+        </tr>
+        <tr>
+            <td width="35%">OEM Maker</td>
+            <td width="63%">
+                <b>
+                    <%OEMMaker%>
+                </b>
+            </td>
+        </tr>
+        <tr>
+            <td width="35%">Compile Date & Time</td>
+            <td width="63%">
+                <b>
+                    <%CompileTime%>
+                </b>
+            </td>
+        </tr>
+        <tr>
+            <td width="35%">HTML Version</td>
+            <td width="63%">
+                <b>
+                    <script>
+                        DW(webPageVersion);
+                    </script>
+                </b>
+            </td>
+        </tr>
+        <tr>
+            <td width="35%">HTML Sub Version</td>
+            <td width="63%">
+                <b>
+                    <script>
+                        DW(webPageSubVersion);
+                    </script>
+                </b>
+            </td>
+        </tr>
+        <tr>
+            <td width="35%">ActiveX Version</td>
+            <td width="63%">
+                <b>
+                    <script>
+                        DW(AxVer);
+                    </script>
+                </b>
+            </td>
+        </tr>
+        <tr>
+            <td width="35%">Digital Signature</td>
+            <td width="63%">
+                <b>
+                    <script>
+                        DW(DigSignName);
+                    </script>
+                </b>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script>
+            InitLoad();
+         </script>
+        <title>
+            
+        </title>
+    <style type="text/css">
+    tr {
+      font-size: 12px;
+    }
+    a {
+  display: block;
+  text-decoration:none;
+}
+
+    </style>
+
+    </head>
+<body onload="MY_ONLOAD()">
+<script>
+  var v_recFtpEn = "<%rftpenable%>";
+  var ISSD = (g_defaultStorage == 1);
+  var v_cardRecEn = (ISSD) ? "<%sdrenable%>": "<%cfrenable%>";
+  var serviceFtpON = (parseInt("<%serviceftpclient%>") == 1);
+  var b_SDInsert = (parseInt("<%sdinsert%>") == 3);
+  if (!b_SDInsert) v_cardRecEn = "0";
+  CTRLARY = {
+    // recFtp: new Ctrl_Check("recFtp", v_recFtpEn, "rftpenable="),
+    recCard: new Ctrl_Check("recCard", v_cardRecEn, "sdrenable=", "ChangerecCard()")
+  };
+function MY_ONLOAD() {
+    g_lockLink = false;
+  }
+  function MY_BEFORE_SUBMIT() {
+    return true;
+  }
+
+  function ChangerecCard()
+  {
+    SendHttp(c_iniUrl + GetSetterCmdKV("sdrenable", GetCCV("recCard")), false);
+    MY_SUBMIT_OK();
+  }
+
+    function MY_SUBMIT_OK() {
+        alert(GL("submit_success"));
+        // ChangeContent(null, true);
+        window.location.reload();
+    }
+function WIAppR(id, enid, ctx)
+{
+  DW("<tr><td height=30 colspan=2 width='200px'>");
+  DW(WH_(id) + " " + GL(enid) + " - " + ctx + "");
+  DW("</td></tr>");
+};
+
+// alert(b_SDInsert);
+  DW('<table>');
+  /*if (! (IsMpeg4()) && serviceFtpON) {
+    WIApp("recFtp", "enable_rec", GL("upload_via") + " " + GetContentLink("nftp", "nftp.htm"));
+  }
+  else {
+    SetCIA("recFtp");
+  }*/
+  // if (b_SDInsert && (!g_isSupS1)) {
+  //   SetCIA("recFtp");
+  //   DW("<tr><td height=30 class='m3'>");
+  //   DW(GetHtmlbyId("recFtp") + " " + GL("msg_jpg_up_only") + " - " + GL("upload_via") + " " + '<a href="nftp.htm" target="content1" class="a1">' + GL("nftp") + '</a>');//GetContentLink("nftp", "nftp.htm"));
+  //   DW("</td></tr>");
+  // } else {
+  //   WIApp("recFtp", "enable_rec", GL("upload_via") + " " + '<a href="nftp.htm" target="content1" class="a1">' + GL("nftp") + '</a>'); //GetContentLink("nftp", "nftp.htm"));
+  // }
+  if (b_SDInsert) {
+    DW("<tr><td height=30>");
+    DW(GetHtmlbyId("recCard") + " " + GL("enable_rec") + " - " + GL("save_into") + GL("sd_card"));//GetContentLink("app_sd_card", "setcard.htm"));
+    // DW("</td><td>");
+    // DW('<a href="setcard.htm" target="content1" class="a1" onfocus="this.blur()">' + GL("sd_card") +' </a>');
+    DW("</td></tr>");
+    // WIAppR("recCard", "enable_rec", GL("save_into") + " " +  '<a href="setcard.htm" target="content1" class="a1">' + GL("sd_card") + '</a>'); //GetContentLink(((ISSD) ? "app_sd_card": "app_cf_card"), "setcard.htm"));
+  }
+  else {
+    SetCIA("recCard");
+    DW("<tr><td height=30 colspan='2'>");
+    DW(GetHtmlbyId("recCard") + " " + GL("msg_insert_card") + " - " + GL("save_into") + " "  + GL("sd_card"));//GetContentLink("app_sd_card", "setcard.htm"));
+
+    DW("</td></tr>");
+  }
+
+  // WIAppSubmit();
+
+  DW('</table>');
+  ALC();
+</script>
+</body>
+</html>

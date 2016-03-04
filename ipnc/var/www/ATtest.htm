@@ -1,0 +1,123 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>
+AT Test 0.01
+</title>
+</head>
+<body>
+<center>
+<!--
+<h2>
+Network Linux 0.01
+</h2>
+-->
+<textarea rows=30  cols=130 readonly name="cmdResults" >root@DM8127 # </textarea>
+<BR><BR>
+<label>root@DM8127 # </label>
+<input type="text"  name="cmdarea" size=80 value="" onkeydown="isEnterPress();isPrevPress()" />
+<BR><BR>
+<!--input type="button" name="ropen"  value="红灯开" onclick="light_control_Function(this.name)">
+<input type="button" name="rclose" value="红灯关" onclick="light_control_Function(this.name)">
+<span style="width:20"></span>
+<input type="button" name="gopen"  value="绿灯开" onclick="light_control_Function(this.name)">
+<input type="button" name="gclose" value="绿灯关" onclick="light_control_Function(this.name)">
+<span style="width:20"></span>
+<input type="button" name="bopen"  value="蓝灯开" onclick="light_control_Function(this.name)">
+<input type="button" name="bclose" value="蓝灯关" onclick="light_control_Function(this.name)">
+<span style="width:20"></span>
+<input type="button" name="wopen"  value="白灯开" onclick="light_control_Function(this.name)">
+<input type="button" name="wclose" value="白灯关" onclick="light_control_Function(this.name)">
+<span style="width:20"></span>
+<input type="button" name="allopen"  value="全部开" onclick="light_control_Function(this.name)">
+<input type="button" name="allclose" value="全部关" onclick="light_control_Function(this.name)"-->
+
+</center>
+
+
+<script LANGUAGE="JavaScript",type="text/javascript">	
+	var cmdList = new Array("ls", "pwd", "ls -l", "ps");
+	var i = cmdList.length;
+
+	function isPrevPress()
+	{
+		if(window.event.keyCode == 38) //UP
+		{
+			if(i > 0)
+			{
+				i = i - 1;
+				cmdarea.value = cmdList[i].toString();			
+			}
+		}	
+		else if(window.event.keyCode == 40) //Down
+		{
+			if(i < cmdList.length - 1)
+			{
+				i = i + 1;
+				cmdarea.value = cmdList[i].toString();			
+			}
+		}		
+	}
+
+	function isEnterPress()
+	{	
+		if(window.event.keyCode == 13) //Enter
+		{
+			cmdList[cmdList.length] = cmdarea.value;
+			i = cmdList.length;
+				
+			AjaxFunction();
+		}
+	}
+	
+	function AjaxFunction()
+	{
+		var xmlHttp;
+		try
+		{
+			// Firefox, Opera 8.0+, Safari
+			xmlHttp=new XMLHttpRequest();
+		}
+		catch (e)
+		{
+			// Internet Explorer
+			try
+			{
+				xmlHttp=new ActiveXObject("Msxml2.XMLHTTP");
+			}
+			catch (e)
+			{
+
+				try
+				{
+					xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				catch (e)
+				{
+					alert("浏览器不支持AJAX！");
+					return false;
+				}
+			}
+		}
+
+		xmlHttp.onreadystatechange=function()
+		{
+			if(xmlHttp.readyState==4)
+			{					
+				cmdResults.value += "\nroot@DM8127 # " + cmdarea.value + "\n";				
+				cmdResults.value += xmlHttp.responseText;
+				cmdResults.scrollTop = cmdResults.scrollHeight;				
+				cmdarea.value = "";				
+			}
+		}
+		
+		//hicmdurl = "http://192.168.0.12/cgi-bin/lcmd?cmd=" + cmdarea.value ;
+		hicmdurl = "/cgi-bin/4gtest.cgi?" + cmdarea.value ;
+		xmlHttp.open("GET", hicmdurl, true);
+		xmlHttp.send(null);
+	}	
+</script>
+
+
+</body>
+</html>

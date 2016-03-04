@@ -1,0 +1,588 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script language="javascript" src="ptzctrl.js"></script>        
+        <script language="javascript" src="My97DatePicker/WdatePicker.js"></script>
+        <script language="javascript" src="jquery/jquery-1.9.1.min.js"></script>
+		<script>
+      		InitLoad();
+   		 </script>
+         <script>
+        var imgmodname = GL("raw_img") + ";" + GL("static_img") + ";" + GL("dan_img");
+        var lvdsdelayname = GL("delay") + "0;" + GL("delay") + "1;" + GL("delay") + "2;" + GL("delay") + "3;" + GL("delay") + "4;" + GL("delay") + "5;" + GL("delay") + "6;" + GL("delay") + "7";
+        var coloradjustname = GL("color") + "0;" + GL("color") + "1;" + GL("color") + "2;" + GL("color") + "3;" + GL("color") + "4;" + GL("color") + "5;" + GL("color") + "6;" + GL("color") + "7";
+        var ad9928name = GL("first_ad9928") + ";" + GL("sec_ad9928") + ";" + GL("dou_ad9928");
+        var ledctrl = parseInt("<%ledctrl%>", 10);
+        var isuseledval = ledctrl & 0x01;
+        var polarledval = (ledctrl >> 4) & 0x01;
+        var signalledval = (ledctrl >> 5) & 0x01;
+        // alert(signalledval);
+        var leduselist = GL("nuseled") + ';' + GL("useled");
+        var polarlist = GL("npolar") + ';' + GL("ppolar");
+        var signallist = GL("signall") + ';' + GL("signalex");
+        // blk, gamma, raw, imgmod, lvdsdelay, coloradjust, peakenable, nfconf, lowthr, hithr, peakgain, ad9928, softreset
+        CTRLARY = {
+            // Black Level channel
+            /*blka: new Ctrl_Text("blka", "4", "4", "<%blka%>", "blka="), 
+              blkb: new Ctrl_Text("blkb", "4", "4", "<%blkb%>", "blkb="),
+              blkc: new Ctrl_Text("blkc", "4", "4", "<%blkc%>", "blkc="),
+              blkd: new Ctrl_Text("blkd", "4", "4", "<%blkd%>", "blkd="),*/
+
+            // ledctrl:  new Ctrl_Text("ledctrl", "4", "4", "<%ledctrl%>", "ledctrl="),
+            leddelaytime: new Ctrl_Text("leddelaytime", "10", "10", "<%leddelaytime%>", "leddelaytime="),
+            isuseled: new Ctrl_Select("isuseled", leduselist, signalledval, "signalled=", "FixLed()"),
+            polarled: new Ctrl_Select("polarled", polarlist, polarledval, "polarled="),
+            // signalled: new Ctrl_Select("signalled", signallist, signalledval, "signalled="),
+            gamma: new Ctrl_Check("gamma", "<%gamma%>", "gamma=")
+            // raw: new Ctrl_Check("raw", "<%raw%>", "raw=")
+            // imgmod: new Ctrl_Select("imgmod",imgmodname,"<%imgmod%>","imgmod="),
+            // lvdsdelay: new Ctrl_Select("lvdsdelay",lvdsdelayname,"<%lvdsdelay%>","lvdsdelay="),
+            // coloradjust: new Ctrl_Select("coloradjust",coloradjustname,"<%coloradjust%>","coloradjust="),
+            // // peakenable: new Ctrl_Check("peakenable", "<%peakenable%>", "peakenable=", "isPeakEnable()"),
+            // // nfcoef: new Ctrl_Text("nfcoef", "4", "4", "<%nfcoef%>", "nfcoef="), 
+            // // lowthr: new Ctrl_Text("lowthr", "4", "4", "<%lowthr%>", "lowthr="), 
+            // // hithr: new Ctrl_Text("hithr", "4", "4", "<%hithr%>", "hithr="), 
+            // // peakgain: new Ctrl_Text("peakgain", "4", "4", "<%peakgain%>", "peakgain="), 
+            // ad9928: new Ctrl_Select("ad9928",ad9928name,"<%ad9928%>","ad9928="),
+            // //software reset
+            // softreset: new Ctrl_Input("softreset", "softreset", "SoftReset()")
+        };
+
+        function isPeakEnable() {
+            CTRLARY["peakgain"].Disable(GetCCV("peakenable") == 0);
+            CTRLARY["lowthr"].Disable(GetCCV("peakenable") == 0);
+            CTRLARY["hithr"].Disable(GetCCV("peakenable") == 0);
+            CTRLARY["nfcoef"].Disable(GetCCV("peakenable") == 0);
+        }
+
+        function CheckBlka(min, max) {
+            var value = document.getElementById("blka").value;
+            if (value.length == 0) {
+                alert(GL("blka_empty"));
+                return false;
+            }
+            if (! (IsNumeric(value))) {
+                alert(GL("blka_inva"));
+                document.getElementById("blka").value = "";
+                return false;
+            }
+            if (! ((value >= min && value <= max))) {
+                alert(GL("blka_rager"));
+                document.getElementById("blka").value = "";
+                return false;
+            }
+            return true;
+        }
+
+        function CheckBlkb(min, max) {
+            var value = document.getElementById("blkb").value;
+            if (value.length == 0) {
+                alert(GL("blkb_empty"));
+                return false;
+            }
+            if (! (IsNumeric(value))) {
+                alert(GL("blkb_inva"));
+                document.getElementById("blkb").value = "";
+                return false;
+            }
+            if (! ((value >= min && value <= max))) {
+                alert(GL("blkb_rager"));
+                document.getElementById("blkb").value = "";
+                return false;
+            }
+            return true;
+        }
+
+        function CheckBlkc(min, max) {
+            var value = document.getElementById("blkc").value;
+            if (value.length == 0) {
+                alert(GL("blkc_empty"));
+                return false;
+            }
+            if (! (IsNumeric(value))) {
+                alert(GL("blkc_inva"));
+                document.getElementById("blkc").value = "";
+                return false;
+            }
+            if (! ((value >= min && value <= max))) {
+                alert(GL("blkc_rager"));
+                document.getElementById("blkc").value = "";
+                return false;
+            }
+            return true;
+        }
+
+        function CheckBlkd(min, max) {
+            var value = document.getElementById("blkd").value;
+            if (value.length == 0) {
+                alert(GL("blkd_empty"));
+                return false;
+            }
+            if (! (IsNumeric(value))) {
+                alert(GL("blkd_inva"));
+                document.getElementById("blkd").value = "";
+                return false;
+            }
+            if (! ((value >= min && value <= max))) {
+                alert(GL("blkd_rager"));
+                document.getElementById("blkd").value = "";
+                return false;
+            }
+            return true;
+        }
+
+        function CheckNfcoef(min, max) {
+            var value = document.getElementById("nfcoef").value;
+            if (value.length == 0) {
+                alert(GL("nfcoef_empty"));
+                return false;
+            }
+            if (! (IsNumeric(value))) {
+                alert(GL("nfcoef_inva"));
+                document.getElementById("nfcoef").value = "";
+                return false;
+            }
+            if (! ((value >= min && value <= max))) {
+                alert(GL("nfcoef_rager"));
+                document.getElementById("nfcoef").value = "";
+                return false;
+            }
+            return true;
+        }
+
+        function CheckLowthr(min, max) {
+            var value = document.getElementById("lowthr").value;
+            if (value.length == 0) {
+                alert(GL("lowthr_empty"));
+                return false;
+            }
+            if (! (IsNumeric(value))) {
+                alert(GL("lowthr_inva"));
+                document.getElementById("lowthr").value = "";
+                return false;
+            }
+            if (! ((value >= min && value <= max))) {
+                alert(GL("lowthr_rager"));
+                document.getElementById("lowthr").value = "";
+                return false;
+            }
+            return true;
+        }
+
+        function CheckHithr(min, max) {
+            var value = document.getElementById("hithr").value;
+            if (value.length == 0) {
+                alert(GL("hithr_empty"));
+                return false;
+            }
+            if (! (IsNumeric(value))) {
+                alert(GL("hithr_inva"));
+                document.getElementById("hithr").value = "";
+                return false;
+            }
+            if (! ((value >= min && value <= max))) {
+                alert(GL("hithr_rager"));
+                document.getElementById("hithr").value = "";
+                return false;
+            }
+            return true;
+        }
+
+        function CheckPeakgain(min, max) {
+            var value = document.getElementById("peakgain").value;
+            if (value.length == 0) {
+                alert(GL("peakgain_empty"));
+                return false;
+            }
+            if (! (IsNumeric(value))) {
+                alert(GL("peakgain_inva"));
+                document.getElementById("peakgain").value = "";
+                return false;
+            }
+            if (! ((value >= min && value <= max))) {
+                alert(GL("peakgain_rager"));
+                document.getElementById("peakgain").value = "";
+                return false;
+            }
+            return true;
+        }
+
+        //根据输入地址设置该地址的值
+        function IsAddr(sText) {
+            var ValidChars = "0123456789abcdefABCDEFxX";
+            var IsNumber = true;
+            var i;
+            var Char;
+            for (i = 0; i < sText.length && IsNumber == true; i++) {
+                Char = sText.charAt(i);
+                if (ValidChars.indexOf(Char) == -1) {
+                    IsNumber = false;
+                }
+            }
+            return IsNumber;
+        }
+        function CheckSetVal() {
+            var addr = document.getElementById("addr").value;
+            var val = document.getElementById("val").value;
+            var addrsp = addr.split('x');
+            var valsp = val.split('x');
+            if (addrsp.length == 1) {
+                addrsp = addr.split('X');
+            }
+
+            if (valsp.length == 1) {
+                valsp = val.split('X');
+            }
+
+            if (addr.length == 0) {
+                alert(GL("addr_empty"));
+                return false;
+            }
+            if (!IsAddr(addr) || addrsp.length > 2) {
+                alert(GL("addr_inva"));
+                document.getElementById("addr").value = "";
+                return false;
+            }
+
+            if (val.length == 0) {
+                alert(GL("val_empty"));
+                return false;
+            }
+            if (!IsAddr(val) || valsp.length > 2) {
+                alert(GL("val_inva"));
+                document.getElementById("val").value = "";
+                return false;
+            }
+
+            return true;
+        }
+        function CheckLedTime(min, max) {
+            var value = document.getElementById("leddelaytime").value;
+            if (value.length == 0) {
+                alert(GL("leddelay_empty"));
+                return false;
+            }
+            if (! (IsNumeric(value))) {
+                alert(GL("leddelay_inva"));
+                document.getElementById("leddelaytime").value = "";
+                return false;
+            }
+            if (! ((value >= min && value <= max))) {
+                alert(GL("leddelay_rager"));
+                document.getElementById("leddelaytime").value = "";
+                return false;
+            }
+            return true;
+        }
+
+        function Set() {
+            if (CheckSetVal() == false) {
+                return false;
+            }
+
+            var address, avalue;
+            var addr = document.getElementById("addr").value;
+            if (addr.charAt(1) == 'x') address = addr.substring(addr.indexOf('x') + 1, addr.length);
+            else address = addr;
+
+            var val = document.getElementById("val").value;
+            if (val.charAt(1) == 'x') value = val.substring(val.indexOf('x') + 1, val.length);
+            else value = val;
+            var addrval = address + '_' + value;
+            SendHttp(c_iniUrl + GetSetterCmdKV("addrval", addrval), false);
+            MY_SUBMIT_OK();
+        }
+
+        function SoftReset() {
+            SendHttp(c_iniUrl + GetSetterCmdKV("softreset", "1"), false);
+            MY_SUBMIT_OK();
+        }
+
+        function Update() {
+            var o = '';
+            o += c_iniUrl + GetSetterCmdKV("getblka");
+            o += GetSetterCmdKV("getblkb");
+            o += GetSetterCmdKV("getblkc");
+            o += GetSetterCmdKV("getblkd");
+            o += GetSetterCmdKV("getgamma");
+            // o += GetSetterCmdKV("getraw");
+            // o += GetSetterCmdKV("getimgmod");
+            // o += GetSetterCmdKV("getlvdsdelay");
+            // o += GetSetterCmdKV("getcoloradjust");
+            SendHttp(o, false);
+        }
+
+        function MY_ONLOAD() {
+            g_lockLink = false;
+            StartActiveXEx(0, 0, Get9001FirstCodec(), 5, null);
+            // Update();
+            // isPeakEnable();
+            FixLed();
+            CTRLARY["isuseled"].active = 0;
+            CTRLARY["polarled"].active = 0;
+            // CTRLARY["signalled"].active = 0;
+        }
+
+        function FixLed() {
+            var useled = GetCCV("isuseled");
+            if (useled == 1) {
+                document.getElementById('polarled').disabled = 0;
+                // document.getElementById('signalled').disabled = 0;
+                document.getElementById('leddelaytime').disabled = 0;
+            } else if (useled == 0) {
+                document.getElementById('polarled').disabled = 1;
+                // document.getElementById('signalled').disabled = 1;
+                document.getElementById('leddelaytime').disabled = 1;
+            }
+        }
+
+        function ParaCheck() {
+            var flag = false;
+
+            /*var blka = GetCCV("blka");
+          if (blka == "<%blka%>")
+          {
+            CTRLARY["blka"].active = 0;
+          }
+          else if (flag == false)
+            flag = true;
+
+          var blkb = GetCCV("blkb");
+          if (blkb == "<%blkb%>")
+          {
+            CTRLARY["blkb"].active = 0;
+          } 
+          else if (flag == false)
+            flag = true;
+
+          var blkc = GetCCV("blkc");
+          if (blkc == "<%blkc%>")
+          {
+            CTRLARY["blkc"].active = 0;
+          } 
+          else if (flag == false)
+            flag = true;
+
+          var blkd = GetCCV("blkd");
+          if (blkd == "<%blkd%>")
+          {
+            CTRLARY["blkd"].active = 0;
+          } 
+          else if (flag == false)
+            flag = true;*/
+
+            var gamma = GetCCV("gamma");
+            if (gamma == "<%gamma%>") {
+                CTRLARY["gamma"].active = 0;
+            } else if (flag == false) flag = true;
+
+            var useled = GetCCV("isuseled");
+            if (useled == "<%isuseled%>") {
+                CTRLARY["isuseled"].active = 0;
+            } else if (flag == false) flag = true;
+
+            // var signal = GetCCV("signalled");
+            // if (signal == "<%signalled%>")
+            // {
+            //   CTRLARY["signalled"].active = 0;
+            // } 
+            // else if (flag == false)
+            //   flag = true;
+            var polar = GetCCV("polarled");
+            if (polar == "<%polarled%>") {
+                CTRLARY["polarled"].active = 0;
+            } else if (flag == false) flag = true;
+
+            // var raw = GetCCV("raw");
+            // if (raw == "<%raw%>")
+            // {
+            //   CTRLARY["raw"].active = 0;
+            // } 
+            // else if (flag == false)
+            //   flag = true;
+            // var imgmod = GetCCV("imgmod");
+            // if (imgmod == "<%imgmod%>")
+            // {
+            //   CTRLARY["imgmod"].active = 0;
+            // } 
+            // else if (flag == false)
+            //   flag = true;
+            // var lvdsdelay = GetCCV("lvdsdelay");
+            // if (lvdsdelay == "<%lvdsdelay%>")
+            // {
+            //   CTRLARY["lvdsdelay"].active = 0;
+            // } 
+            // else if (flag == false)
+            //   flag = true;
+            // var coloradjust = GetCCV("coloradjust");
+            // if (coloradjust == "<%coloradjust%>")
+            // {
+            //   CTRLARY["coloradjust"].active = 0;
+            // } 
+            // else if (flag == false)
+            //   flag = true;
+            // var ad9928 = GetCCV("ad9928");
+            // if (ad9928 == "<%ad9928%>")
+            // {
+            //   CTRLARY["ad9928"].active = 0;
+            // } 
+            // else if (flag == false)
+            //   flag = true;
+            return flag;
+        }
+        function MY_BEFORE_SUBMIT() {
+            if (loginauth != 0 && loginauth != 1) {
+                alert(GL("auth_not"));
+                return false;
+            }
+            /*if (CheckBlka(0, 1023) == false)
+                return false;
+              if (CheckBlkb(0, 1023) == false)
+                return false;
+              if (CheckBlkc(0, 1023) == false)
+                return false;
+              if (CheckBlkd(0, 1023) == false)
+                return false;*/
+            // if (CheckLowthr(0, 1023) == false)
+            //   return false;
+            // if (CheckNfcoef(0, 1023) == false)
+            //   return false;
+            // if (CheckHithr(0, 1023) == false)
+            //   return false;
+            // if (CheckPeakgain(0, 1023) == false)
+            //   return false;
+            if (CheckLedTime(0, 80000) == false) return false;
+
+            if (ParaCheck() == false) {
+                alert(GL("para_not_change"));
+                return false;
+            }
+
+            var ledctrlval = '';
+            ledctrlval += GetCCV("polarled") + ':' + GetCCV("isuseled");
+            // alert(ledctrlval);
+            SendHttp(c_iniUrl + GetSetterCmdKV("ledctrl", ledctrlval), false);
+
+            return true;
+        }
+        function MY_SUBMIT_OK() {
+            alert(GL("submit_success"));
+            window.location.reload();
+        }
+        function WIPXGain(tid, ctx, numrange) {
+            DW('<tr><td height="30" >');
+            DW(GL(tid) + ':</td><td height=30>' + ctx + '</td><td height=30>' + GL(numrange) + '</td></tr>');
+        };
+        function WIPGain(tid, id, numrange) {
+            WIPXGain(tid, WH_(id), numrange)
+        }
+
+        </script>
+		<title>
+			
+		</title>
+	</head>
+<body onload="MY_ONLOAD()">
+
+
+<script>
+  DW('<div class="layout" id="tabs-4" >');
+  DW('<table>');
+  /* //deleted by dsl, 2013-12-9
+  WIPGain("blk_a", "blka", "vga_numrange");
+  WIPGain("blk_b", "blkb", "vga_numrange");
+  WIPGain("blk_c", "blkc", "vga_numrange");
+  WIPGain("blk_d", "blkd", "vga_numrange"); 
+  */
+  
+  // DW('<tr><td>');  
+  // WH("peakenable");
+  // DW('&nbsp;' + GL('peak_enable'));
+  // DW('</td></tr>');
+  
+  // WIPGain("nf_coef", "nfcoef", "img_range");
+  // WIPGain("peak_gain", "peakgain", "img_range");
+  // WIPGain("low_thr", "lowthr", "thr_range");
+  // WIPGain("hi_thr", "hithr", "thr_range");
+
+  DW('</table>');
+  DW('</div>');
+  DW('<div class="layout" id="tabs-5" >');
+  DW('<table>');
+  DW('<tr class="b1"><td width=150 height="30" >');  
+  WH("gamma");
+  DW('&nbsp;' + GL('gamma'));
+  DW('</td></tr>');
+
+// isuseled
+  DW('<tr class="b1"><td>');  
+  DW(GL('isuse_led') + '</td><td>');
+  WH("isuseled");
+  DW('</td></tr>');
+// led 1：正极性，0：负极性
+  DW('<tr class="b1"><td>');  
+  DW(GL('polar_led') + '</td><td>');
+  WH("polarled");
+  DW('</td></tr>');
+// 输出信号选择。1：输出曝光同步信号，0：输出固定电平信号
+  // DW('<tr class="b1"><td colspan=2>');  
+  // DW(GL('signal_led'));
+  // WH("signalled");
+  // DW('</td></tr>');
+
+  // WIP("leddelaytime", "leddelaytime"); 
+  DW('<tr class="b1"><td>');  
+  DW(GL('leddelaytime') + '</td><td>');
+  WH("leddelaytime");
+  DW('us</td><td>');
+  DW(GL("ledtime_range"));
+  DW('</td></tr>');
+
+  //raw
+  // DW('<tr class="b1"><td width=150 height="30" colspan=2>');  
+  // WH("raw");
+  // DW('&nbsp;' + GL('raw'));
+  // DW('</td></tr>');
+
+  // WIP("img_mod", "imgmod");
+
+  // //lvds delay time
+  // WIP("lvds_delay", "lvdsdelay");
+
+  // // color adjust
+  // WIP("color_adjust", "coloradjust");
+
+  // //ad9928
+  // WIP("ad9928", "ad9928");
+
+  // DW('<tr><td height=30><input type="button" id="softreset" value="' + GL("soft_reset") + '" class="m1" onClick="SoftReset()"></td>');
+
+  </script>
+<!--   <tr >
+  <td>根据输入地址设置该地址的值</td>
+  <td>
+    <span>Address:</span>
+    <input type="text" id="addr"></input>
+  </td>
+  <td  >
+    <span>Value:</span>
+    <input type="text" id="val"></input>
+  </td>
+  <td  >
+    <input type="button" id="set" value="Set" onclick="Set()"></input>
+  </td>  
+ </tr> -->
+</table>
+<script>
+  DW('<div>');
+  DW('<table><tr><td colspan=4 align="center">');
+  CreateSubmitButton();
+  DW('</td></tr></table>');
+  DW('</div>');
+
+</script>
+</body>
+</html>

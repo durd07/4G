@@ -1,0 +1,436 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+        <script language="javascript" src="var.js"></script>
+        <script language="javascript" src="common.js"></script>
+        <script>
+            InitLoad();
+         </script>
+        <title>
+            
+        </title>
+    <style type="text/css">
+    
+    td {
+    	font-size:12px;
+    }
+    </style>
+
+    </head>
+<body onload="MY_ONLOAD()">
+    <!-- ntp server ip and interval -->
+<script> 
+function CheckSntpIp() {
+  var value = document.getElementById("sntpip").value;
+      var res = false;    
+      var ipary = value.split(".");     
+      var num = ipary.length;
+      if (value.length == 0)
+      {
+        alert(GL("sntpip_empty"));
+        return false;
+      }
+      if(num != 4)
+      {
+        alert(GL("sntpip_err"));
+        document.getElementById("sntpip").value = "";
+        return false;
+      }
+      else
+      {
+        var i = 0;
+        if (ipary[0] <= 0 || !(IsNumeric(ipary[0])))
+        {
+          alert(GL("sntpip_err"));
+          document.getElementById("sntpip").value = "";
+          return false; 
+        } 
+
+        for (i = 1; i<num;i++)
+        {
+          if(ipary[i] < 0 || ipary[i] >255 || !(IsNumeric(ipary[i])) || ipary[i] == '')
+          {
+            alert(GL("sntpip_err"));  
+            document.getElementById("sntpip").value = "";          
+            return false; 
+          }
+        }
+      }
+      return true;
+}
+
+function CheckSntpInterval(min) {
+    var value = document.getElementById("ntpinterval").value;
+
+      if (value.length == 0)
+      {
+        alert(GL("sntpinter_empty"));
+        return false;
+      }
+
+      if (!(IsNumeric(value)))
+      {
+          alert(GL("sntpinter_err"));
+          document.getElementById("ntpinterval").value = "";
+          return false; 
+      }
+
+      if (value < min)
+      {
+          alert(GL("sntpinter_num"));
+          document.getElementById("ntpinterval").value = "";
+          return false; 
+      }
+
+}
+function ParaCheck()
+{
+  var flag = false;
+
+  var sntpip = GetCCV("sntpip");
+  if (sntpip == "<%sntpip%>")
+  {
+    CTRLARY["sntpip"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  var sntpinterval = GetCCV("ntpinterval");
+  if (sntpinterval == "<%ntpinterval%>")
+  {
+    CTRLARY["ntpinterval"].active = 0;
+  }
+  else if (flag == false)
+    flag = true;
+
+  return flag;
+}
+
+  function MY_BEFORE_SUBMIT() {
+    if (loginauth != 0)
+        {
+            alert(GL("auth_not"));
+            return false;
+        }
+    if(CheckSntpIp() == false)
+      return false;
+
+    if(CheckSntpInterval(15) == false)
+      return false;
+
+    if (ParaCheck() == false)
+    {
+      alert(GL("para_not_change"));
+      ChangeActive();
+      return false;
+    }
+
+    return true;
+}
+  function MY_SUBMIT_OK() {
+    alert(GL("submit_success"));
+    ChangeContent(null, false);
+  }
+function WIPXGain(tid, ctx, numrange)
+{
+  DW('<tr><td height="30" >');
+  DW(GL(tid) + ':</td><td height=30>' + ctx + '</td><td height=30>' + GL(numrange)+ '</td></tr>');  
+};
+function WIPGain(tid, id, numrange)
+{
+  WIPXGain(tid, WH_(id), numrange)
+}
+
+</script>
+
+
+
+
+
+<script>
+    var dateformatname = parseInt("<%dateformat%>");
+    var isDayLight = "<%daylight%>";
+    var cameraTime, cct_yy, cct_mm, cct_dd, cct_hr, cct_min, cct_sec;
+    var tmpMonth = parseInt("<%date.1%>") - 1;
+    var v_sntpFreq = 0;  //"<%sntpfrequency%>";
+    var T1, T2;
+    cameraTime = new Date("<%time%>");
+    // alert(cameraTime);
+    // cameraTime = new Date("<%time.0%>", "<%time.1%>", "<%date.2%>", "<%time.3%>", "<%time.4%>", "<%time.5%>");
+    var clientTime = new Date();
+    var timeDiff = clientTime.getTime() - cameraTime.getTime();
+    CTRLARY = {
+        datemanual: new Ctrl_Text("datemanual", "25", "25", "", "newdate="),
+        timemanual: new Ctrl_Text("timemanual", "25", "25", "", "newtime="),
+        manualSntp: new Ctrl_Text("manualSntp", "25", "25", "-1", "timefrequency=")
+        // dateformatname: new Ctrl_Select("dateformatname", "<%dateformatname.all%>", dateformatname, "dateformat=", "RefreshDateTime()"),
+        // freqSntp: new Ctrl_Select("freqSntp", "never;1 hour;2 hours;4 hours;8 hours;12 hours;1 day;2 days;3 days", v_sntpFreq, "timefrequency=")
+    };
+    var c_TimeType = new Ctrl_Radio("timeType", "-1", "0", "FixStatus()");
+    var c_syncSntp = new Ctrl_Radio("syncSntp", ((v_sntpFreq > 0) ? "1" : "0"), "", "FixStatus()");
+
+    function MY_ONLOAD() {
+        PCClock();
+        CCTClock();
+        RefreshDateTime();
+        FixStatus();
+        g_lockLink = false;
+    }
+    function MY_ONUNLOAD() {
+        clearTimeout(T1);
+        clearTimeout(T2);
+    }
+
+function CheckTime()
+{
+    var hours = document.getElementById("hhh").value;
+    var min = document.getElementById("mmm").value;
+    var secs = document.getElementById("sss").value;
+
+    if (hours.length == 0)
+    {
+        alert(GL("hour_empty"));
+        return false;
+    }
+
+    if (!(IsNumeric(hours)) || hours > 23)
+    {
+        alert(GL("hour_inva"));
+        document.getElementById("hhh").value = "";
+        return false;
+    }
+    if (min.length == 0)
+    {
+        alert(GL("min_empty"));
+        return false;
+    }
+
+    if (!(IsNumeric(min)) || min > 59)
+    {
+        alert(GL("min_inva"));
+        document.getElementById("mmm").value = "";
+        return false;
+    }
+
+    if (secs.length == 0)
+    {
+        alert(GL("sec_empty"));
+        return false;
+    }
+
+    if (!(IsNumeric(secs)) || secs > 59)
+    {
+        alert(GL("sec_inva"));
+        document.getElementById("sss").value = "";
+        return false;
+    }
+
+    return true;
+}
+
+    function MY_BEFORE_SUBMIT() {
+        var v = parseInt(c_TimeType.GV());
+        var manualdate = document.getElementById("datemanual").value;
+        if (v == 0)
+        {
+            if (CheckTime() == false)
+                return false;
+        }
+        switch (v) {
+            case 0:
+            // alert((FixNum(GE("hhh").value, 2)));
+                SetCCV("timemanual", (FixNum(GE("hhh").value, 2) + ":" + FixNum(GE("mmm").value, 2) + ":" + FixNum(GE("sss").value, 2)));
+                break;
+            case 1:
+                SetCCV("datemanual", GiveMeDateString(new Date(), 0, 0));
+                SetCCV("timemanual", GiveMeTimeString(new Date()));
+                break;
+            case -1:
+                SetCIA("datemanual");
+                SetCIA("timemanual");
+                break;
+        }
+// alert(v);
+        return true;
+    }
+    function MY_SUBMIT_OK() {
+        alert(GL("submit_success"));
+
+        ChangeContent(null, true);
+    }
+    function CCTClock() { // camera date time 
+        UpdateCameraClock();
+        T1 = setTimeout("CCTClock()", 1000);
+    }
+    function UpdateCameraClock() {
+        // var cameraTime = new Date("<%time%>");
+        // alert(cameraTime);
+        var aa = new Date();
+        cameraTime.setTime(aa.getTime());//-timeDiff
+        GE("currentCameraDate").value = GiveMeDateString(cameraTime, 0, isDayLight);
+        GE("currentCameraTime").value = GiveMeTimeString(cameraTime);
+    }
+
+    function PCClock() {
+        UpdatePCClock();
+        T2 = setTimeout("PCClock()", 1000);
+    }
+    function UpdatePCClock() {
+        var now = new Date();
+        GE("pcdate").value = GiveMeDateString(now, 0, isDayLight);
+        GE("pctime").value = GiveMeTimeString(now);
+    }
+    function FixStatus() {
+        DisableObjs(new Array("pcdate", "pctime", "currentCameraDate", "currentCameraTime", "syncSntp", "hhh","mmm", "sss"), true);
+        document.getElementById("datemanual").disabled = 1;
+        // document.getElementById("mmm").disabled = 1;
+
+        var v = parseInt(GetRadioValue("timeType"));
+        var iaT = (v >= 2);
+        SetCIA("datemanual", !iaT);
+        SetCIA("timemanual", !iaT);
+        switch (v) {
+        case 0:
+            // DisableObjs(new Array("datemanual", "timemanual"), false);
+            document.getElementById("datemanual").disabled = 0;
+            document.getElementById("hhh").disabled = 0;
+            document.getElementById("mmm").disabled = 0;
+            document.getElementById("sss").disabled = 0;
+            break;
+        case 2:
+            var vv = parseInt(c_syncSntp.GV());
+            DisableObject("syncSntp", false);
+            DisableObject("manualSntp", !(vv == 0));
+            // DisableObject("freqSntp", (vv == 0));
+            break;
+        }
+        try {
+            for (var i = 0; i < 3; i++) {
+                GE("sTimeType_" + i).className = ((v == i) ? "bluerWithYel" : "bluer");
+            }
+        } catch (e) {};
+    }
+    function RefreshDateTime() {
+        UpdateCameraClock();
+        UpdatePCClock();
+        var date = new Date();
+        GE("datemanual").value = GiveMeDateString(date, 0, isDayLight);
+        var time = GiveMeTimeString(date);
+        var timelist = time.split(':');
+        GE("hhh").value = timelist[0];
+        GE("mmm").value = timelist[1];
+        GE("sss").value = timelist[2];
+        GE("datemanual").disabled = 1;
+        // GE("mmm").disabled = 1;
+        FixStatus();
+    }
+    function WSI1(ctx, css) {
+        DW("<tr class=" + ((css == null) ? "b1" : css) + "><td height=25 colspan=2>" + ctx + "</td></tr>");
+    }
+    function WSI2(ctx1, ctx2) {
+        DW("<tr class=b1><td height=25 width=20>" + ctx1 + "</td><td>" + ctx2 + "</td></tr>");
+    }
+    function STimeType(id, tid) {
+        return "<span id='sTimeType_" + id + "' class='bluer'>" + GL(tid) + "</span>";
+    }
+
+DW("<div class=cssViewChLayer >"  + WH_("manualSntp") + c_TimeType.GetHtml(-1) + "</div>");
+    DW('<div>');
+    DW('<table>');
+
+    WSI1(GL("local_time"), "m1");
+
+    WSI2("&nbsp;", GL("date") + ":&nbsp;" + CreateTextHtml("currentCameraDate", "15", "15", "") + "&nbsp;&nbsp;" + GL("time") + ":&nbsp;" + CreateTextHtml("currentCameraTime", "9", "9", ""));
+
+
+    WSI1(GL("desired_time"), "m1");
+
+// set manual
+    WSI2(c_TimeType.GetHtml(0), STimeType(0, "set_manual"));
+    DW('<tr><td colspan=2>');
+    DW('<div id="manual">');
+    DW('<table>');
+</script>
+    <tr>
+        <td>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <script>
+                DW(GL("date"));
+            </script>
+        :<input style="font-family:  Arial,sans-serif;" name="Tstart" id="datemanual" type="text" readonly="1" value="" onClick="WdatePicker()" size=11 maxlength="10"/>
+        </td>
+
+        <td>
+            <img onclick="WdatePicker({el:$dp.$('datemanual')})" src="My97DatePicker/skin/datePicker.gif" width="16" height="22" align="absmiddle">
+        </td>
+
+        <td>
+            <input style="font-family:  Arial,sans-serif;" type="hidden" name="time" id="timemanual" size="2" maxlength="2" value="">
+            <script>
+                DW(GL("time"));
+            </script>
+            :<input style="font-family:  Arial,sans-serif;" type="text" name="hhh" id="hhh" size="2" maxlength="2" value="">
+            <script>
+                DW(GL("hour"));
+            </script>
+            <input style="font-family:  Arial,sans-serif;" type="text" name="hhh" id="mmm" size="2" maxlength="2" value="">
+            <script>
+                DW(GL("min"));
+            </script>
+            <input style="font-family:  Arial,sans-serif;" type="text" name="hhh" id="sss" size="2" maxlength="2" value="">
+            <script>
+                DW(GL("second_s"));
+            </script>
+        </td>
+    </tr>
+<script>
+DW('</table></div>');
+DW('</td></tr>');
+
+// sync computer time
+    WSI2(c_TimeType.GetHtml(1), STimeType(1, "sync_computer_time"));
+    WSI2("&nbsp;", GL("date") + ":&nbsp;" + CreateTextHtml("pcdate", "15", "15", "") + "&nbsp;&nbsp;" + GL("time") + ":&nbsp;" + CreateTextHtml("pctime", "9", "9", ""));
+
+// sync sntp
+    WSI2(c_TimeType.GetHtml(2), STimeType(2, "sync_sntp"));
+    WSI2("&nbsp;", GetContentLink("sntp_server", "nsntp.htm") + ":&nbsp;<%sntpip%>");
+
+// submit
+    var lb = '';
+    lb += '<input type="button" id="smbtn_" value="' + GL("submit") + '" class="m1" onClick="SubmitCenter()">';
+    WSI1("<br><center>" + lb);
+
+
+    function SubmitCenter() {
+        var v = parseInt(GetRadioValue("timeType"));
+        if (v == 2) {
+            SntpSend();
+        } else {
+            ValidateCtrlAndSubmit(CTRLARY);
+        }
+    }
+    function SntpSend() {
+        var o = c_iniUrl;
+        o += GetSetterCmd(CTRLARY["manualSntp"], GetCCV("manualSntp"));
+        // alert(o);
+        SendHttp(o, false, SntpCallBack);
+
+        // ChangeContent(null, true);
+        MY_SUBMIT_OK();
+    }
+    function SntpCallBack() {
+        if (g_SubmitHttp.readyState == 4) {
+            WS("");
+            if (g_SubmitHttp.status == 200) {
+                var txt = g_SubmitHttp.responseText;
+                if (txt.indexOf("TIMEOUT") >= 0) {
+                    alert("SNTP request timed out due to network problem.");
+                }
+            }
+        }
+    }
+    ALC();
+</script>
+    </body>
+</html>
